@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class BubbleSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sorts array using specified comparer,
     ///     internal, in-place, stable,
@@ -17,9 +19,11 @@ public class BubbleSorter<T> : IComparisonSorter<T>
     /// <param name="comparer">Compares elements.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         for (var i = 0; i < array.Length - 1; i++)
         {
             var wasChanged = false;
+			_logger.LogDebug("Sort(array={Array},comparer={Comparer}): wasChanged → {WasChanged}", array, comparer, wasChanged);
             for (var j = 0; j < array.Length - i - 1; j++)
             {
                 if (comparer.Compare(array[j], array[j + 1]) > 0)
@@ -36,5 +40,6 @@ public class BubbleSorter<T> : IComparisonSorter<T>
                 break;
             }
         }
+		_logger.LogDebug("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 ﻿namespace Algorithms.Sequences;
 
 /// <summary>
@@ -10,6 +11,7 @@
 /// </summary>
 public class OnesCountingSequence : ISequence
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     <para>
     ///         Gets the generated sequence of the 1's contained in the binary representation of n.
@@ -49,6 +51,8 @@ public class OnesCountingSequence : ISequence
                 foreach (var count in GenerateFractalCount(BigInteger.One, depth))
                 {
                     yield return count;
+					_logger.LogDebug(">>> Entering GenerateFractalCount(i={I},depth={Depth})", i, depth);
+					_logger.LogDebug("<<< Exiting GenerateFractalCount(i={I},depth={Depth})", i, depth);
                 }
 
                 depth++;
@@ -66,6 +70,7 @@ public class OnesCountingSequence : ISequence
     /// <returns>An IEnumerable sequence of BigInteger values that can be iterated over.</returns>
     private static IEnumerable<BigInteger> GenerateFractalCount(BigInteger i, int depth)
     {
+		_logger.LogDebug(">>> Entering GenerateFractalCount(i={I},depth={Depth})", i, depth);
         // Terminal condition
         if (depth == 0)
         {
@@ -82,5 +87,6 @@ public class OnesCountingSequence : ISequence
         {
             yield return secondHalf;
         }
+		_logger.LogDebug("<<< Exiting GenerateFractalCount(i={I},depth={Depth})", i, depth);
     }
 }

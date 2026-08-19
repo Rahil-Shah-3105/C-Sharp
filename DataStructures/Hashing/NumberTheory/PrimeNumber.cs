@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Hashing.NumberTheory;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace DataStructures.Hashing.NumberTheory;
 /// </remarks>
 public static class PrimeNumber
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Checks if a number is prime or not.
     /// </summary>
@@ -15,6 +17,7 @@ public static class PrimeNumber
     /// <returns>True if number is prime, false otherwise.</returns>
     public static bool IsPrime(int number)
     {
+		_logger.LogDebug(">>> Entering IsPrime(number={Number})", number);
         if (number <= 1)
         {
             return false;
@@ -38,6 +41,7 @@ public static class PrimeNumber
             }
         }
 
+		_logger.LogDebug("<<< Exiting IsPrime(number={Number})", number);
         return true;
     }
 
@@ -50,6 +54,7 @@ public static class PrimeNumber
     /// <returns>The next prime number.</returns>
     public static int NextPrime(int number, int factor = 1, bool desc = false)
     {
+		_logger.LogDebug(">>> Entering NextPrime(number={Number},factor={Factor},desc={Desc})", number, factor, desc);
         number = factor * number;
         int firstValue = number;
 
@@ -60,6 +65,7 @@ public static class PrimeNumber
 
         if (number == firstValue)
         {
+		_logger.LogDebug("<<< Exiting NextPrime(number={Number},factor={Factor},desc={Desc})", number, factor, desc);
             return NextPrime(
                 number + (desc ? -1 : 1),
                 factor,

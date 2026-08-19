@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -10,6 +11,7 @@ namespace Algorithms.Graph;
 /// </summary>
 public class TarjanStronglyConnectedComponents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly List<int>[] graph;
     private readonly int[] ids;
     private readonly int[] low;
@@ -20,18 +22,26 @@ public class TarjanStronglyConnectedComponents
 
     public TarjanStronglyConnectedComponents(int vertices)
     {
+		_logger.LogDebug(">>> Entering TarjanStronglyConnectedComponents(vertices={Vertices})", vertices);
         graph = new List<int>[vertices];
         ids = new int[vertices];
+		_logger.LogDebug("TarjanStronglyConnectedComponents(vertices={Vertices}): ids → {Ids}", vertices, ids);
         low = new int[vertices];
+		_logger.LogDebug("TarjanStronglyConnectedComponents(vertices={Vertices}): low → {Low}", vertices, low);
         onStack = new bool[vertices];
+		_logger.LogDebug("TarjanStronglyConnectedComponents(vertices={Vertices}): onStack → {OnStack}", vertices, onStack);
         stack = new Stack<int>();
         sccs = new List<List<int>>();
 
+		_logger.LogDebug("TarjanStronglyConnectedComponents(vertices={Vertices}): stack → {Stack}", vertices, stack);
+		_logger.LogDebug("TarjanStronglyConnectedComponents(vertices={Vertices}): sccs → {Sccs}", vertices, sccs);
+		_logger.LogDebug("TarjanStronglyConnectedComponents(vertices={Vertices}): graph → {Graph}", vertices, graph);
         for (int i = 0; i < vertices; i++)
         {
             graph[i] = new List<int>();
             ids[i] = -1;
         }
+		_logger.LogDebug("<<< Exiting TarjanStronglyConnectedComponents(vertices={Vertices})", vertices);
     }
 
     /// <summary>
@@ -39,12 +49,15 @@ public class TarjanStronglyConnectedComponents
     /// </summary>
     public void AddEdge(int u, int v)
     {
+		_logger.LogDebug(">>> Entering AddEdge(u={U},v={V})", u, v);
         if (u < 0 || u >= graph.Length || v < 0 || v >= graph.Length)
         {
+			_logger.LogWarning("Throwing ArgumentOutOfRangeException from AddEdge(u={U},v={V})", u, v);
             throw new ArgumentOutOfRangeException(nameof(u), "Vertex indices must be within valid range.");
         }
 
         graph[u].Add(v);
+		_logger.LogDebug("<<< Exiting AddEdge(u={U},v={V})", u, v);
     }
 
     /// <summary>
@@ -53,6 +66,7 @@ public class TarjanStronglyConnectedComponents
     /// <returns>List of SCCs, where each SCC is a list of vertex indices.</returns>
     public List<List<int>> FindSCCs()
     {
+		_logger.LogDebug(">>> Entering FindSCCs()");
         for (int i = 0; i < graph.Length; i++)
         {
             if (ids[i] == -1)
@@ -61,6 +75,7 @@ public class TarjanStronglyConnectedComponents
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindSCCs()");
         return sccs;
     }
 
@@ -74,6 +89,7 @@ public class TarjanStronglyConnectedComponents
     /// </summary>
     public bool InSameScc(int u, int v)
     {
+		_logger.LogDebug(">>> Entering InSameScc(u={U},v={V})", u, v);
         if (sccs.Count == 0)
         {
             FindSCCs();
@@ -87,6 +103,7 @@ public class TarjanStronglyConnectedComponents
             }
         }
 
+		_logger.LogDebug("<<< Exiting InSameScc(u={U},v={V})", u, v);
         return false;
     }
 
@@ -95,11 +112,13 @@ public class TarjanStronglyConnectedComponents
     /// </summary>
     public List<int>? GetScc(int vertex)
     {
+		_logger.LogDebug(">>> Entering GetScc(vertex={Vertex})", vertex);
         if (sccs.Count == 0)
         {
             FindSCCs();
         }
 
+		_logger.LogDebug("<<< Exiting GetScc(vertex={Vertex})", vertex);
         return sccs.FirstOrDefault(scc => scc.Contains(vertex));
     }
 
@@ -108,6 +127,7 @@ public class TarjanStronglyConnectedComponents
     /// </summary>
     public List<int>[] BuildCondensationGraph()
     {
+		_logger.LogDebug(">>> Entering BuildCondensationGraph()");
         if (sccs.Count == 0)
         {
             FindSCCs();
@@ -129,6 +149,7 @@ public class TarjanStronglyConnectedComponents
         }
 
         var edges = new HashSet<(int, int)>();
+		_logger.LogDebug("BuildCondensationGraph(): edges → {Edges}", edges);
         for (int u = 0; u < graph.Length; u++)
         {
             foreach (var v in graph[u])
@@ -144,11 +165,13 @@ public class TarjanStronglyConnectedComponents
             }
         }
 
+		_logger.LogDebug("<<< Exiting BuildCondensationGraph()");
         return condensation;
     }
 
     private void Dfs(int at)
     {
+		_logger.LogDebug(">>> Entering Dfs(at={At})", at);
         stack.Push(at);
         onStack[at] = true;
         ids[at] = low[at] = id++;
@@ -169,9 +192,11 @@ public class TarjanStronglyConnectedComponents
         if (ids[at] == low[at])
         {
             var scc = new List<int>();
+			_logger.LogDebug("Dfs(at={At}): scc → {Scc}", at, scc);
             while (true)
             {
                 int node = stack.Pop();
+				_logger.LogDebug("Dfs(at={At}): node → {Node}", at, node);
                 onStack[node] = false;
                 scc.Add(node);
                 if (node == at)
@@ -182,5 +207,6 @@ public class TarjanStronglyConnectedComponents
 
             sccs.Add(scc);
         }
+		_logger.LogDebug("<<< Exiting Dfs(at={At})", at);
     }
 }

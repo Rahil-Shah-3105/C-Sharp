@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class Factorial
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates factorial of a integer number.
     /// </summary>
@@ -13,23 +15,28 @@ public static class Factorial
     /// <returns>Factorial of integer input number.</returns>
     public static BigInteger Calculate(int inputNum)
     {
+		_logger.LogDebug(">>> Entering Calculate(inputNum={InputNum})", inputNum);
         // Convert integer input to BigInteger
         BigInteger num = new BigInteger(inputNum);
+		_logger.LogDebug("Calculate(inputNum={InputNum}): num → {Num}", inputNum, num);
 
         // Don't calculate factorial if input is a negative number.
         if (BigInteger.Compare(num, BigInteger.Zero) < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from Calculate(inputNum={InputNum})", inputNum);
             throw new ArgumentException("Only for num >= 0");
         }
 
         // Factorial of numbers greater than 0.
         BigInteger result = BigInteger.One;
+		_logger.LogDebug("Calculate(inputNum={InputNum}): result → {Result}", inputNum, result);
 
         for (BigInteger i = BigInteger.One; BigInteger.Compare(i, num) <= 0; i = BigInteger.Add(i, BigInteger.One))
         {
             result = BigInteger.Multiply(result, i);
         }
 
+		_logger.LogDebug("<<< Exiting Calculate(inputNum={InputNum})", inputNum);
         return result;
     }
 }

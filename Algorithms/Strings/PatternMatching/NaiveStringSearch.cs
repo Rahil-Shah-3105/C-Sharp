@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 // Implements the traditional naive string matching algorithm in C# for TheAlgorithms/C-Sharp.
 namespace Algorithms.Strings.PatternMatching;
 
@@ -6,6 +7,7 @@ namespace Algorithms.Strings.PatternMatching;
 /// </summary>
 public static class NaiveStringSearch
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     NaiveSearch(Content, Pattern) will return an array containing each index of Content in which Pattern appears.
     ///     Cost:  O(n*m).
@@ -15,6 +17,7 @@ public static class NaiveStringSearch
     /// <returns>Array containing each index of Content in which Pattern appears.</returns>
     public static int[] NaiveSearch(string content, string pattern)
     {
+		_logger.LogDebug(">>> Entering NaiveSearch(content={Content},pattern={Pattern})", content, pattern);
         var m = pattern.Length;
         var n = content.Length;
         List<int> indices = [];
@@ -35,6 +38,7 @@ public static class NaiveStringSearch
             }
         }
 
+		_logger.LogDebug("<<< Exiting NaiveSearch(content={Content},pattern={Pattern})", content, pattern);
         return indices.ToArray();
     }
 }

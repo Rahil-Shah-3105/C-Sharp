@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class Relu
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Compute the Rectified Linear Unit (ReLU) for a single value.
     /// </summary>
@@ -14,6 +16,7 @@ public static class Relu
     /// <returns>The output real number (>= 0).</returns>
     public static double Compute(double input)
     {
+		_logger.LogDebug("<<< Exiting Compute(input={Input})", input);
         return Math.Max(0.0, input);
     }
 

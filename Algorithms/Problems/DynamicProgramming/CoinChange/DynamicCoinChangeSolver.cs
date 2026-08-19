@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Problems.DynamicProgramming.CoinChange;
 
 public static class DynamicCoinChangeSolver
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Generates an array of changes for current coin.
     /// For instance, having coin C = 6 and array A = [1,3,4] it returns an array R = [2,3,5].
@@ -12,6 +14,7 @@ public static class DynamicCoinChangeSolver
     /// <returns>Array of changes of current coins by available coins.</returns>
     public static int[] GenerateSingleCoinChanges(int coin, int[] coins)
     {
+		_logger.LogDebug(">>> Entering GenerateSingleCoinChanges(coin={Coin},coins={Coins})", coin, coins);
         ValidateCoin(coin);
         ValidateCoinsArray(coins);
 
@@ -36,7 +39,9 @@ public static class DynamicCoinChangeSolver
         }
 
         var result = list.ToArray();
+		_logger.LogDebug("GenerateSingleCoinChanges(coin={Coin},coins={Coins}): result → {Result}", coin, coins, result);
 
+		_logger.LogDebug("<<< Exiting GenerateSingleCoinChanges(coin={Coin},coins={Coins})", coin, coins);
         return result;
     }
 
@@ -73,8 +78,11 @@ public static class DynamicCoinChangeSolver
     /// <returns>Index of the next coin with minimal exchange.</returns>
     public static int GetMinimalNextCoin(int coin, Dictionary<int, int[]> exchanges)
     {
+		_logger.LogDebug(">>> Entering GetMinimalNextCoin(coin={Coin},exchanges={Exchanges})", coin, exchanges);
         var nextCoin = int.MaxValue;
         var minChange = int.MaxValue;
+		_logger.LogDebug("GetMinimalNextCoin(coin={Coin},exchanges={Exchanges}): minChange → {MinChange}", coin, exchanges, minChange);
+		_logger.LogDebug("GetMinimalNextCoin(coin={Coin},exchanges={Exchanges}): nextCoin → {NextCoin}", coin, exchanges, nextCoin);
 
         var coinChanges = exchanges[coin];
 
@@ -87,6 +95,7 @@ public static class DynamicCoinChangeSolver
 
             var currentChange = exchanges[change];
             var min = currentChange.Min();
+			_logger.LogDebug("GetMinimalNextCoin(coin={Coin},exchanges={Exchanges}): min → {Min}", coin, exchanges, min);
 
             var minIsLesser = min < minChange;
 
@@ -97,6 +106,7 @@ public static class DynamicCoinChangeSolver
             }
         }
 
+		_logger.LogDebug("<<< Exiting GetMinimalNextCoin(coin={Coin},exchanges={Exchanges})", coin, exchanges);
         return nextCoin;
     }
 
@@ -108,11 +118,16 @@ public static class DynamicCoinChangeSolver
     /// <returns>Array of exchanges.</returns>
     public static int[] MakeCoinChangeDynamic(int coin, int[] coins)
     {
+		_logger.LogDebug(">>> Entering MakeCoinChangeDynamic(coin={Coin},coins={Coins})", coin, coins);
         var changesTable = GenerateChangesDictionary(coin, coins);
         var list = new List<int>();
+		_logger.LogDebug("MakeCoinChangeDynamic(coin={Coin},coins={Coins}): list → {List}", coin, coins, list);
+		_logger.LogDebug("MakeCoinChangeDynamic(coin={Coin},coins={Coins}): changesTable → {ChangesTable}", coin, coins, changesTable);
 
         var currentCoin = coin;
+		_logger.LogDebug("MakeCoinChangeDynamic(coin={Coin},coins={Coins}): currentCoin → {CurrentCoin}", coin, coins, currentCoin);
         var nextCoin = int.MaxValue;
+		_logger.LogDebug("MakeCoinChangeDynamic(coin={Coin},coins={Coins}): nextCoin → {NextCoin}", coin, coins, nextCoin);
 
         while (nextCoin != 0)
         {
@@ -123,28 +138,37 @@ public static class DynamicCoinChangeSolver
         }
 
         var result = list.ToArray();
+		_logger.LogDebug("MakeCoinChangeDynamic(coin={Coin},coins={Coins}): result → {Result}", coin, coins, result);
 
+		_logger.LogDebug("<<< Exiting MakeCoinChangeDynamic(coin={Coin},coins={Coins})", coin, coins);
         return result;
     }
 
     private static void ValidateCoin(int coin)
     {
+		_logger.LogDebug(">>> Entering ValidateCoin(coin={Coin})", coin);
         if (coin <= 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from ValidateCoin(coin={Coin})", coin);
+		_logger.LogDebug("<<< Exiting ValidateCoin(coin={Coin})", coin);
             throw new InvalidOperationException($"The coin cannot be lesser or equal to zero {nameof(coin)}.");
         }
     }
 
     private static void ValidateCoinsArray(int[] coinsArray)
     {
+		_logger.LogDebug(">>> Entering ValidateCoinsArray(coinsArray={CoinsArray})", coinsArray);
         var coinsAsArray = coinsArray.ToArray();
 
+		_logger.LogDebug("ValidateCoinsArray(coinsArray={CoinsArray}): coinsAsArray → {CoinsAsArray}", coinsArray, coinsAsArray);
         if (coinsAsArray.Length == 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from ValidateCoinsArray(coinsArray={CoinsArray})", coinsArray);
             throw new InvalidOperationException($"Coins array cannot be empty {nameof(coinsAsArray)}.");
         }
 
         var coinsContainOne = coinsAsArray.Any(x => x == 1);
+		_logger.LogDebug("ValidateCoinsArray(coinsArray={CoinsArray}): coinsContainOne → {CoinsContainOne}", coinsArray, coinsContainOne);
 
         if (!coinsContainOne)
         {
@@ -152,6 +176,7 @@ public static class DynamicCoinChangeSolver
         }
 
         var containsNonPositive = coinsAsArray.Any(x => x <= 0);
+		_logger.LogDebug("ValidateCoinsArray(coinsArray={CoinsArray}): containsNonPositive → {ContainsNonPositive}", coinsArray, containsNonPositive);
 
         if (containsNonPositive)
         {
@@ -160,9 +185,11 @@ public static class DynamicCoinChangeSolver
         }
 
         var containsDuplicates = coinsAsArray.GroupBy(x => x).Any(g => g.Count() > 1);
+		_logger.LogDebug("ValidateCoinsArray(coinsArray={CoinsArray}): containsDuplicates → {ContainsDuplicates}", coinsArray, containsDuplicates);
 
         if (containsDuplicates)
         {
+		_logger.LogDebug("<<< Exiting ValidateCoinsArray(coinsArray={CoinsArray})", coinsArray);
             throw new InvalidOperationException($"Coins array cannot contain duplicates {nameof(coinsAsArray)}.");
         }
     }

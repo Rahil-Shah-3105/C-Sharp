@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace DataStructures;
 /// </summary>
 public class InvertedIndex
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly Dictionary<string, List<string>> invertedIndex = [];
 
     /// <summary>
@@ -18,9 +20,11 @@ public class InvertedIndex
     /// <param name="sourceContent">Content of the source.</param>
     public void AddToIndex(string sourceName, string sourceContent)
     {
+		_logger.LogDebug(">>> Entering AddToIndex(sourceName={SourceName},sourceContent={SourceContent})", sourceName, sourceContent);
         var context = sourceContent.Split(' ').Distinct();
         foreach (var word in context)
         {
+		_logger.LogDebug("AddToIndex(sourceName={SourceName},sourceContent={SourceContent}): context → {Context}", sourceName, sourceContent, context);
             if (!invertedIndex.ContainsKey(word))
             {
                 invertedIndex.Add(word, [sourceName]);
@@ -30,6 +34,7 @@ public class InvertedIndex
                 invertedIndex[word].Add(sourceName);
             }
         }
+		_logger.LogDebug("<<< Exiting AddToIndex(sourceName={SourceName},sourceContent={SourceContent})", sourceName, sourceContent);
     }
 
     /// <summary>
@@ -39,6 +44,7 @@ public class InvertedIndex
     /// <returns>Source names.</returns>
     public IEnumerable<string> And(IEnumerable<string> terms)
     {
+		_logger.LogDebug(">>> Entering And(terms={Terms})", terms);
         var entries = terms
             .Select(term => invertedIndex
                 .Where(x => x.Key.Equals(term))
@@ -50,6 +56,7 @@ public class InvertedIndex
             .Aggregate(new HashSet<string>(entries.First()), (hashSet, enumerable) =>
             {
                 hashSet.IntersectWith(enumerable);
+		_logger.LogDebug("<<< Exiting And(terms={Terms})", terms);
                 return hashSet;
             });
 
@@ -63,9 +70,11 @@ public class InvertedIndex
     /// <returns>Source names.</returns>
     public IEnumerable<string> Or(IEnumerable<string> terms)
     {
+		_logger.LogDebug(">>> Entering Or(terms={Terms})", terms);
         var sources = new List<string>();
         foreach (var term in terms)
         {
+		_logger.LogDebug("Or(terms={Terms}): sources → {Sources}", terms, sources);
             var source = invertedIndex
                 .Where(x => x.Key.Equals(term))
                 .SelectMany(x => x.Value);
@@ -73,6 +82,7 @@ public class InvertedIndex
             sources.AddRange(source);
         }
 
+		_logger.LogDebug("<<< Exiting Or(terms={Terms})", terms);
         return sources.Distinct();
     }
 }

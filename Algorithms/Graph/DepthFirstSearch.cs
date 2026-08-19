@@ -1,4 +1,5 @@
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -10,6 +11,7 @@ namespace Algorithms.Graph;
 /// <typeparam name="T">Vertex data type.</typeparam>
 public class DepthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Traverses graph from start vertex.
     /// </summary>
@@ -18,7 +20,9 @@ public class DepthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
     /// <param name="action">Action that needs to be executed on each graph vertex.</param>
     public void VisitAll(IDirectedWeightedGraph<T> graph, Vertex<T> startVertex, Action<Vertex<T>>? action = default)
     {
+		_logger.LogDebug(">>> Entering VisitAll(graph={Graph},startVertex={StartVertex},action={Action})", graph, startVertex, action);
         Dfs(graph, startVertex, action, []);
+		_logger.LogDebug("<<< Exiting VisitAll(graph={Graph},startVertex={StartVertex},action={Action})", graph, startVertex, action);
     }
 
     /// <summary>
@@ -30,6 +34,7 @@ public class DepthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
     /// <param name="visited">Hash set with visited vertices.</param>
     private void Dfs(IDirectedWeightedGraph<T> graph, Vertex<T> startVertex, Action<Vertex<T>>? action, HashSet<Vertex<T>> visited)
     {
+		_logger.LogDebug(">>> Entering Dfs(graph={Graph},startVertex={StartVertex},action={Action},visited={Visited})", graph, startVertex, action, visited);
         action?.Invoke(startVertex);
 
         visited.Add(startVertex);
@@ -43,5 +48,6 @@ public class DepthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
 
             Dfs(graph, vertex!, action, visited);
         }
+		_logger.LogDebug("<<< Exiting Dfs(graph={Graph},startVertex={StartVertex},action={Action},visited={Visited})", graph, startVertex, action, visited);
     }
 }

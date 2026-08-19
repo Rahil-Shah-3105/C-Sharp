@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sequences;
 
 /// <summary>
@@ -13,6 +14,7 @@ namespace Algorithms.Sequences;
 /// </summary>
 public class EulerTotientSequence : ISequence
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     <para>
     ///         Gets sequence of Euler totient function phi(n).
@@ -85,6 +87,8 @@ public class EulerTotientSequence : ISequence
     /// <returns>List of prime factors of target.</returns>
     private static IEnumerable<BigInteger> PrimeFactors(BigInteger target)
     {
+		_logger.LogDebug(">>> Entering PrimeFactors(target={Target})", target);
+		_logger.LogDebug("<<< Exiting PrimeFactors(target={Target})", target);
         return new PrimesSequence()
               .Sequence.TakeWhile(prime => prime * prime <= target)
               .Where(prime => target % prime == 0)

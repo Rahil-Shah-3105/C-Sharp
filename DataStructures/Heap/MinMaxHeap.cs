@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Heap;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace DataStructures.Heap;
 /// <typeparam name="T">Generic type.</typeparam>
 public class MinMaxHeap<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly List<T> heap;
 
     /// <summary>
@@ -19,14 +21,17 @@ public class MinMaxHeap<T>
     /// <param name="comparer">The default comparer to use for comparing objects.</param>
     public MinMaxHeap(IEnumerable<T>? collection = null, IComparer<T>? comparer = null)
     {
+		_logger.LogDebug(">>> Entering MinMaxHeap(collection={Collection},comparer={Comparer})", collection, comparer);
         Comparer = comparer ?? Comparer<T>.Default;
         collection ??= Enumerable.Empty<T>();
+		_logger.LogDebug("MinMaxHeap(collection={Collection},comparer={Comparer}): Comparer → {Comparer1}", collection, comparer, Comparer);
 
         heap = collection.ToList();
         for (var i = Count / 2 - 1; i >= 0; --i)
         {
             PushDown(i);
         }
+		_logger.LogDebug("<<< Exiting MinMaxHeap(collection={Collection},comparer={Comparer})", collection, comparer);
     }
 
     /// <summary>
@@ -45,8 +50,10 @@ public class MinMaxHeap<T>
     /// <param name="item">The element to add to the heap.</param>
     public void Add(T item)
     {
+		_logger.LogDebug(">>> Entering Add(item={Item})", item);
         heap.Add(item);
         PushUp(Count - 1);
+		_logger.LogDebug("<<< Exiting Add(item={Item})", item);
     }
 
     /// <summary>
@@ -56,13 +63,17 @@ public class MinMaxHeap<T>
     /// <returns>Value of the removed maximum node.</returns>
     public T ExtractMax()
     {
+		_logger.LogDebug(">>> Entering ExtractMax()");
         if (Count == 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from ExtractMax()");
             throw new InvalidOperationException("Heap is empty");
         }
 
         var max = GetMax();
+		_logger.LogDebug("ExtractMax(): max → {Max}", max);
         RemoveNode(GetMaxNodeIndex());
+		_logger.LogDebug("<<< Exiting ExtractMax()");
         return max;
     }
 
@@ -73,13 +84,17 @@ public class MinMaxHeap<T>
     /// <returns>Value of the removed minimum node.</returns>
     public T ExtractMin()
     {
+		_logger.LogDebug(">>> Entering ExtractMin()");
         if (Count == 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from ExtractMin()");
             throw new InvalidOperationException("Heap is empty");
         }
 
         var min = GetMin();
+		_logger.LogDebug("ExtractMin(): min → {Min}", min);
         RemoveNode(0);
+		_logger.LogDebug("<<< Exiting ExtractMin()");
         return min;
     }
 
@@ -90,8 +105,11 @@ public class MinMaxHeap<T>
     /// <returns>The maximum value in the heap.</returns>
     public T GetMax()
     {
+		_logger.LogDebug(">>> Entering GetMax()");
         if (Count == 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from GetMax()");
+		_logger.LogDebug("<<< Exiting GetMax()");
             throw new InvalidOperationException("Heap is empty");
         }
 
@@ -105,8 +123,11 @@ public class MinMaxHeap<T>
     /// <returns>The minimum value in the heap.</returns>
     public T GetMin()
     {
+		_logger.LogDebug(">>> Entering GetMin()");
         if (Count == 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from GetMin()");
+		_logger.LogDebug("<<< Exiting GetMin()");
             throw new InvalidOperationException("Heap is empty");
         }
 
@@ -120,6 +141,7 @@ public class MinMaxHeap<T>
     /// <returns>Index of the maximum descendant.</returns>
     private int IndexOfMaxChildOrGrandchild(int index)
     {
+		_logger.LogDebug(">>> Entering IndexOfMaxChildOrGrandchild(index={Index})", index);
         var descendants = new[]
         {
             2 * index + 1,
@@ -130,6 +152,7 @@ public class MinMaxHeap<T>
             4 * index + 6,
         };
         var resIndex = descendants[0];
+		_logger.LogDebug("IndexOfMaxChildOrGrandchild(index={Index}): resIndex → {ResIndex}", index, resIndex);
         foreach (var descendant in descendants)
         {
             if (descendant >= Count)
@@ -143,6 +166,7 @@ public class MinMaxHeap<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting IndexOfMaxChildOrGrandchild(index={Index})", index);
         return resIndex;
     }
 
@@ -153,8 +177,10 @@ public class MinMaxHeap<T>
     /// <returns>Index of the minimum descendant.</returns>
     private int IndexOfMinChildOrGrandchild(int index)
     {
+		_logger.LogDebug(">>> Entering IndexOfMinChildOrGrandchild(index={Index})", index);
         var descendants = new[] { 2 * index + 1, 2 * index + 2, 4 * index + 3, 4 * index + 4, 4 * index + 5, 4 * index + 6 };
         var resIndex = descendants[0];
+		_logger.LogDebug("IndexOfMinChildOrGrandchild(index={Index}): resIndex → {ResIndex}", index, resIndex);
         foreach (var descendant in descendants)
         {
             if (descendant >= Count)
@@ -168,11 +194,14 @@ public class MinMaxHeap<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting IndexOfMinChildOrGrandchild(index={Index})", index);
         return resIndex;
     }
 
     private int GetMaxNodeIndex()
     {
+		_logger.LogDebug(">>> Entering GetMaxNodeIndex()");
+		_logger.LogDebug("<<< Exiting GetMaxNodeIndex()");
         return Count switch
         {
             0 => throw new InvalidOperationException("Heap is empty"),
@@ -195,9 +224,11 @@ public class MinMaxHeap<T>
     /// <returns>true if index is at Min level; false if it is at Max Level.</returns>
     private bool IsMinLevelIndex(int index)
     {
+		_logger.LogDebug(">>> Entering IsMinLevelIndex(index={Index})", index);
         // For all Min levels, value (index + 1) has the leftmost bit set to '1' at even position.
         const uint minLevelsBits = 0x55555555;
         const uint maxLevelsBits = 0xAAAAAAAA;
+		_logger.LogDebug("<<< Exiting IsMinLevelIndex(index={Index})", index);
         return ((index + 1) & minLevelsBits) > ((index + 1) & maxLevelsBits);
     }
 
@@ -212,6 +243,7 @@ public class MinMaxHeap<T>
     /// <param name="index">Node index.</param>
     private void PushDown(int index)
     {
+		_logger.LogDebug(">>> Entering PushDown(index={Index})", index);
         if (IsMinLevelIndex(index))
         {
             PushDownMin(index);
@@ -220,16 +252,19 @@ public class MinMaxHeap<T>
         {
             PushDownMax(index);
         }
+		_logger.LogDebug("<<< Exiting PushDown(index={Index})", index);
     }
 
     private void PushDownMax(int index)
     {
+		_logger.LogDebug(">>> Entering PushDownMax(index={Index})", index);
         if (!HasChild(index))
         {
             return;
         }
 
         var maxIndex = IndexOfMaxChildOrGrandchild(index);
+		_logger.LogDebug("PushDownMax(index={Index}): maxIndex → {MaxIndex}", index, maxIndex);
 
         // If smaller element are put at min level (as result of swaping), it doesn't affect sub-tree validity.
         // If smaller element are put at max level, PushDownMax() should be called for that node.
@@ -253,16 +288,19 @@ public class MinMaxHeap<T>
                 SwapNodes(maxIndex, index);
             }
         }
+		_logger.LogDebug("<<< Exiting PushDownMax(index={Index})", index);
     }
 
     private void PushDownMin(int index)
     {
+		_logger.LogDebug(">>> Entering PushDownMin(index={Index})", index);
         if (!HasChild(index))
         {
             return;
         }
 
         var minIndex = IndexOfMinChildOrGrandchild(index);
+		_logger.LogDebug("PushDownMin(index={Index}): minIndex → {MinIndex}", index, minIndex);
 
         // If bigger element are put at max level (as result of swaping), it doesn't affect sub-tree validity.
         // If bigger element are put at min level, PushDownMin() should be called for that node.
@@ -286,6 +324,7 @@ public class MinMaxHeap<T>
                 SwapNodes(minIndex, index);
             }
         }
+		_logger.LogDebug("<<< Exiting PushDownMin(index={Index})", index);
     }
 
     /// <summary>
@@ -298,12 +337,14 @@ public class MinMaxHeap<T>
     /// <param name="index">Index of the new node.</param>
     private void PushUp(int index)
     {
+		_logger.LogDebug(">>> Entering PushUp(index={Index})", index);
         if (index == 0)
         {
             return;
         }
 
         var parent = Parent(index);
+		_logger.LogDebug("PushUp(index={Index}): parent → {Parent}", index, parent);
 
         if (IsMinLevelIndex(index))
         {
@@ -329,48 +370,59 @@ public class MinMaxHeap<T>
                 PushUpMax(index);
             }
         }
+		_logger.LogDebug("<<< Exiting PushUp(index={Index})", index);
     }
 
     private void PushUpMax(int index)
     {
+		_logger.LogDebug(">>> Entering PushUpMax(index={Index})", index);
         if (index > 2)
         {
             var grandparent = Grandparent(index);
+			_logger.LogDebug("PushUpMax(index={Index}): grandparent → {Grandparent}", index, grandparent);
             if (Comparer.Compare(heap[index], heap[grandparent]) > 0)
             {
                 SwapNodes(index, grandparent);
                 PushUpMax(grandparent);
             }
         }
+		_logger.LogDebug("<<< Exiting PushUpMax(index={Index})", index);
     }
 
     private void PushUpMin(int index)
     {
+		_logger.LogDebug(">>> Entering PushUpMin(index={Index})", index);
         if (index > 2)
         {
             var grandparent = Grandparent(index);
+			_logger.LogDebug("PushUpMin(index={Index}): grandparent → {Grandparent}", index, grandparent);
             if (Comparer.Compare(heap[index], heap[grandparent]) < 0)
             {
                 SwapNodes(index, grandparent);
                 PushUpMin(grandparent);
             }
         }
+		_logger.LogDebug("<<< Exiting PushUpMin(index={Index})", index);
     }
 
     private void RemoveNode(int index)
     {
+		_logger.LogDebug(">>> Entering RemoveNode(index={Index})", index);
         SwapNodes(index, Count - 1);
         heap.RemoveAt(Count - 1);
         if (Count != 0)
         {
             PushDown(index);
         }
+		_logger.LogDebug("<<< Exiting RemoveNode(index={Index})", index);
     }
 
     private void SwapNodes(int i, int j)
     {
+		_logger.LogDebug(">>> Entering SwapNodes(i={I},j={J})", i, j);
         var temp = heap[i];
         heap[i] = heap[j];
         heap[j] = temp;
+		_logger.LogDebug("<<< Exiting SwapNodes(i={I},j={J})", i, j);
     }
 }

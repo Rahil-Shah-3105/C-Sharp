@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Stack;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace DataStructures.Stack;
 /// <typeparam name="T">Generic Type.</typeparam>
 public class ArrayBasedStack<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private const int DefaultCapacity = 10;
     private const string StackEmptyErrorMessage = "Stack is empty";
 
@@ -24,8 +26,14 @@ public class ArrayBasedStack<T>
     /// </summary>
     public ArrayBasedStack()
     {
+		_logger.LogDebug(">>> Entering ArrayBasedStack()");
         stack = new T[DefaultCapacity];
         top = -1;
+		_logger.LogDebug("ArrayBasedStack(): stack → {Stack}", stack);
+		_logger.LogDebug("ArrayBasedStack(items={Items}): stack → {Stack}", items, stack);
+		_logger.LogDebug("ArrayBasedStack(): top → {Top}", top);
+		_logger.LogDebug("<<< Exiting ArrayBasedStack()");
+		_logger.LogDebug("ArrayBasedStack(items={Items}): top → {Top}", items, top);
     }
 
     /// <summary>
@@ -43,6 +51,8 @@ public class ArrayBasedStack<T>
     {
         stack = items;
         top = items.Length - 1;
+		_logger.LogDebug(">>> Entering Push(item={Item})", item);
+		_logger.LogDebug("<<< Exiting Push(item={Item})", item);
     }
 
     /// <summary>
@@ -64,8 +74,12 @@ public class ArrayBasedStack<T>
     /// </summary>
     public void Clear()
     {
+		_logger.LogDebug(">>> Entering Clear()");
         top = -1;
         Capacity = DefaultCapacity;
+		_logger.LogDebug("Clear(): top → {Top}", top);
+		_logger.LogDebug("Clear(): Capacity → {Capacity}", Capacity);
+		_logger.LogDebug("<<< Exiting Clear()");
     }
 
     /// <summary>
@@ -81,8 +95,11 @@ public class ArrayBasedStack<T>
     /// <returns>The item at the top of the <see cref="ArrayBasedStack{T}" />.</returns>
     public T Peek()
     {
+		_logger.LogDebug(">>> Entering Peek()");
         if (top == -1)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Peek()");
+		_logger.LogDebug("<<< Exiting Peek()");
             throw new InvalidOperationException(StackEmptyErrorMessage);
         }
 
@@ -95,8 +112,11 @@ public class ArrayBasedStack<T>
     /// <returns>The item removed from the top of the <see cref="ArrayBasedStack{T}" />.</returns>
     public T Pop()
     {
+		_logger.LogDebug(">>> Entering Pop()");
         if (top == -1)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Pop()");
+		_logger.LogDebug("<<< Exiting Pop()");
             throw new InvalidOperationException(StackEmptyErrorMessage);
         }
 

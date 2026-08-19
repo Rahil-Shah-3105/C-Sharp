@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.AVLTree;
 
 /// <summary>
@@ -12,6 +13,7 @@ namespace DataStructures.AVLTree;
 /// <param name="key">Key value for node.</param>
 internal class AvlTreeNode<TKey>(TKey key)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets or sets key value of node.
     /// </summary>
@@ -42,6 +44,7 @@ internal class AvlTreeNode<TKey>(TKey key)
     /// </summary>
     public void UpdateBalanceFactor()
     {
+		_logger.LogDebug(">>> Entering UpdateBalanceFactor()");
         if (Left is null && Right is null)
         {
             Height = 0;
@@ -62,5 +65,6 @@ internal class AvlTreeNode<TKey>(TKey key)
             Height = Math.Max(Left.Height, Right.Height) + 1;
             BalanceFactor = Right.Height - Left.Height;
         }
+		_logger.LogDebug("<<< Exiting UpdateBalanceFactor()");
     }
 }

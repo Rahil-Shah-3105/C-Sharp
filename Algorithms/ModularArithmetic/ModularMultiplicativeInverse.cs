@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.ModularArithmetic;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.ModularArithmetic;
 /// </summary>
 public static class ModularMultiplicativeInverse
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Computes the modular multiplicative inverse of a in Z/nZ, if there is any (i.e. if a and n are coprime).
     /// </summary>
@@ -29,6 +31,7 @@ public static class ModularMultiplicativeInverse
             inverseOfA += n;
         }
 
+		_logger.LogDebug("<<< Exiting Compute(a={A},n={N})", a, n);
         return inverseOfA;
     }
 

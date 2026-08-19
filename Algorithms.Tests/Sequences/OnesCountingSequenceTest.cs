@@ -1,10 +1,12 @@
 using Algorithms.Sequences;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Sequences;
 
 [TestFixture]
 public class OnesCountingSequenceTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     <para>
     ///         Values taken from http://oeis.org/A000120/b000120.txt.
@@ -68,9 +70,11 @@ public class OnesCountingSequenceTest
     /// <returns>Number of 1s in binary representation of number.</returns>
     private int CountOnes(BigInteger i)
     {
+		_logger.LogDebug(">>> Entering CountOnes(i={I})", i);
         var temp = i;
         BigInteger remainder = 0;
         var result = 0;
+		_logger.LogDebug("CountOnes(i={I}): result → {Result}", i, result);
 
         while (temp != BigInteger.Zero)
         {
@@ -78,6 +82,7 @@ public class OnesCountingSequenceTest
             result += remainder.IsOne ? 1 : 0;
         }
 
+		_logger.LogDebug("<<< Exiting CountOnes(i={I})", i);
         return result;
     }
 
@@ -85,21 +90,27 @@ public class OnesCountingSequenceTest
     [Test]
     public void Count1000()
     {
+		_logger.LogDebug(">>> Entering Count1000()");
         //  Compare generated sequence against provided data
         var sequence = new OnesCountingSequence().Sequence.Take(oeisValues.Length);
+		_logger.LogDebug("Count1000(): sequence → {Sequence}", sequence);
         sequence.SequenceEqual(oeisValues).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Count1000()");
     }
 
     [Test]
     public void CompareAgainstCalculated()
     {
+		_logger.LogDebug(">>> Entering CompareAgainstCalculated()");
         //  Calculate 1s in binary value the old fashioned way.
         var calculated = new List<BigInteger>();
+		_logger.LogDebug("CompareAgainstCalculated(): calculated → {Calculated}", calculated);
         for (var i = 0; i < oeisValues.Length; i++)
         {
             calculated.Add(CountOnes(new BigInteger(i)));
         }
 
         calculated.SequenceEqual(oeisValues).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting CompareAgainstCalculated()");
     }
 }

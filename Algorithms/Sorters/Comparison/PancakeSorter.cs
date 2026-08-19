@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class PancakeSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sorts array using specified comparer,
     ///     internal, in-place, stable,
@@ -17,6 +19,7 @@ public class PancakeSorter<T> : IComparisonSorter<T>
     /// <param name="comparer">Compares elements.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         var n = array.Length;
 
         // Start from the complete array and one by one
@@ -26,6 +29,7 @@ public class PancakeSorter<T> : IComparisonSorter<T>
             // Find index of the maximum element in
             // array[0..curr_size-1]
             var mi = FindMax(array, currSize, comparer);
+			_logger.LogDebug("Sort(array={Array},comparer={Comparer}): mi → {Mi}", array, comparer, mi);
 
             // Move the maximum element to end of current array
             // if it's not already at  the end
@@ -40,11 +44,13 @@ public class PancakeSorter<T> : IComparisonSorter<T>
                 Flip(array, currSize - 1);
             }
         }
+		_logger.LogDebug("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 
     // Reverses array[0..i]
     private void Flip(T[] array, int i)
     {
+		_logger.LogDebug(">>> Entering Flip(array={Array},i={I})", array, i);
         T temp;
         var start = 0;
         while (start < i)
@@ -55,12 +61,14 @@ public class PancakeSorter<T> : IComparisonSorter<T>
             start++;
             i--;
         }
+		_logger.LogDebug("<<< Exiting Flip(array={Array},i={I})", array, i);
     }
 
     // Returns index of the maximum element
     // in array[0..n-1]
     private int FindMax(T[] array, int n, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering FindMax(array={Array},n={N},comparer={Comparer})", array, n, comparer);
         var mi = 0;
         for (var i = 0; i < n; i++)
         {
@@ -70,6 +78,7 @@ public class PancakeSorter<T> : IComparisonSorter<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindMax(array={Array},n={N},comparer={Comparer})", array, n, comparer);
         return mi;
     }
 }
