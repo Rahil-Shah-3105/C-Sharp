@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.SegmentTrees;
 
 /// <summary>
@@ -10,6 +11,7 @@ namespace DataStructures.SegmentTrees;
 /// <param name="arr">Array on which the queries should be made.</param>
 public class SegmentTreeUpdate(int[] arr) : SegmentTree(arr)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Updates a single element of the input array.
     ///     Changes the leaf first and updates its parents afterwards.
@@ -19,8 +21,10 @@ public class SegmentTreeUpdate(int[] arr) : SegmentTree(arr)
     /// <param name="value">New Value of the element.</param>
     public void Update(int node, int value)
     {
+		_logger.LogDebug(">>> Entering Update(node={Node},value={Value})", node, value);
         Tree[node + Tree.Length / 2] = value;
         Propagate(Parent(node + Tree.Length / 2));
+		_logger.LogDebug("<<< Exiting Update(node={Node},value={Value})", node, value);
     }
 
     /// <summary>
@@ -30,6 +34,7 @@ public class SegmentTreeUpdate(int[] arr) : SegmentTree(arr)
     /// <param name="node">Index of current node.</param>
     private void Propagate(int node)
     {
+		_logger.LogDebug(">>> Entering Propagate(node={Node})", node);
         if (node == 0)
         {
             // passed root
@@ -38,5 +43,6 @@ public class SegmentTreeUpdate(int[] arr) : SegmentTree(arr)
 
         Tree[node] = Tree[Left(node)] + Tree[Right(node)];
         Propagate(Parent(node));
+		_logger.LogDebug("<<< Exiting Propagate(node={Node})", node);
     }
 }

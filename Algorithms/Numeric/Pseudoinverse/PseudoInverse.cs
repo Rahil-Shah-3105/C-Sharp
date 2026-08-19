@@ -1,10 +1,12 @@
 using Algorithms.Numeric.Decomposition;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Numeric.Pseudoinverse;
 
 /// <summary>
 ///     The Moore–Penrose pseudo-inverse A+ of a matrix A,
 ///     is a general way to find the solution to the following system of linear equations:
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 ///     ~b = A ~y. ~b e R^m; ~y e R^n; A e Rm×n.
 ///     There are various methods for construction the pseudo-inverse.
 ///     This one is based on Singular Value Decomposition (SVD).
@@ -19,6 +21,7 @@ public static class PseudoInverse
     /// <returns>The inverse matrix approximation of the input matrix.</returns>
     public static double[,] PInv(double[,] inMat)
     {
+		_logger.LogDebug(">>> Entering PInv(inMat={InMat})", inMat);
         // To compute the SVD of the matrix to find Sigma.
         var (u, s, v) = ThinSvd.Decompose(inMat);
 
@@ -33,11 +36,14 @@ public static class PseudoInverse
 
         // To construct a diagonal matrix based on the vector result.
         var diag = sigma.ToDiagonalMatrix();
+		_logger.LogDebug("PInv(inMat={InMat}): diag → {Diag}", inMat, diag);
 
         // To construct the pseudo-inverse using the computed information above.
         var matinv = u.Multiply(diag).Multiply(v.Transpose());
+		_logger.LogDebug("PInv(inMat={InMat}): matinv → {Matinv}", inMat, matinv);
 
         // To Transpose the result matrix.
+		_logger.LogDebug("<<< Exiting PInv(inMat={InMat})", inMat);
         return matinv.Transpose();
     }
 }

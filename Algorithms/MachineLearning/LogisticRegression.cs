@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.MachineLearning;
 
@@ -8,6 +9,7 @@ namespace Algorithms.MachineLearning;
 /// </summary>
 public class LogisticRegression
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private double[] weights = [];
     private double bias;
 
@@ -22,8 +24,10 @@ public class LogisticRegression
     /// <param name="learningRate">Step size.</param>
     public void Fit(double[][] x, int[] y, int epochs = 1000, double learningRate = 0.01)
     {
+		_logger.LogDebug(">>> Entering Fit(x={X},y={Y},epochs={Epochs},learningRate={LearningRate})", x, y, epochs, learningRate);
         if (x.Length == 0 || x[0].Length == 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from Fit(x={X},y={Y},epochs={Epochs},learningRate={LearningRate})", x, y, epochs, learningRate);
             throw new ArgumentException("Input features cannot be empty.");
         }
 
@@ -35,7 +39,9 @@ public class LogisticRegression
         int nSamples = x.Length;
         int nFeatures = x[0].Length;
         weights = new double[nFeatures];
+		_logger.LogDebug("Fit(x={X},y={Y},epochs={Epochs},learningRate={LearningRate}): weights → {Weights}", x, y, epochs, learningRate, weights);
         bias = 0;
+		_logger.LogDebug("Fit(x={X},y={Y},epochs={Epochs},learningRate={LearningRate}): bias → {Bias}", x, y, epochs, learningRate, bias);
 
         for (int epoch = 0; epoch < epochs; epoch++)
         {
@@ -44,7 +50,9 @@ public class LogisticRegression
             for (int i = 0; i < nSamples; i++)
             {
                 double linear = Dot(x[i], weights) + bias;
+				_logger.LogDebug("Fit(x={X},y={Y},epochs={Epochs},learningRate={LearningRate}): linear → {Linear}", x, y, epochs, learningRate, linear);
                 double pred = Sigmoid(linear);
+				_logger.LogDebug("Fit(x={X},y={Y},epochs={Epochs},learningRate={LearningRate}): pred → {Pred}", x, y, epochs, learningRate, pred);
                 double error = pred - y[i];
                 for (int j = 0; j < nFeatures; j++)
                 {
@@ -61,6 +69,7 @@ public class LogisticRegression
 
             bias -= learningRate * db / nSamples;
         }
+		_logger.LogDebug("<<< Exiting Fit(x={X},y={Y},epochs={Epochs},learningRate={LearningRate})", x, y, epochs, learningRate);
     }
 
     /// <summary>
@@ -68,8 +77,11 @@ public class LogisticRegression
     /// </summary>
     public double PredictProbability(double[] x)
     {
+		_logger.LogDebug(">>> Entering PredictProbability(x={X})", x);
         if (x.Length != weights.Length)
         {
+			_logger.LogWarning("Throwing ArgumentException from PredictProbability(x={X})", x);
+		_logger.LogDebug("<<< Exiting PredictProbability(x={X})", x);
             throw new ArgumentException("Feature count mismatch.");
         }
 

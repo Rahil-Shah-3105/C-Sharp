@@ -1,10 +1,12 @@
 using Algorithms.Sequences;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Sequences;
 
 [TestFixture]
 public static class MatchstickTriangleSequenceTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static BigInteger[] _testList = [
                                                0, 1, 5, 13, 27, 48, 78, 118, 170, 235, 315, 411, 525, 658,
                                                812, 988, 1188, 1413, 1665, 1945, 2255, 2596, 2970, 3378,
@@ -18,7 +20,10 @@ public static class MatchstickTriangleSequenceTests
     [Test]
     public static void TestOeisList()
     {
+		_logger.LogDebug(">>> Entering TestOeisList()");
         var sequence = new MatchstickTriangleSequence().Sequence.Take(_testList.Length);
         sequence.SequenceEqual(_testList).Should().BeTrue();
+		_logger.LogDebug("TestOeisList(): sequence → {Sequence}", sequence);
+		_logger.LogDebug("<<< Exiting TestOeisList()");
     }
 }

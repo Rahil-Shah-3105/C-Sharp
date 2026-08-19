@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 ﻿namespace Algorithms.Strings.PatternMatching;
 
 /// <summary>
@@ -45,6 +46,7 @@
 /// </summary>
 public static class Bitap
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// <para>
     /// This function implements the Bitap algorithm for finding exact matches of a pattern within a text.
@@ -72,6 +74,7 @@ public static class Bitap
     /// <exception cref="ArgumentException">The pattern is longer than 31 characters.</exception>
     public static int FindExactPattern(string text, string pattern)
     {
+		_logger.LogDebug(">>> Entering FindExactPattern(text={Text},pattern={Pattern})", text, pattern);
         // The length of the pattern.
         var len = pattern.Length;
 
@@ -91,6 +94,7 @@ public static class Bitap
         // Check if the pattern is longer than 31 characters.
         if (len > 31)
         {
+			_logger.LogWarning("Throwing ArgumentException from FindExactPattern(text={Text},pattern={Pattern})", text, pattern);
             throw new ArgumentException("The pattern is longer than 31 characters.");
         }
 
@@ -127,6 +131,7 @@ public static class Bitap
         }
 
         // If no match is found, return -1.
+		_logger.LogDebug("<<< Exiting FindExactPattern(text={Text},pattern={Pattern})", text, pattern);
         return -1;
     }
 
@@ -139,6 +144,7 @@ public static class Bitap
     /// <returns>The index of the first occurrence of the pattern in the text, or -1 if not found.</returns>
     public static int FindFuzzyPattern(string text, string pattern, int threshold)
     {
+		_logger.LogDebug(">>> Entering FindFuzzyPattern(text={Text},pattern={Pattern},threshold={Threshold})", text, pattern, threshold);
         // Create a pattern mask for each character in the pattern.
         // The pattern mask is a bitmask that we will use to search for the pattern characters
         // in the text. We'll set the bit corresponding to the character in the pattern
@@ -150,6 +156,7 @@ public static class Bitap
         // We'll start with a register that has all bits set to 1, because all bits in the pattern mask
         // will be set to 1 initially.
         var r = new int[(threshold + 1) * sizeof(int)];
+		_logger.LogDebug("FindFuzzyPattern(text={Text},pattern={Pattern},threshold={Threshold}): r → {R}", text, pattern, threshold, r);
 
         var len = pattern.Length;
 
@@ -208,6 +215,7 @@ public static class Bitap
             // depending on whether the current character in the text matches the pattern.
             // This will make it easier to check for the pattern later.
             var oldR = r[0];
+			_logger.LogDebug("FindFuzzyPattern(text={Text},pattern={Pattern},threshold={Threshold}): oldR → {OldR}", text, pattern, threshold, oldR);
 
             r[0] |= patternMask[text[i]];
             r[0] <<= 1;
@@ -236,6 +244,7 @@ public static class Bitap
         }
 
         // The pattern has not been found.
+		_logger.LogDebug("<<< Exiting FindFuzzyPattern(text={Text},pattern={Pattern},threshold={Threshold})", text, pattern, threshold);
         return -1;
     }
 }

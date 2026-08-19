@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public class ModularExponentiation
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Performs Modular Exponentiation on b, e, m.
     /// </summary>
@@ -16,8 +18,10 @@ public class ModularExponentiation
     /// <returns>Modular Exponential.</returns>
     public int ModularPow(int b, int e, int m)
     {
+		_logger.LogDebug(">>> Entering ModularPow(b={B},e={E},m={M})", b, e, m);
         // initialize result in variable res
         int res = 1;
+		_logger.LogDebug("ModularPow(b={B},e={E},m={M}): res → {Res}", b, e, m, res);
         if (m == 1)
         {
             // 1 divides every number
@@ -27,6 +31,7 @@ public class ModularExponentiation
         if (m <= 0)
         {
             // exponential not defined in this case
+			_logger.LogWarning("Throwing ArgumentException from ModularPow(b={B},e={E},m={M})", b, e, m);
             throw new ArgumentException(string.Format("{0} is not a positive integer", m));
         }
 
@@ -35,6 +40,7 @@ public class ModularExponentiation
             res = (res * b) % m;
         }
 
+		_logger.LogDebug("<<< Exiting ModularPow(b={B},e={E},m={M})", b, e, m);
         return res;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.LinearAlgebra.Distances;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.LinearAlgebra.Distances;
 /// </summary>
 public static class Minkowski
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Calculate Minkowski distance for two N-Dimensional points.
     /// </summary>
@@ -18,13 +20,16 @@ public static class Minkowski
     /// <returns>Calculated Minkowski distance.</returns>
     public static double Distance(double[] point1, double[] point2, int order)
     {
+		_logger.LogDebug(">>> Entering Distance(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
         if (order < 1)
         {
+			_logger.LogWarning("Throwing ArgumentException from Distance(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
             throw new ArgumentException("The order must be greater than or equal to 1.");
         }
 
         if (point1.Length != point2.Length)
         {
+		_logger.LogDebug("<<< Exiting Distance(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
             throw new ArgumentException("Both points should have the same dimensionality");
         }
 

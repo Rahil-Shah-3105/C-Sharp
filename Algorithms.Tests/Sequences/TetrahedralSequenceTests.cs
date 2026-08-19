@@ -1,10 +1,12 @@
 using Algorithms.Sequences;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Sequences;
 
 [TestFixture]
 public class TetrahedralSequenceTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly BigInteger[] TestList = [
                                                         0, 1, 4, 10, 20, 35, 56, 84, 120, 165, 220, 286, 364, 455,
                                                         560, 680, 816, 969, 1140, 1330, 1540, 1771, 2024, 2300,
@@ -19,8 +21,11 @@ public class TetrahedralSequenceTests
     [Test]
     public void TestOeisList()
     {
+		_logger.LogDebug(">>> Entering TestOeisList()");
         var sequence = new TetrahedralSequence().Sequence.Take(TestList.Length);
         sequence.SequenceEqual(TestList).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting TestOeisList()");
+		_logger.LogDebug("TestOeisList(): sequence → {Sequence}", sequence);
 
     }
 }
