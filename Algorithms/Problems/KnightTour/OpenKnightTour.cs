@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Problems.KnightTour;
 
 /// <summary>
@@ -29,6 +30,7 @@ namespace Algorithms.Problems.KnightTour;
 /// </remarks>
 public sealed class OpenKnightTour
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Attempts to find a Knight's Tour on an <c>n × n</c> board.
     /// </summary>
@@ -52,8 +54,10 @@ public sealed class OpenKnightTour
     /// </remarks>
     public int[,] Tour(int n)
     {
+		_logger.LogDebug(">>> Entering Tour(n={N})", n);
         if (n <= 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from Tour(n={N})", n);
             throw new ArgumentException("Board size must be positive.", nameof(n));
         }
 
@@ -74,6 +78,7 @@ public sealed class OpenKnightTour
             }
         }
 
+		_logger.LogDebug("<<< Exiting Tour(n={N})", n);
         throw new ArgumentException($"Knight Tour cannot be performed on a board of size {n}.");
     }
 
@@ -91,6 +96,7 @@ public sealed class OpenKnightTour
     /// </remarks>
     private bool KnightTourHelper(int[,] board, (int Row, int Col) pos, int current)
     {
+		_logger.LogDebug(">>> Entering KnightTourHelper(board={Board},pos={Pos},current={Current})", board, pos, current);
         if (IsComplete(board))
         {
             return true;
@@ -111,6 +117,7 @@ public sealed class OpenKnightTour
             }
         }
 
+		_logger.LogDebug("<<< Exiting KnightTourHelper(board={Board},pos={Pos},current={Current})", board, pos, current);
         return false;
     }
 
@@ -160,6 +167,7 @@ public sealed class OpenKnightTour
     /// </remarks>
     private bool IsComplete(int[,] board)
     {
+		_logger.LogDebug(">>> Entering IsComplete(board={Board})", board);
         var n = board.GetLength(0);
         for (var row = 0; row < n; row++)
         {
@@ -172,6 +180,7 @@ public sealed class OpenKnightTour
             }
         }
 
+		_logger.LogDebug("<<< Exiting IsComplete(board={Board})", board);
         return true;
     }
 }

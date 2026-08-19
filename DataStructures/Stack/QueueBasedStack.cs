@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Stack;
 
 public class QueueBasedStack<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly Queue<T> queue;
 
     public QueueBasedStack() => queue = new Queue<T>();
@@ -26,8 +28,10 @@ public class QueueBasedStack<T>
     /// <exception cref="InvalidOperationException">Throw if stack is empty.</exception>
     public T Pop()
     {
+		_logger.LogDebug(">>> Entering Pop()");
         if (IsEmpty())
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Pop()");
             throw new InvalidOperationException("The stack contains no items.");
         }
 
@@ -36,6 +40,7 @@ public class QueueBasedStack<T>
             queue.Enqueue(queue.Dequeue());
         }
 
+		_logger.LogDebug("<<< Exiting Pop()");
         return queue.Dequeue();
     }
 
@@ -46,8 +51,10 @@ public class QueueBasedStack<T>
     /// <exception cref="InvalidOperationException">Throw if stack is empty.</exception>
     public T Peek()
     {
+		_logger.LogDebug(">>> Entering Peek()");
         if (IsEmpty())
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Peek()");
             throw new InvalidOperationException("The stack contains no items.");
         }
 
@@ -57,7 +64,9 @@ public class QueueBasedStack<T>
         }
 
         var item = queue.Peek();
+		_logger.LogDebug("Peek(): item → {Item}", item);
         queue.Enqueue(queue.Dequeue());
+		_logger.LogDebug("<<< Exiting Peek()");
         return item;
     }
 

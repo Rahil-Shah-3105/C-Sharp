@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Stack;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace DataStructures.Stack;
 /// <typeparam name="T">Generic Type.</typeparam>
 public class ListBasedStack<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     <see cref="List{T}" /> based stack.
     /// </summary>
@@ -30,8 +32,10 @@ public class ListBasedStack<T>
     public ListBasedStack(IEnumerable<T> items)
         : this()
     {
+		_logger.LogDebug(">>> Entering ListBasedStack(items={Items})", items);
         foreach (var item in items)
         {
+			_logger.LogDebug("<<< Exiting ListBasedStack(item={Item})", item);
             Push(item);
         }
     }
@@ -59,8 +63,11 @@ public class ListBasedStack<T>
     /// <returns>The item at the top of the <see cref="ListBasedStack{T}" />.</returns>
     public T Peek()
     {
+		_logger.LogDebug(">>> Entering Peek()");
         if (stack.First is null)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Peek()");
+		_logger.LogDebug("<<< Exiting Peek()");
             throw new InvalidOperationException("Stack is empty");
         }
 
@@ -73,13 +80,16 @@ public class ListBasedStack<T>
     /// <returns>The item removed from the top of the <see cref="ListBasedStack{T}" />.</returns>
     public T Pop()
     {
+		_logger.LogDebug(">>> Entering Pop()");
         if (stack.First is null)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Pop()");
             throw new InvalidOperationException("Stack is empty");
         }
 
         var item = stack.First.Value;
         stack.RemoveFirst();
+		_logger.LogDebug("<<< Exiting Pop()");
         return item;
     }
 

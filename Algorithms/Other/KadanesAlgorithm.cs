@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class KadanesAlgorithm
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the maximum sum of a contiguous subarray using Kadane's Algorithm.
     ///     The algorithm works by maintaining two variables:
@@ -24,18 +26,22 @@ public static class KadanesAlgorithm
     /// </example>
     public static int FindMaximumSubarraySum(int[] array)
     {
+		_logger.LogDebug(">>> Entering FindMaximumSubarraySum(array={Array})", array);
         // Validate input to ensure array is not null or empty
         if (array == null || array.Length == 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from FindMaximumSubarraySum(array={Array})", array);
             throw new ArgumentException("Array cannot be null or empty.", nameof(array));
         }
 
         // Initialize both variables with the first element
         // maxSoFar tracks the best sum we've seen across all subarrays
         int maxSoFar = array[0];
+		_logger.LogDebug("FindMaximumSubarraySum(array={Array}): maxSoFar → {MaxSoFar}", array, maxSoFar);
 
         // maxEndingHere tracks the best sum ending at the current position
         int maxEndingHere = array[0];
+		_logger.LogDebug("FindMaximumSubarraySum(array={Array}): maxEndingHere → {MaxEndingHere}", array, maxEndingHere);
 
         // Iterate through the array starting from the second element
         for (int i = 1; i < array.Length; i++)
@@ -49,6 +55,7 @@ public static class KadanesAlgorithm
             maxSoFar = Math.Max(maxSoFar, maxEndingHere);
         }
 
+		_logger.LogDebug("<<< Exiting FindMaximumSubarraySum(array={Array})", array);
         return maxSoFar;
     }
 
@@ -67,18 +74,24 @@ public static class KadanesAlgorithm
     /// </example>
     public static (int MaxSum, int StartIndex, int EndIndex) FindMaximumSubarrayWithIndices(int[] array)
     {
+		_logger.LogDebug(">>> Entering FindMaximumSubarrayWithIndices(MaxSum={MaxSum},StartIndex={StartIndex},EndIndex={EndIndex})", MaxSum, StartIndex, EndIndex);
         // Validate input
         if (array == null || array.Length == 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from FindMaximumSubarrayWithIndices(MaxSum={MaxSum},StartIndex={StartIndex},EndIndex={EndIndex})", MaxSum, StartIndex, EndIndex);
             throw new ArgumentException("Array cannot be null or empty.", nameof(array));
         }
 
         // Initialize tracking variables
         int maxSoFar = array[0];        // Global maximum sum
+		_logger.LogDebug("FindMaximumSubarrayWithIndices(MaxSum={MaxSum},StartIndex={StartIndex},EndIndex={EndIndex}): maxSoFar → {MaxSoFar}", MaxSum, StartIndex, EndIndex, maxSoFar);
         int maxEndingHere = array[0];   // Local maximum sum ending at current position
+		_logger.LogDebug("FindMaximumSubarrayWithIndices(MaxSum={MaxSum},StartIndex={StartIndex},EndIndex={EndIndex}): maxEndingHere → {MaxEndingHere}", MaxSum, StartIndex, EndIndex, maxEndingHere);
         int start = 0;                   // Start index of the maximum subarray
         int end = 0;                     // End index of the maximum subarray
+		_logger.LogDebug("FindMaximumSubarrayWithIndices(MaxSum={MaxSum},StartIndex={StartIndex},EndIndex={EndIndex}): end → {End}", MaxSum, StartIndex, EndIndex, end);
         int tempStart = 0;               // Temporary start index for current subarray
+		_logger.LogDebug("FindMaximumSubarrayWithIndices(MaxSum={MaxSum},StartIndex={StartIndex},EndIndex={EndIndex}): tempStart → {TempStart}", MaxSum, StartIndex, EndIndex, tempStart);
 
         // Process each element starting from index 1
         for (int i = 1; i < array.Length; i++)
@@ -105,6 +118,7 @@ public static class KadanesAlgorithm
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindMaximumSubarrayWithIndices(MaxSum={MaxSum},StartIndex={StartIndex},EndIndex={EndIndex})", MaxSum, StartIndex, EndIndex);
         return (maxSoFar, start, end);
     }
 

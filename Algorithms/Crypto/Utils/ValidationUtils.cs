@@ -1,4 +1,5 @@
 using Algorithms.Crypto.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Crypto.Utils;
 
@@ -13,6 +14,7 @@ namespace Algorithms.Crypto.Utils;
 /// </remarks>
 public static class ValidationUtils
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Validates that the specified offset and length fit within the bounds of the given buffer.
     /// </summary>
@@ -27,8 +29,11 @@ public static class ValidationUtils
     /// </remarks>
     public static void CheckDataLength(byte[] buffer, int offset, int length, string message)
     {
+		_logger.LogDebug(">>> Entering CheckDataLength(buffer={Buffer},offset={Offset},length={Length},message={Message})", buffer, offset, length, message);
         if (offset > (buffer.Length - length))
         {
+			_logger.LogWarning("Throwing DataLengthException from CheckDataLength(buffer={Buffer},offset={Offset},length={Length},message={Message})", buffer, offset, length, message);
+		_logger.LogDebug("<<< Exiting CheckDataLength(buffer={Buffer},offset={Offset},length={Length},message={Message})", buffer, offset, length, message);
             throw new DataLengthException(message);
         }
     }
@@ -45,8 +50,11 @@ public static class ValidationUtils
     /// </remarks>
     public static void CheckOutputLength(bool condition, string message)
     {
+		_logger.LogDebug(">>> Entering CheckOutputLength(condition={Condition},message={Message})", condition, message);
         if (condition)
         {
+			_logger.LogWarning("Throwing OutputLengthException from CheckOutputLength(condition={Condition},message={Message})", condition, message);
+		_logger.LogDebug("<<< Exiting CheckOutputLength(condition={Condition},message={Message})", condition, message);
             throw new OutputLengthException(message);
         }
     }
@@ -65,8 +73,11 @@ public static class ValidationUtils
     /// </remarks>
     public static void CheckOutputLength(byte[] buffer, int offset, int length, string message)
     {
+		_logger.LogDebug(">>> Entering CheckOutputLength(buffer={Buffer},offset={Offset},length={Length},message={Message})", buffer, offset, length, message);
         if (offset > (buffer.Length - length))
         {
+			_logger.LogWarning("Throwing OutputLengthException from CheckOutputLength(buffer={Buffer},offset={Offset},length={Length},message={Message})", buffer, offset, length, message);
+		_logger.LogDebug("<<< Exiting CheckOutputLength(buffer={Buffer},offset={Offset},length={Length},message={Message})", buffer, offset, length, message);
             throw new OutputLengthException(message);
         }
     }
@@ -87,6 +98,7 @@ public static class ValidationUtils
     {
         if (output.Length > length)
         {
+			_logger.LogWarning("Throwing OutputLengthException from CheckOutputLength(output={Output},length={Length},message={Message})", output, length, message);
             throw new OutputLengthException(message);
         }
     }

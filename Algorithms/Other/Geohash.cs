@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 public static class Geohash
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private const string Base32Characters = "0123456789bcdefghjkmnpqrstuvwxyz"; // Convert latitude and longitude coordinates into a concise string
     private const int GeohashLength = 12; // ± 1.86 cm
 
@@ -20,12 +22,17 @@ public static class Geohash
     /// </returns>
     public static string Encode(double latitude, double longitude)
     {
+		_logger.LogDebug(">>> Entering Encode(latitude={Latitude},longitude={Longitude})", latitude, longitude);
         double[] latitudeRange = [-90.0, 90.0];
         double[] longitudeRange = [-180.0, 180.0];
         bool isEncodingLongitude = true;
+		_logger.LogDebug("Encode(latitude={Latitude},longitude={Longitude}): isEncodingLongitude → {IsEncodingLongitude}", latitude, longitude, isEncodingLongitude);
         int currentBit = 0;
+		_logger.LogDebug("Encode(latitude={Latitude},longitude={Longitude}): currentBit → {CurrentBit}", latitude, longitude, currentBit);
         int base32Index = 0;
+		_logger.LogDebug("Encode(latitude={Latitude},longitude={Longitude}): base32Index → {Base32Index}", latitude, longitude, base32Index);
         StringBuilder geohashResult = new StringBuilder();
+		_logger.LogDebug("Encode(latitude={Latitude},longitude={Longitude}): geohashResult → {GeohashResult}", latitude, longitude, geohashResult);
 
         while (geohashResult.Length < GeohashLength)
         {
@@ -72,6 +79,7 @@ public static class Geohash
             }
         }
 
+		_logger.LogDebug("<<< Exiting Encode(latitude={Latitude},longitude={Longitude})", latitude, longitude);
         return geohashResult.ToString();
     }
 }
