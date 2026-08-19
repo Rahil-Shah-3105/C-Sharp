@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class Tanh
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Compute the Hyperbolic Tangent (Tanh) function for a single value.
     ///     The Math.Tanh() method is used for efficient and accurate computation.
@@ -18,6 +20,7 @@ public static class Tanh
     public static double Compute(double input)
     {
         // For a single double, we can directly use the optimized Math.Tanh method.
+		_logger.LogDebug("<<< Exiting Compute(input={Input})", input);
         return Math.Tanh(input);
     }
 

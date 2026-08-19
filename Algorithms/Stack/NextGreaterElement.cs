@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Stack;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Stack;
 /// </summary>
 public class NextGreaterElement
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Finds the next greater element for each element in the input array.
     /// The next greater element for an element x is the first element greater than x to its right.
@@ -16,8 +18,10 @@ public class NextGreaterElement
     /// <exception cref="ArgumentNullException">Thrown when the input array is null.</exception>
     public int[] FindNextGreaterElement(int[] nums)
     {
+		_logger.LogDebug(">>> Entering FindNextGreaterElement(nums={Nums})", nums);
         int[] result = new int[nums.Length];
         Stack<int> stack = new Stack<int>();
+		_logger.LogDebug("FindNextGreaterElement(nums={Nums}): stack → {Stack}", nums, stack);
 
         // Initialize all elements in the result array to -1
         for (int i = 0; i < nums.Length; i++)
@@ -38,6 +42,7 @@ public class NextGreaterElement
             stack.Push(i); // Push current index to stack
         }
 
+		_logger.LogDebug("<<< Exiting FindNextGreaterElement(nums={Nums})", nums);
         return result;
     }
 }

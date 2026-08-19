@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Problems.NQueens;
 
 public class BacktrackingNQueensSolver
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Solves N-Queen Problem given a n dimension chessboard and using backtracking with recursion algorithm.
     ///     If we find a dead-end within or current solution we go back and try another position for queen.
@@ -10,11 +12,15 @@ public class BacktrackingNQueensSolver
     /// <returns>All solutions.</returns>
     public IEnumerable<bool[,]> BacktrackSolve(int n)
     {
+		_logger.LogDebug(">>> Entering BacktrackSolve(n={N})", n);
         if (n < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from BacktrackSolve(n={N})", n);
+		_logger.LogDebug("<<< Exiting BacktrackSolve(n={N})", n);
             throw new ArgumentException(nameof(n));
         }
 
+		_logger.LogDebug("<<< Exiting BacktrackSolve(board={Board},col={Col})", board, col);
         return BacktrackSolve(new bool[n, n], 0);
     }
 
@@ -28,6 +34,7 @@ public class BacktrackingNQueensSolver
 
     private static IEnumerable<bool[,]> HandleIntermediateColumn(bool[,] board, int col)
     {
+		_logger.LogDebug(">>> Entering HandleIntermediateColumn(board={Board},col={Col})", board, col);
         // To start placing queens on possible spaces within the board.
         for (var i = 0; i < board.GetLength(0); i++)
         {
@@ -43,12 +50,15 @@ public class BacktrackingNQueensSolver
                 board[i, col] = false;
             }
         }
+		_logger.LogDebug("<<< Exiting HandleIntermediateColumn(board={Board},col={Col})", board, col);
     }
 
     private static IEnumerable<bool[,]> HandleLastColumn(bool[,] board)
     {
+		_logger.LogDebug(">>> Entering HandleLastColumn(board={Board})", board);
         var n = board.GetLength(0);
         for (var i = 0; i < n; i++)
+		_logger.LogDebug("HandleLastColumn(board={Board}): n → {N}", board, n);
         {
             if (CanPlace(board, i, n - 1))
             {
@@ -59,6 +69,7 @@ public class BacktrackingNQueensSolver
                 board[i, n - 1] = false;
             }
         }
+		_logger.LogDebug("<<< Exiting HandleLastColumn(board={Board})", board);
     }
 
     /// <summary>
@@ -71,6 +82,7 @@ public class BacktrackingNQueensSolver
     /// <returns>true if queen can be placed in given chessboard coordinates; false otherwise.</returns>
     private static bool CanPlace(bool[,] board, int row, int col)
     {
+		_logger.LogDebug(">>> Entering CanPlace(board={Board},row={Row},col={Col})", board, row, col);
         // To check whether there are any queens on current row.
         for (var i = 0; i < col; i++)
         {
@@ -99,6 +111,7 @@ public class BacktrackingNQueensSolver
         }
 
         // Return true if it can use position.
+		_logger.LogDebug("<<< Exiting CanPlace(board={Board},row={Row},col={Col})", board, row, col);
         return true;
     }
 }

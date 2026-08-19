@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.ScapegoatTree;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace DataStructures.ScapegoatTree;
 /// <typeparam name="TKey">Scapegoat tree node key type.</typeparam>
 public class Node<TKey>(TKey key) where TKey : IComparable
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private Node<TKey>? right;
     private Node<TKey>? left;
 
@@ -42,8 +44,12 @@ public class Node<TKey>(TKey key) where TKey : IComparable
     public Node(TKey key, Node<TKey>? right, Node<TKey>? left)
         : this(key)
     {
+		_logger.LogDebug(">>> Entering Node(key={Key},right={Right},left={Left})", key, right, left);
         Right = right;
         Left = left;
+		_logger.LogDebug("Node(key={Key},right={Right},left={Left}): Left → {Left1}", key, right, left, Left);
+		_logger.LogDebug("<<< Exiting Node(key={Key},right={Right},left={Left})", key, right, left);
+		_logger.LogDebug("Node(key={Key},right={Right},left={Left}): Right → {Right1}", key, right, left, Right);
     }
 
     /// <summary>
@@ -70,14 +76,20 @@ public class Node<TKey>(TKey key) where TKey : IComparable
     /// <returns>True - if node is alpha weight balanced. If not - false.</returns>
     public bool IsAlphaWeightBalanced(double a)
     {
+		_logger.LogDebug(">>> Entering IsAlphaWeightBalanced(a={A})", a);
         var isLeftBalanced = (Left?.GetSize() ?? 0) <= a * GetSize();
         var isRightBalanced = (Right?.GetSize() ?? 0) <= a * GetSize();
+		_logger.LogDebug("IsAlphaWeightBalanced(a={A}): isRightBalanced → {IsRightBalanced}", a, isRightBalanced);
+		_logger.LogDebug("IsAlphaWeightBalanced(a={A}): isLeftBalanced → {IsLeftBalanced}", a, isLeftBalanced);
 
+		_logger.LogDebug("<<< Exiting IsAlphaWeightBalanced(a={A})", a);
         return isLeftBalanced && isRightBalanced;
     }
 
     private bool IsGreaterThanOrSameAs(TKey key)
     {
+		_logger.LogDebug(">>> Entering IsGreaterThanOrSameAs(key={Key})", key);
+		_logger.LogDebug("<<< Exiting IsGreaterThanOrSameAs(key={Key})", key);
         return Key.CompareTo(key) >= 0;
     }
 }

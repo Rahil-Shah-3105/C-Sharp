@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class KrishnamurthyNumberChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Check if a number is Krishnamurthy number or not.
     /// </summary>
@@ -15,6 +17,7 @@ public static class KrishnamurthyNumberChecker
     /// <returns>True if the number is Krishnamurthy, false otherwise.</returns>
     public static bool IsKMurthyNumber(int n)
     {
+		_logger.LogDebug(">>> Entering IsKMurthyNumber(n={N})", n);
         int sumOfFactorials = 0;
         int tmp = n;
 
@@ -26,10 +29,12 @@ public static class KrishnamurthyNumberChecker
         while (n != 0)
         {
             int factorial = (int)Factorial.Calculate(n % 10);
+			_logger.LogDebug("IsKMurthyNumber(n={N}): factorial → {Factorial}", n, factorial);
             sumOfFactorials += factorial;
             n = n / 10;
         }
 
+		_logger.LogDebug("<<< Exiting IsKMurthyNumber(n={N})", n);
         return tmp == sumOfFactorials;
     }
 }

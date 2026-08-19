@@ -1,4 +1,5 @@
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph.Dijkstra;
 
@@ -9,6 +10,7 @@ namespace Algorithms.Graph.Dijkstra;
 /// <typeparam name="T">Generic parameter.</typeparam>
 public class DistanceModel<T>(Vertex<T>? vertex, Vertex<T>? previousVertex, double distance)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public Vertex<T>? Vertex { get; } = vertex;
 
     public Vertex<T>? PreviousVertex { get; set; } = previousVertex;
@@ -17,4 +19,6 @@ public class DistanceModel<T>(Vertex<T>? vertex, Vertex<T>? previousVertex, doub
 
     public override string ToString() =>
         $"Vertex: {Vertex} - Distance: {Distance} - Previous: {PreviousVertex}";
+		_logger.LogDebug(">>> Entering ToString()");
 }
+_logger.LogDebug("<<< Exiting ToString()");

@@ -1,12 +1,15 @@
 using Algorithms.Other;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
 public static class DecisionsConvolutionsTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void Verify_Linear_Convolution()
     {
+		_logger.LogDebug(">>> Entering Verify_Linear_Convolution()");
         // Arrange
         var matrix = new List<List<decimal>>
         {
@@ -25,14 +28,17 @@ public static class DecisionsConvolutionsTest
 
         // Act
         var optimizedMatrix = DecisionsConvolutions.Linear(matrix, priorities);
+		_logger.LogDebug("Verify_Linear_Convolution(): optimizedMatrix → {OptimizedMatrix}", optimizedMatrix);
 
         // Assert
         Assert.That(expectedMatrix, Is.EqualTo(optimizedMatrix));
+		_logger.LogDebug("<<< Exiting Verify_Linear_Convolution()");
     }
 
     [Test]
     public static void Verify_MaxMin_Convolution()
     {
+		_logger.LogDebug(">>> Entering Verify_MaxMin_Convolution()");
         // Arrange
         var matrix = new List<List<decimal>>
         {
@@ -51,8 +57,10 @@ public static class DecisionsConvolutionsTest
 
         // Act
         var optimizedMatrix = DecisionsConvolutions.MaxMin(matrix, priorities);
+		_logger.LogDebug("Verify_MaxMin_Convolution(): optimizedMatrix → {OptimizedMatrix}", optimizedMatrix);
 
         // Assert
         Assert.That(expectedMatrix, Is.EqualTo(optimizedMatrix));
+		_logger.LogDebug("<<< Exiting Verify_MaxMin_Convolution()");
     }
 }

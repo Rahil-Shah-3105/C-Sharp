@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.Other;
 /// </summary>
 public class GaussOptimization
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Implementation of function extremum search by the Gauss optimization algorithm.
     /// </summary>
@@ -29,20 +31,28 @@ public class GaussOptimization
         double x2)
     {
         // The initial value of the error
+		_logger.LogDebug(">>> Entering Optimize(X1={X1},X2={X2})", X1, X2);
         double error = 1;
+		_logger.LogDebug("Optimize(X1={X1},X2={X2}): error → {Error}", X1, X2, error);
 
         while (Math.Abs(error) > eps)
         {
             // Calculation of the function with coordinates that are calculated with shift
             double bottom = func(x1, x2 - step);
+			_logger.LogDebug("Optimize(X1={X1},X2={X2}): bottom → {Bottom}", X1, X2, bottom);
             double top = func(x1, x2 + step);
+			_logger.LogDebug("Optimize(X1={X1},X2={X2}): top → {Top}", X1, X2, top);
             double left = func(x1 - step, x2);
+			_logger.LogDebug("Optimize(X1={X1},X2={X2}): left → {Left}", X1, X2, left);
             double right = func(x1 + step, x2);
+			_logger.LogDebug("Optimize(X1={X1},X2={X2}): right → {Right}", X1, X2, right);
 
             // Determination of the best option.
             var possibleFunctionValues = new List<double> { bottom, top, left, right };
             double maxValue = possibleFunctionValues.Max();
+			_logger.LogDebug("Optimize(X1={X1},X2={X2}): maxValue → {MaxValue}", X1, X2, maxValue);
             double maxValueIndex = possibleFunctionValues.IndexOf(maxValue);
+			_logger.LogDebug("Optimize(X1={X1},X2={X2}): maxValueIndex → {MaxValueIndex}", X1, X2, maxValueIndex);
 
             // Error evaluation
             error = maxValue - func(x1, x2);
@@ -68,6 +78,7 @@ public class GaussOptimization
             step /= n;
         }
 
+		_logger.LogDebug("<<< Exiting Optimize(X1={X1},X2={X2})", X1, X2);
         return (x1, x2);
     }
 }

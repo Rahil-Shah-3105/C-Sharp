@@ -1,12 +1,15 @@
 using Algorithms.Graph.MinimumSpanningTree;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Graph.MinimumSpanningTree;
 
 internal class KruskalTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void ValidateGraph_adjWrongSize_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering ValidateGraph_adjWrongSize_ThrowsException()");
         // Wrong number of columns
         var adj = new[,]
         {
@@ -27,11 +30,13 @@ internal class KruskalTests
             { float.PositiveInfinity, 6, float.PositiveInfinity, 0, float.PositiveInfinity },
         };
         Assert.Throws<ArgumentException>(() => Kruskal.Solve(adj), "adj must be square!");
+		_logger.LogDebug("<<< Exiting ValidateGraph_adjWrongSize_ThrowsException()");
     }
 
     [Test]
     public void ValidateGraph_adjDirectedGraph_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering ValidateGraph_adjDirectedGraph_ThrowsException()");
         // Nodes 1 and 2 have a directed edge
         var adj = new[,]
         {
@@ -42,11 +47,13 @@ internal class KruskalTests
             { float.PositiveInfinity, 2, float.PositiveInfinity, float.PositiveInfinity, 0 },
         };
         Assert.Throws<ArgumentException>(() => Kruskal.Solve(adj), "adj must be symmetric!");
+		_logger.LogDebug("<<< Exiting ValidateGraph_adjDirectedGraph_ThrowsException()");
     }
 
     [Test]
     public void Solve_adjGraph1_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_adjGraph1_CorrectAnswer()");
         /* Graph
          *       (1)
          *       / \
@@ -76,11 +83,13 @@ internal class KruskalTests
         };
 
         Kruskal.Solve(adj).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Solve_adjGraph1_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_adjGraph2_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_adjGraph2_CorrectAnswer()");
         /* Graph
          *  (0)     (4)
          *   |\     /
@@ -122,11 +131,13 @@ internal class KruskalTests
         };
 
         Kruskal.Solve(adj).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Solve_adjGraph2_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_adjGraph3_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_adjGraph3_CorrectAnswer()");
         /* Graph
          *  (0)--3--(2)     (4)--2--(5)
          *    \     / \     /
@@ -162,11 +173,13 @@ internal class KruskalTests
         };
 
         Kruskal.Solve(adj).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Solve_adjGraph3_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_adjGraph4_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_adjGraph4_CorrectAnswer()");
         /* Graph
          *  (0)--7--(1)--8--(2)
          *    \     / \     /
@@ -212,11 +225,13 @@ internal class KruskalTests
         };
 
         Kruskal.Solve(adj).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Solve_adjGraph4_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_adjGraph5_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_adjGraph5_CorrectAnswer()");
         /* Graph
          *  (0)--8--(1)--15-(2)
          *   |\     /     __/|\
@@ -356,11 +371,13 @@ internal class KruskalTests
         };
 
         Kruskal.Solve(adj).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Solve_adjGraph5_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_adjGraph6_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_adjGraph6_CorrectAnswer()");
         /* Graph
          *  (0)--7--(1)     (2)
          *    \     /       /|
@@ -406,11 +423,13 @@ internal class KruskalTests
         };
 
         Kruskal.Solve(adj).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Solve_adjGraph6_CorrectAnswer()");
     }
 
     [Test]
     public void ValidateGraph_ListDirectedGraph_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering ValidateGraph_ListDirectedGraph_ThrowsException()");
         var adj = new[]
         {
             new Dictionary<int, float>{ { 2, 4 } },
@@ -420,11 +439,13 @@ internal class KruskalTests
             new Dictionary<int, float>{ { 1, 2 } },
         };
         Assert.Throws<ArgumentException>(() => Kruskal.Solve(adj), "Graph must be undirected!");
+		_logger.LogDebug("<<< Exiting ValidateGraph_ListDirectedGraph_ThrowsException()");
     }
 
     [Test]
     public void Solve_ListGraph1_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_ListGraph1_CorrectAnswer()");
         /* Graph
          *       (1)
          *       / \
@@ -454,15 +475,18 @@ internal class KruskalTests
         };
 
         var res = Kruskal.Solve(adj);
+		_logger.LogDebug("Solve_ListGraph1_CorrectAnswer(): res → {Res}", res);
         for (var i = 0; i < adj.Length; i++)
         {
             res[i].OrderBy(edge => edge.Key).SequenceEqual(expected[i]).Should().BeTrue();
         }
+		_logger.LogDebug("<<< Exiting Solve_ListGraph1_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_ListGraph2_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_ListGraph2_CorrectAnswer()");
         /* Graph
          *  (0)     (4)
          *   |\     /
@@ -504,15 +528,18 @@ internal class KruskalTests
         };
 
         var res = Kruskal.Solve(adj);
+		_logger.LogDebug("Solve_ListGraph2_CorrectAnswer(): res → {Res}", res);
         for (var i = 0; i < adj.Length; i++)
         {
             res[i].OrderBy(edge => edge.Key).SequenceEqual(expected[i]).Should().BeTrue();
         }
+		_logger.LogDebug("<<< Exiting Solve_ListGraph2_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_ListGraph3_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_ListGraph3_CorrectAnswer()");
         /* Graph
          *  (0)--3--(2)     (4)--2--(5)
          *    \     / \     /
@@ -548,15 +575,18 @@ internal class KruskalTests
         };
 
         var res = Kruskal.Solve(adj);
+		_logger.LogDebug("Solve_ListGraph3_CorrectAnswer(): res → {Res}", res);
         for (var i = 0; i < adj.Length; i++)
         {
             res[i].OrderBy(edge => edge.Key).SequenceEqual(expected[i]).Should().BeTrue();
         }
+		_logger.LogDebug("<<< Exiting Solve_ListGraph3_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_ListGraph4_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_ListGraph4_CorrectAnswer()");
         /* Graph
          *  (0)--7--(1)--8--(2)
          *    \     / \     /
@@ -602,15 +632,18 @@ internal class KruskalTests
         };
 
         var res = Kruskal.Solve(adj);
+		_logger.LogDebug("Solve_ListGraph4_CorrectAnswer(): res → {Res}", res);
         for (var i = 0; i < adj.Length; i++)
         {
             res[i].OrderBy(edge => edge.Key).SequenceEqual(expected[i]).Should().BeTrue();
         }
+		_logger.LogDebug("<<< Exiting Solve_ListGraph4_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_ListGraph5_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_ListGraph5_CorrectAnswer()");
         /* Graph
          *  (0)--8--(1)--15-(2)
          *   |\     /     __/|\
@@ -660,15 +693,18 @@ internal class KruskalTests
         };
 
         var res = Kruskal.Solve(adj);
+		_logger.LogDebug("Solve_ListGraph5_CorrectAnswer(): res → {Res}", res);
         for (var i = 0; i < adj.Length; i++)
         {
             res[i].OrderBy(edge => edge.Key).SequenceEqual(expected[i]).Should().BeTrue();
         }
+		_logger.LogDebug("<<< Exiting Solve_ListGraph5_CorrectAnswer()");
     }
 
     [Test]
     public void Solve_ListGraph6_CorrectAnswer()
     {
+		_logger.LogDebug(">>> Entering Solve_ListGraph6_CorrectAnswer()");
         /* Graph
          *  (0)--7--(1)     (2)
          *    \     /       /|
@@ -714,9 +750,11 @@ internal class KruskalTests
         };
 
         var res = Kruskal.Solve(adj);
+		_logger.LogDebug("Solve_ListGraph6_CorrectAnswer(): res → {Res}", res);
         for (var i = 0; i < adj.Length; i++)
         {
             res[i].OrderBy(edge => edge.Key).SequenceEqual(expected[i]).Should().BeTrue();
         }
+		_logger.LogDebug("<<< Exiting Solve_ListGraph6_CorrectAnswer()");
     }
 }

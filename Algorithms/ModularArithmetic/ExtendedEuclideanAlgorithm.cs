@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.ModularArithmetic;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.ModularArithmetic;
 /// </summary>
 public static class ExtendedEuclideanAlgorithm
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Computes the greatest common divisor (Gcd) of integers a and b, also the coefficients of Bézout's identity,
     ///     which are integers x and y such that a*bezoutCoefficientOfA + b*bezoutCoefficientOfB = Gcd(a, b).
@@ -40,6 +42,7 @@ public static class ExtendedEuclideanAlgorithm
             bezoutOfB = (gcd - bezoutOfA * a) / b; // integer division
         }
 
+		_logger.LogDebug("<<< Exiting Compute(a={A},b={B})", a, b);
         return new ExtendedEuclideanAlgorithmResult<long>(bezoutOfA, bezoutOfB, gcd);
     }
 
