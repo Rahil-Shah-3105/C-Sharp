@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric.Decomposition;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Numeric.Decomposition;
 /// </summary>
 public static class Lu
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Performs LU-decomposition on "source" matrix.
     ///     Lower and upper matrices have same shapes as source matrix.
@@ -16,12 +18,15 @@ public static class Lu
     /// <exception cref="ArgumentException">Source matrix is not square shaped.</exception>
     public static (double[,] L, double[,] U) Decompose(double[,] source)
     {
+		_logger.LogDebug(">>> Entering Decompose(L={L},U={U})", L, U);
         if (source.GetLength(0) != source.GetLength(1))
         {
+			_logger.LogWarning("Throwing ArgumentException from Decompose(L={L},U={U})", L, U);
             throw new ArgumentException("Source matrix is not square shaped.");
         }
 
         var pivot = source.GetLength(0);
+		_logger.LogDebug("Decompose(L={L},U={U}): pivot → {Pivot}", L, U, pivot);
         var lower = new double[pivot, pivot];
         var upper = new double[pivot, pivot];
 
@@ -59,6 +64,7 @@ public static class Lu
             }
         }
 
+		_logger.LogDebug("<<< Exiting Decompose(L={L},U={U})", L, U);
         return (L: lower, U: upper);
     }
 
@@ -72,12 +78,15 @@ public static class Lu
     /// <exception cref="ArgumentException">Matrix of equation coefficients is not square shaped.</exception>
     public static double[] Eliminate(double[,] matrix, double[] coefficients)
     {
+		_logger.LogDebug(">>> Entering Eliminate(matrix={Matrix},coefficients={Coefficients})", matrix, coefficients);
         if (matrix.GetLength(0) != matrix.GetLength(1))
         {
+			_logger.LogWarning("Throwing ArgumentException from Eliminate(matrix={Matrix},coefficients={Coefficients})", matrix, coefficients);
             throw new ArgumentException("Matrix of equation coefficients is not square shaped.");
         }
 
         var pivot = matrix.GetLength(0);
+		_logger.LogDebug("Eliminate(matrix={Matrix},coefficients={Coefficients}): pivot → {Pivot}", matrix, coefficients, pivot);
         var upperTransform = new double[pivot, 1]; // U * upperTransform = coefficients
         var solution = new double[pivot]; // L * solution = upperTransform
         (double[,] l, double[,] u) = Decompose(matrix);
@@ -106,6 +115,7 @@ public static class Lu
             solution[i] = (upperTransform[i, 0] - pivotPointSum) / u[i, i];
         }
 
+		_logger.LogDebug("<<< Exiting Eliminate(matrix={Matrix},coefficients={Coefficients})", matrix, coefficients);
         return solution;
     }
 }

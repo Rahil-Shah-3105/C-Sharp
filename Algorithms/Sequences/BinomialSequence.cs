@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sequences;
 
 /// <summary>
@@ -13,6 +14,7 @@ namespace Algorithms.Sequences;
 /// </summary>
 public class BinomialSequence : ISequence
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets sequence of binomial coefficients.
     /// </summary>
@@ -37,6 +39,7 @@ public class BinomialSequence : ISequence
 
     private static BigInteger BinomialCoefficient(long n, long k)
     {
+		_logger.LogDebug(">>> Entering BinomialCoefficient(n={N},k={K})", n, k);
         if (k == 0 || k == n)
         {
             return new BigInteger(1);
@@ -44,6 +47,7 @@ public class BinomialSequence : ISequence
 
         if (n < 0)
         {
+		_logger.LogDebug("<<< Exiting BinomialCoefficient(n={N},k={K})", n, k);
             return new BigInteger(0);
         }
 
@@ -52,6 +56,7 @@ public class BinomialSequence : ISequence
 
     private static IEnumerable<BigInteger> GenerateRow(long n)
     {
+		_logger.LogDebug(">>> Entering GenerateRow(n={N})", n);
         long k = 0;
 
         while (k <= n)
@@ -59,5 +64,6 @@ public class BinomialSequence : ISequence
             yield return BinomialCoefficient(n, k);
             k++;
         }
+		_logger.LogDebug("<<< Exiting GenerateRow(n={N})", n);
     }
 }

@@ -1,9 +1,11 @@
 using Algorithms.Numeric;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
 public static class AbsTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase(0, 0)]
     [TestCase(34, 34)]
     [TestCase(-100000000000.0d, 100000000000.0d)]
@@ -11,11 +13,14 @@ public static class AbsTests
     [TestCase(-3.1443123d, 3.1443123d)]
     public static void GetsAbsVal<T>(T inputNum, T expected) where T : INumber<T>
     {
+		_logger.LogDebug(">>> Entering GetsAbsVal(inputNum={InputNum},expected={Expected})", inputNum, expected);
         // Act
         var result = Abs.AbsVal(inputNum);
+		_logger.LogDebug("GetsAbsVal(inputNum={InputNum},expected={Expected}): result → {Result}", inputNum, expected, result);
 
         // Assert
         Assert.That(result, Is.EqualTo(expected));
+		_logger.LogDebug("<<< Exiting GetsAbsVal(inputNum={InputNum},expected={Expected})", inputNum, expected);
     }
 
     [TestCase(new[] { -3, -1, 2, -11 }, -11)]
@@ -33,11 +38,14 @@ public static class AbsTests
     [Test]
     public static void AbsMaxThrowsArgumentException()
     {
+		_logger.LogDebug(">>> Entering AbsMaxThrowsArgumentException()");
         // Arrange
         var inputNums = Array.Empty<int>();
+		_logger.LogDebug("AbsMaxThrowsArgumentException(): inputNums → {InputNums}", inputNums);
 
         // Assert
         Assert.Throws<ArgumentException>(() => Abs.AbsMax(inputNums));
+		_logger.LogDebug("<<< Exiting AbsMaxThrowsArgumentException()");
     }
 
     [TestCase(new[] { -3, -1, 2, -11 }, -1)]
@@ -45,20 +53,26 @@ public static class AbsTests
     [TestCase(new[] { 0, 5, 1, 11 }, 0)]
     public static void GetAbsMin<T>(T[] inputNums, T expected) where T : INumber<T>
     {
+		_logger.LogDebug(">>> Entering GetAbsMin(inputNums={InputNums},expected={Expected})", inputNums, expected);
         // Act
         var result = Abs.AbsMin(inputNums);
+		_logger.LogDebug("GetAbsMin(inputNums={InputNums},expected={Expected}): result → {Result}", inputNums, expected, result);
 
         // Assert
         Assert.That(result, Is.EqualTo(expected));
+		_logger.LogDebug("<<< Exiting GetAbsMin(inputNums={InputNums},expected={Expected})", inputNums, expected);
     }
 
     [Test]
     public static void AbsMinThrowsArgumentException()
     {
+		_logger.LogDebug(">>> Entering AbsMinThrowsArgumentException()");
         // Arrange
         var inputNums = Array.Empty<int>();
+		_logger.LogDebug("AbsMinThrowsArgumentException(): inputNums → {InputNums}", inputNums);
 
         // Assert
         Assert.Throws<ArgumentException>(() => Abs.AbsMin(inputNums));
+		_logger.LogDebug("<<< Exiting AbsMinThrowsArgumentException()");
     }
 }

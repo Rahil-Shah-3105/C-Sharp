@@ -1,11 +1,13 @@
 using Algorithms.Crypto.Digests;
 using Algorithms.Crypto.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Crypto.Digests;
 
 [NonParallelizable]
 public class AsconDigestTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly AsconDigest asconHash = new AsconDigest(AsconDigest.AsconParameters.AsconHash);
     private readonly AsconDigest asconHashA = new AsconDigest(AsconDigest.AsconParameters.AsconHashA);
 
@@ -18,10 +20,14 @@ public class AsconDigestTests
     [TestCase("12345678901234567890123456789012345678901234567890123456789012345678901234567890", "2dae8b553b93841120e88ee77b9ccb8b512a32318db6012025f3f1c482b1def8")]
     public void AsconHash_ReturnsCorrectValue(string input, string expected)
     {
+		_logger.LogDebug(">>> Entering AsconHash_ReturnsCorrectValue(input={Input},expected={Expected})", input, expected);
         var inputBytes = Encoding.ASCII.GetBytes(input);
         var result = asconHash.Digest(inputBytes);
+		_logger.LogDebug("AsconHash_ReturnsCorrectValue(input={Input},expected={Expected}): result → {Result}", input, expected, result);
+		_logger.LogDebug("AsconHash_ReturnsCorrectValue(input={Input},expected={Expected}): inputBytes → {InputBytes}", input, expected, inputBytes);
 
         result.Should().Be(expected);
+		_logger.LogDebug("<<< Exiting AsconHash_ReturnsCorrectValue(input={Input},expected={Expected})", input, expected);
     }
 
     [TestCase("a", "062bb0346671da00da4f460308b4d2c4d9877c3e2827d6229ff5361332d36527")]
@@ -33,15 +39,20 @@ public class AsconDigestTests
     [TestCase("12345678901234567890123456789012345678901234567890123456789012345678901234567890", "d8e38fc50d682550cd176decda61adb7fd1c793cdafa825f17f3a002d65847be")]
     public void AsconHashA_ReturnsCorrectValue(string input, string expected)
     {
+		_logger.LogDebug(">>> Entering AsconHashA_ReturnsCorrectValue(input={Input},expected={Expected})", input, expected);
         var inputBytes = Encoding.ASCII.GetBytes(input);
         var result = asconHashA.Digest(inputBytes);
+		_logger.LogDebug("AsconHashA_ReturnsCorrectValue(input={Input},expected={Expected}): result → {Result}", input, expected, result);
+		_logger.LogDebug("AsconHashA_ReturnsCorrectValue(input={Input},expected={Expected}): inputBytes → {InputBytes}", input, expected, inputBytes);
 
         result.Should().Be(expected);
+		_logger.LogDebug("<<< Exiting AsconHashA_ReturnsCorrectValue(input={Input},expected={Expected})", input, expected);
     }
 
     [Test]
     public void BlockUpdate_WithValidOffsetAndLength_ShouldProcessCorrectly()
     {
+		_logger.LogDebug(">>> Entering BlockUpdate_WithValidOffsetAndLength_ShouldProcessCorrectly()");
         // Arrange
         var input = new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99 };
         var offset = 2;
@@ -49,19 +60,23 @@ public class AsconDigestTests
 
         // Act
         var act = () => asconHash.BlockUpdate(input, offset, length);
+		_logger.LogDebug("BlockUpdate_WithValidOffsetAndLength_ShouldProcessCorrectly(): act → {Act}", act);
 
         // Assert
         act.Should().NotThrow(); // Ensure no exceptions are thrown during processing
 
         // Finalize the hash and check the output size
         var output = new byte[asconHash.GetDigestSize()];
+		_logger.LogDebug("BlockUpdate_WithValidOffsetAndLength_ShouldProcessCorrectly(): output → {Output}", output);
         asconHash.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ascon hash size is 32 bytes
+		_logger.LogDebug("<<< Exiting BlockUpdate_WithValidOffsetAndLength_ShouldProcessCorrectly()");
     }
 
     [Test]
     public void BlockUpdate_WithInvalidOffset_ShouldThrowDataLengthException()
     {
+		_logger.LogDebug(">>> Entering BlockUpdate_WithInvalidOffset_ShouldThrowDataLengthException()");
         // Arrange
         var input = new byte[] { 0x00, 0x11, 0x22, 0x33 };
         var offset = 3; // Offset goes too close to the end
@@ -69,15 +84,18 @@ public class AsconDigestTests
 
         // Act
         var act = () => asconHash.BlockUpdate(input, offset, length);
+		_logger.LogDebug("BlockUpdate_WithInvalidOffset_ShouldThrowDataLengthException(): act → {Act}", act);
 
         // Assert
         act.Should().Throw<DataLengthException>()
             .WithMessage("input buffer too short");
+			_logger.LogDebug("<<< Exiting BlockUpdate_WithInvalidOffset_ShouldThrowDataLengthException()");
     }
 
     [Test]
     public void BlockUpdate_WithInvalidLength_ShouldThrowDataLengthException()
     {
+		_logger.LogDebug(">>> Entering BlockUpdate_WithInvalidLength_ShouldThrowDataLengthException()");
         // Arrange
         var input = new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 };
         var offset = 1; // Valid offset
@@ -85,15 +103,18 @@ public class AsconDigestTests
 
         // Act
         var act = () => asconHash.BlockUpdate(input, offset, length);
+		_logger.LogDebug("BlockUpdate_WithInvalidLength_ShouldThrowDataLengthException(): act → {Act}", act);
 
         // Assert
         act.Should().Throw<DataLengthException>()
             .WithMessage("input buffer too short");
+			_logger.LogDebug("<<< Exiting BlockUpdate_WithInvalidLength_ShouldThrowDataLengthException()");
     }
 
     [Test]
     public void BlockUpdate_WithPartialBlock_ShouldProcessCorrectly()
     {
+		_logger.LogDebug(">>> Entering BlockUpdate_WithPartialBlock_ShouldProcessCorrectly()");
         // Arrange
         var input = new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44 };
         var offset = 0;
@@ -104,13 +125,16 @@ public class AsconDigestTests
 
         // Assert
         var output = new byte[asconHash.GetDigestSize()];
+		_logger.LogDebug("BlockUpdate_WithPartialBlock_ShouldProcessCorrectly(): output → {Output}", output);
         asconHash.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ensure valid hash output
+		_logger.LogDebug("<<< Exiting BlockUpdate_WithPartialBlock_ShouldProcessCorrectly()");
     }
 
     [Test]
     public void BlockUpdate_WithFullBlock_ShouldProcessCorrectly()
     {
+		_logger.LogDebug(">>> Entering BlockUpdate_WithFullBlock_ShouldProcessCorrectly()");
         // Arrange
         var input = new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
         var offset = 0;
@@ -121,13 +145,16 @@ public class AsconDigestTests
 
         // Assert
         var output = new byte[asconHash.GetDigestSize()];
+		_logger.LogDebug("BlockUpdate_WithFullBlock_ShouldProcessCorrectly(): output → {Output}", output);
         asconHash.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ensure valid hash output
+		_logger.LogDebug("<<< Exiting BlockUpdate_WithFullBlock_ShouldProcessCorrectly()");
     }
 
     [Test]
     public void BlockUpdate_MultipleCalls_ShouldProcessCorrectly()
     {
+		_logger.LogDebug(">>> Entering BlockUpdate_MultipleCalls_ShouldProcessCorrectly()");
         // Arrange
         var input1 = new byte[] { 0x00, 0x11, 0x22 };
         var input2 = new byte[] { 0x33, 0x44, 0x55, 0x66, 0x77 };
@@ -138,26 +165,33 @@ public class AsconDigestTests
 
         // Assert
         var output = new byte[asconHash.GetDigestSize()];
+		_logger.LogDebug("BlockUpdate_MultipleCalls_ShouldProcessCorrectly(): output → {Output}", output);
         asconHash.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ensure valid hash output
+		_logger.LogDebug("<<< Exiting BlockUpdate_MultipleCalls_ShouldProcessCorrectly()");
     }
 
     [Test]
     public void AsconHash_WhenGetNameIsCalled_ReturnsCorrectValue()
     {
+		_logger.LogDebug(">>> Entering AsconHash_WhenGetNameIsCalled_ReturnsCorrectValue()");
         asconHash.AlgorithmName.Should().Be("Ascon-Hash");
         asconHashA.AlgorithmName.Should().Be("Ascon-HashA");
+		_logger.LogDebug("<<< Exiting AsconHash_WhenGetNameIsCalled_ReturnsCorrectValue()");
     }
 
     [Test]
     public void AsconHash_WhenGetByteLengthIsCalled_ReturnsCorrectValue()
     {
+		_logger.LogDebug(">>> Entering AsconHash_WhenGetByteLengthIsCalled_ReturnsCorrectValue()");
         asconHash.GetByteLength().Should().Be(8);
+		_logger.LogDebug("<<< Exiting AsconHash_WhenGetByteLengthIsCalled_ReturnsCorrectValue()");
     }
 
     [Test]
     public void Update_ShouldProcessByte_WhenBufferIsFull()
     {
+		_logger.LogDebug(">>> Entering Update_ShouldProcessByte_WhenBufferIsFull()");
         // Arrange
         byte[] inputBytes = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77]; // 8 bytes to fill the buffer
 
@@ -170,13 +204,16 @@ public class AsconDigestTests
         // Assert
         // Since the buffer is full after 8 updates, we expect the state to have been processed.
         var output = new byte[asconHashA.GetDigestSize()];
+		_logger.LogDebug("Update_ShouldProcessByte_WhenBufferIsFull(): output → {Output}", output);
         asconHashA.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ascon hash size is 32 bytes
+		_logger.LogDebug("<<< Exiting Update_ShouldProcessByte_WhenBufferIsFull()");
     }
 
     [Test]
     public void Update_ShouldNotProcess_WhenBufferIsNotFull()
     {
+		_logger.LogDebug(">>> Entering Update_ShouldNotProcess_WhenBufferIsNotFull()");
         // Arrange
         byte[] inputBytes = [0x00, 0x11, 0x22, 0x33]; // Only 4 bytes (buffer is not full)
 
@@ -190,13 +227,16 @@ public class AsconDigestTests
         // Even though the buffer has received input, it should not process until it is full (8 bytes).
         // We can check that DoFinal still completes, but the buffer has not been processed yet.
         var output = new byte[asconHashA.GetDigestSize()];
+		_logger.LogDebug("Update_ShouldNotProcess_WhenBufferIsNotFull(): output → {Output}", output);
         asconHashA.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ensure valid hash output
+		_logger.LogDebug("<<< Exiting Update_ShouldNotProcess_WhenBufferIsNotFull()");
     }
 
     [Test]
     public void Update_ShouldProcessMultipleBlocks()
     {
+		_logger.LogDebug(">>> Entering Update_ShouldProcessMultipleBlocks()");
         // Arrange
         var inputBytes = new byte[16]; // Enough to fill two full blocks (16 bytes)
 
@@ -209,13 +249,16 @@ public class AsconDigestTests
         // Assert
         // Ensure that the state is processed twice since 16 bytes were passed (2 blocks of 8 bytes).
         var output = new byte[asconHashA.GetDigestSize()];
+		_logger.LogDebug("Update_ShouldProcessMultipleBlocks(): output → {Output}", output);
         asconHashA.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ensure valid hash output
+		_logger.LogDebug("<<< Exiting Update_ShouldProcessMultipleBlocks()");
     }
 
     [Test]
     public void Update_ShouldHandleSingleByteCorrectly()
     {
+		_logger.LogDebug(">>> Entering Update_ShouldHandleSingleByteCorrectly()");
         // Arrange
         byte input = 0xFF; // Single byte input
 
@@ -225,13 +268,16 @@ public class AsconDigestTests
         // Assert
         // Even though one byte is provided, it should not process the state (waiting for 8 bytes).
         var output = new byte[asconHashA.GetDigestSize()];
+		_logger.LogDebug("Update_ShouldHandleSingleByteCorrectly(): output → {Output}", output);
         asconHashA.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ensure valid hash output
+		_logger.LogDebug("<<< Exiting Update_ShouldHandleSingleByteCorrectly()");
     }
 
     [Test]
     public void Update_ShouldAccumulateStateWithMultipleUpdates()
     {
+		_logger.LogDebug(">>> Entering Update_ShouldAccumulateStateWithMultipleUpdates()");
         // Arrange
         byte[] inputBytes = [0x00, 0x11, 0x22]; // Partial input
 
@@ -251,12 +297,16 @@ public class AsconDigestTests
         // Assert
         // Ensure that the state is correctly updated after multiple partial updates.
         var output = new byte[asconHashA.GetDigestSize()];
+		_logger.LogDebug("Update_ShouldAccumulateStateWithMultipleUpdates(): output → {Output}", output);
         asconHashA.DoFinal(output, 0);
         output.Should().HaveCount(32); // Ensure valid hash output
+		_logger.LogDebug("<<< Exiting Update_ShouldAccumulateStateWithMultipleUpdates()");
     }
 
     private static string ToHexString(byte[] bytes)
     {
+		_logger.LogDebug(">>> Entering ToHexString(bytes={Bytes})", bytes);
+		_logger.LogDebug("<<< Exiting ToHexString(bytes={Bytes})", bytes);
         return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
     }
 }

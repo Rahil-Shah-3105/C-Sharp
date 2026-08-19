@@ -1,24 +1,35 @@
 using Algorithms.Graph;
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Graph;
 
 public class KosarajuTests
 {
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     [Test]
     public void GetRepresentativesTest()
     {
+		_logger.LogDebug(">>> Entering GetRepresentativesTest()");
         // Create a graph with some SCC. 
         var graph = new DirectedWeightedGraph<int>(10);
+		_logger.LogDebug("GetRepresentativesTest(): graph → {Graph}", graph);
 
         var vertex1 = graph.AddVertex(1);
+		_logger.LogDebug("GetRepresentativesTest(): vertex1 → {Vertex1}", vertex1);
         var vertex2 = graph.AddVertex(2);
+		_logger.LogDebug("GetRepresentativesTest(): vertex2 → {Vertex2}", vertex2);
         var vertex3 = graph.AddVertex(3);
+		_logger.LogDebug("GetRepresentativesTest(): vertex3 → {Vertex3}", vertex3);
         var vertex4 = graph.AddVertex(4);
+		_logger.LogDebug("GetRepresentativesTest(): vertex4 → {Vertex4}", vertex4);
         var vertex5 = graph.AddVertex(5);
+		_logger.LogDebug("GetRepresentativesTest(): vertex5 → {Vertex5}", vertex5);
         var vertex6 = graph.AddVertex(6);
+		_logger.LogDebug("GetRepresentativesTest(): vertex6 → {Vertex6}", vertex6);
         var vertex7 = graph.AddVertex(7);
+		_logger.LogDebug("GetRepresentativesTest(): vertex7 → {Vertex7}", vertex7);
 
         graph.AddEdge(vertex1, vertex2, 1);
         graph.AddEdge(vertex2, vertex3, 1);
@@ -54,21 +65,31 @@ public class KosarajuTests
         // Vertices 6 and 7 are their own SCC
         result[vertex6].Should().Be(vertex6);
         result[vertex7].Should().Be(vertex7);
+		_logger.LogDebug("<<< Exiting GetRepresentativesTest()");
     }
 
     [Test]
     public void GetSccTest()
     {
+		_logger.LogDebug(">>> Entering GetSccTest()");
         // Create a graph with some SCC. 
         var graph = new DirectedWeightedGraph<int>(10);
+		_logger.LogDebug("GetSccTest(): graph → {Graph}", graph);
 
         var vertex1 = graph.AddVertex(1);
+		_logger.LogDebug("GetSccTest(): vertex1 → {Vertex1}", vertex1);
         var vertex2 = graph.AddVertex(2);
+		_logger.LogDebug("GetSccTest(): vertex2 → {Vertex2}", vertex2);
         var vertex3 = graph.AddVertex(3);
+		_logger.LogDebug("GetSccTest(): vertex3 → {Vertex3}", vertex3);
         var vertex4 = graph.AddVertex(4);
+		_logger.LogDebug("GetSccTest(): vertex4 → {Vertex4}", vertex4);
         var vertex5 = graph.AddVertex(5);
+		_logger.LogDebug("GetSccTest(): vertex5 → {Vertex5}", vertex5);
         var vertex6 = graph.AddVertex(6);
+		_logger.LogDebug("GetSccTest(): vertex6 → {Vertex6}", vertex6);
         var vertex7 = graph.AddVertex(7);
+		_logger.LogDebug("GetSccTest(): vertex7 → {Vertex7}", vertex7);
 
         graph.AddEdge(vertex1, vertex2, 1);
         graph.AddEdge(vertex2, vertex3, 1);
@@ -81,6 +102,7 @@ public class KosarajuTests
 
         // Run the algorithm and get SCC as lists of vertices. 
         var scc = Kosaraju<int>.GetScc(graph);
+		_logger.LogDebug("GetSccTest(): scc → {Scc}", scc);
 
         // There should be 4 SCC: {1,2,3}, {4,5}, {6} and {7}
         scc.Should().HaveCount(4);
@@ -94,5 +116,6 @@ public class KosarajuTests
         // Vertices 6 and 7 are their own SCC
         scc.First(c => c.Contains(vertex6)).Should().HaveCount(1);
         scc.First(c => c.Contains(vertex7)).Should().HaveCount(1);
+		_logger.LogDebug("<<< Exiting GetSccTest()");
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Array input type.</typeparam>
 public class CocktailSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sorts array using Cocktail sort algorithm.
     /// </summary>
@@ -16,8 +18,10 @@ public class CocktailSorter<T> : IComparisonSorter<T>
 
     private static void CocktailSort(IList<T> array, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering CocktailSort(array={Array},comparer={Comparer})", array, comparer);
         var swapped = true;
 
+		_logger.LogDebug("CocktailSort(array={Array},comparer={Comparer}): swapped → {Swapped}", array, comparer, swapped);
         var startIndex = 0;
         var endIndex = array.Count - 1;
 
@@ -54,5 +58,6 @@ public class CocktailSorter<T> : IComparisonSorter<T>
 
             startIndex++;
         }
+		_logger.LogDebug("<<< Exiting CocktailSort(array={Array},comparer={Comparer})", array, comparer);
     }
 }

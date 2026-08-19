@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Crypto.Exceptions;
 
 /// <summary>
@@ -14,6 +15,7 @@ namespace Algorithms.Crypto.Exceptions;
 /// </remarks>
 public class OutputLengthException : DataLengthException
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Initializes a new instance of the <see cref="OutputLengthException"/> class.
     /// </summary>
@@ -23,6 +25,8 @@ public class OutputLengthException : DataLengthException
     /// </remarks>
     public OutputLengthException()
     {
+	_logger.LogDebug(">>> Entering OutputLengthException()");
+	_logger.LogDebug("<<< Exiting OutputLengthException()");
     }
 
     /// <summary>
@@ -35,7 +39,9 @@ public class OutputLengthException : DataLengthException
     public OutputLengthException(string message)
         : base(message)
     {
+	_logger.LogDebug(">>> Entering OutputLengthException(message={Message})", message);
     }
+	_logger.LogDebug("<<< Exiting OutputLengthException(message={Message})", message);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OutputLengthException"/> class with a specified error message

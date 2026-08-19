@@ -1,4 +1,5 @@
 using Algorithms.Sorters.Comparison;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.DataCompression;
 
@@ -7,6 +8,7 @@ namespace Algorithms.DataCompression;
 /// </summary>
 public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sorter, Translator translator)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Use partial sorter
     private readonly IComparisonSorter<ListNode> sorter = sorter;
     private readonly Translator translator = translator;
@@ -19,6 +21,7 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
     /// <returns>Compressed string and keys to decompress it.</returns>
     public (string CompressedText, Dictionary<string, string> DecompressionKeys) Compress(string uncompressedText)
     {
+		_logger.LogDebug(">>> Entering Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys})", CompressedText, DecompressionKeys);
         if (string.IsNullOrEmpty(uncompressedText))
         {
             return (string.Empty, []);
@@ -34,8 +37,11 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
         }
 
         var nodes = GetListNodesFromText(uncompressedText);
+		_logger.LogDebug("Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys}): nodes → {Nodes}", CompressedText, DecompressionKeys, nodes);
         var tree = GenerateHuffmanTree(nodes);
+		_logger.LogDebug("Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys}): tree → {Tree}", CompressedText, DecompressionKeys, tree);
         var (compressionKeys, decompressionKeys) = GetKeys(tree);
+		_logger.LogDebug("<<< Exiting Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys})", CompressedText, DecompressionKeys);
         return (translator.Translate(uncompressedText, compressionKeys), decompressionKeys);
     }
 
@@ -45,8 +51,10 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
     /// <returns>Symbol-frequency array.</returns>
     private static ListNode[] GetListNodesFromText(string text)
     {
+		_logger.LogDebug(">>> Entering GetListNodesFromText(text={Text})", text);
         var occurenceCounts = new Dictionary<char, int>();
 
+		_logger.LogDebug("GetListNodesFromText(text={Text}): occurenceCounts → {OccurenceCounts}", text, occurenceCounts);
         foreach (var ch in text)
         {
             if (!occurenceCounts.ContainsKey(ch))
@@ -57,14 +65,18 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
             occurenceCounts[ch]++;
         }
 
+		_logger.LogDebug("<<< Exiting GetListNodesFromText(text={Text})", text);
         return occurenceCounts.Select(kvp => new ListNode(kvp.Key, 1d * kvp.Value / text.Length)).ToArray();
     }
 
     private (Dictionary<string, string> CompressionKeys, Dictionary<string, string> DecompressionKeys) GetKeys(
         ListNode tree)
     {
+		_logger.LogDebug(">>> Entering GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys})", CompressionKeys, DecompressionKeys);
         var compressionKeys = new Dictionary<string, string>();
         var decompressionKeys = new Dictionary<string, string>();
+		_logger.LogDebug("GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys}): decompressionKeys → {DecompressionKeys1}", CompressionKeys, DecompressionKeys, decompressionKeys);
+		_logger.LogDebug("GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys}): compressionKeys → {CompressionKeys1}", CompressionKeys, DecompressionKeys, compressionKeys);
 
         if (tree.HasData)
         {
@@ -86,6 +98,7 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
             compressionKeys.AddMany(rsck.Select(kvp => (kvp.Key, "1" + kvp.Value)));
             decompressionKeys.AddMany(rsdk.Select(kvp => ("1" + kvp.Key, kvp.Value)));
 
+		_logger.LogDebug("<<< Exiting GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys})", CompressionKeys, DecompressionKeys);
             return (compressionKeys, decompressionKeys);
         }
 
@@ -94,8 +107,10 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
 
     private ListNode GenerateHuffmanTree(ListNode[] nodes)
     {
+		_logger.LogDebug(">>> Entering GenerateHuffmanTree(nodes={Nodes})", nodes);
         var comparer = new ListNodeComparer();
         while (nodes.Length > 1)
+		_logger.LogDebug("GenerateHuffmanTree(nodes={Nodes}): comparer → {Comparer}", nodes, comparer);
         {
             sorter.Sort(nodes, comparer);
 
@@ -108,6 +123,7 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
             nodes = newNodes;
         }
 
+		_logger.LogDebug("<<< Exiting GenerateHuffmanTree(nodes={Nodes})", nodes);
         return nodes[0];
     }
 
@@ -118,15 +134,21 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
     {
         public ListNode(char data, double frequency)
         {
+			_logger.LogDebug(">>> Entering ListNode(data={Data},frequency={Frequency})", data, frequency);
             HasData = true;
             Data = data;
+			_logger.LogDebug("ListNode(data={Data},frequency={Frequency}): HasData → {HasData}", data, frequency, HasData);
             Frequency = frequency;
+			_logger.LogDebug("ListNode(data={Data},frequency={Frequency}): Frequency → {Frequency1}", data, frequency, Frequency);
+			_logger.LogDebug("<<< Exiting ListNode(data={Data},frequency={Frequency})", data, frequency);
+			_logger.LogDebug("ListNode(leftChild={LeftChild},rightChild={RightChild}): Frequency → {Frequency}", leftChild, rightChild, Frequency);
         }
 
         public ListNode(ListNode leftChild, ListNode rightChild)
         {
             LeftChild = leftChild;
             RightChild = rightChild;
+			_logger.LogDebug("ListNode(leftChild={LeftChild},rightChild={RightChild}): RightChild → {RightChild1}", leftChild, rightChild, RightChild);
             Frequency = leftChild.Frequency + rightChild.Frequency;
         }
 
@@ -145,8 +167,10 @@ public class HuffmanCompressor(IComparisonSorter<HuffmanCompressor.ListNode> sor
     {
         public int Compare(ListNode? x, ListNode? y)
         {
+			_logger.LogDebug(">>> Entering Compare(x={X},y={Y})", x, y);
             if (x is null || y is null)
             {
+			_logger.LogDebug("<<< Exiting Compare(x={X},y={Y})", x, y);
                 return 0;
             }
 

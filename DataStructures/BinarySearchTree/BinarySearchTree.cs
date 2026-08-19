@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.BinarySearchTree;
 
 /// <summary>
@@ -15,6 +16,7 @@ namespace DataStructures.BinarySearchTree;
 /// <typeparam name="TKey">Type of key for the BST. Keys must implement IComparable.</typeparam>
 public class BinarySearchTree<TKey>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Comparer to use when comparing node elements/keys.
     /// </summary>
@@ -43,6 +45,7 @@ public class BinarySearchTree<TKey>
     /// </exception>
     public void Add(TKey key)
     {
+		_logger.LogDebug(">>> Entering Add(key={Key})", key);
         if (Root is null)
         {
             Root = new BinarySearchTreeNode<TKey>(key);
@@ -53,6 +56,10 @@ public class BinarySearchTree<TKey>
         }
 
         Count++;
+		_logger.LogDebug("<<< Exiting Add(key={Key})", key);
+		_logger.LogDebug("Add(node={Node},key={Key}): node.Left → {Arg2}", node, key, node.Left);
+		_logger.LogDebug("Add(node={Node},key={Key}): node.Right → {Arg2}", node, key, node.Right);
+		_logger.LogWarning("Throwing ArgumentException from Add(node={Node},key={Key})", node, key);
     }
 
     /// <summary>
@@ -62,10 +69,12 @@ public class BinarySearchTree<TKey>
     /// <param name="keys">Sequence of keys to insert.</param>
     public void AddRange(IEnumerable<TKey> keys)
     {
+		_logger.LogDebug(">>> Entering AddRange(keys={Keys})", keys);
         foreach (var key in keys)
         {
             Add(key);
         }
+		_logger.LogDebug("<<< Exiting AddRange(keys={Keys})", keys);
     }
 
     /// <summary>
@@ -89,17 +98,25 @@ public class BinarySearchTree<TKey>
     /// <returns>true if the removal was successful, false otherwise.</returns>
     public bool Remove(TKey key)
     {
+		_logger.LogDebug(">>> Entering Remove(key={Key})", key);
         if (Root is null)
         {
             return false;
         }
 
         var result = Remove(Root, Root, key);
+		_logger.LogDebug("Remove(key={Key}): result → {Result}", key, result);
         if (result)
         {
             Count--;
         }
 
+		_logger.LogWarning("Remove(parent={Parent},node={Node},key={Key}): Root → {Root}", parent, node, key, Root);
+		_logger.LogDebug("Remove(parent={Parent},node={Node},key={Key}): parent.Left → {Arg3}", parent, node, key, parent.Left);
+		_logger.LogDebug("Remove(parent={Parent},node={Node},key={Key}): parent.Right → {Arg3}", parent, node, key, parent.Right);
+		_logger.LogDebug("<<< Exiting Remove(key={Key})", key);
+		_logger.LogDebug(">>> Entering Search(node={Node},key={Key})", node, key);
+		_logger.LogDebug("<<< Exiting Search(node={Node},key={Key})", node, key);
         return result;
     }
 
@@ -109,11 +126,14 @@ public class BinarySearchTree<TKey>
     /// <returns>The node if possible, a default value otherwise.</returns>
     public BinarySearchTreeNode<TKey>? GetMin()
     {
+		_logger.LogDebug(">>> Entering GetMin()");
         if (Root is null)
         {
+		_logger.LogDebug("<<< Exiting GetMin()");
             return default;
         }
 
+		_logger.LogDebug("<<< Exiting GetMin(node={Node})", node);
         return GetMin(Root);
     }
 
@@ -123,11 +143,14 @@ public class BinarySearchTree<TKey>
     /// <returns>The node if possible, a default value otherwise.</returns>
     public BinarySearchTreeNode<TKey>? GetMax()
     {
+		_logger.LogDebug(">>> Entering GetMax()");
         if (Root is null)
         {
+		_logger.LogDebug("<<< Exiting GetMax()");
             return default;
         }
 
+		_logger.LogDebug("<<< Exiting GetMax(node={Node})", node);
         return GetMax(Root);
     }
 
@@ -161,6 +184,7 @@ public class BinarySearchTree<TKey>
     {
         var compareResult = comparer.Compare(node.Key, key);
         if (compareResult > 0)
+		_logger.LogDebug("Add(node={Node},key={Key}): compareResult → {CompareResult}", node, key, compareResult);
         {
             if (node.Left is not null)
             {
@@ -169,6 +193,7 @@ public class BinarySearchTree<TKey>
             else
             {
                 var newNode = new BinarySearchTreeNode<TKey>(key);
+				_logger.LogDebug("Add(node={Node},key={Key}): newNode → {NewNode}", node, key, newNode);
                 node.Left = newNode;
             }
         }
@@ -188,8 +213,11 @@ public class BinarySearchTree<TKey>
         // Key is already in tree.
         else
         {
+			_logger.LogWarning("Throwing ArgumentException from Add(node={Node},key={Key})", node, key);
             throw new ArgumentException($"""Key "{key}" already exists in tree!""");
         }
+		_logger.LogDebug(">>> Entering GetKeysPostOrder(node={Node})", node);
+		_logger.LogDebug("<<< Exiting GetKeysPostOrder(node={Node})", node);
     }
 
     /// <summary>
@@ -311,6 +339,7 @@ public class BinarySearchTree<TKey>
     /// <returns>List of keys in in-order order.</returns>
     private IList<TKey> GetKeysInOrder(BinarySearchTreeNode<TKey>? node)
     {
+		_logger.LogDebug(">>> Entering GetKeysInOrder(node={Node})", node);
         if (node is null)
         {
             return [];
@@ -318,9 +347,11 @@ public class BinarySearchTree<TKey>
 
         // Use mutable list approach instead of spread operator for better performance
         var result = new List<TKey>();
+		_logger.LogDebug("GetKeysInOrder(node={Node}): result → {Result}", node, result);
         result.AddRange(GetKeysInOrder(node.Left));
         result.Add(node.Key);
         result.AddRange(GetKeysInOrder(node.Right));
+		_logger.LogDebug("<<< Exiting GetKeysInOrder(node={Node})", node);
         return result;
     }
 
@@ -331,6 +362,7 @@ public class BinarySearchTree<TKey>
     /// <returns>List of keys in pre-order order.</returns>
     private IList<TKey> GetKeysPreOrder(BinarySearchTreeNode<TKey>? node)
     {
+		_logger.LogDebug(">>> Entering GetKeysPreOrder(node={Node})", node);
         if (node is null)
         {
             return [];
@@ -343,6 +375,7 @@ public class BinarySearchTree<TKey>
         };
         result.AddRange(GetKeysPreOrder(node.Left));
         result.AddRange(GetKeysPreOrder(node.Right));
+		_logger.LogDebug("<<< Exiting GetKeysPreOrder(node={Node})", node);
         return result;
     }
 
@@ -360,6 +393,7 @@ public class BinarySearchTree<TKey>
 
         // Use mutable list approach instead of spread operator for better performance
         var result = new List<TKey>();
+		_logger.LogDebug("GetKeysPostOrder(node={Node}): result → {Result}", node, result);
         result.AddRange(GetKeysPostOrder(node.Left));
         result.AddRange(GetKeysPostOrder(node.Right));
         result.Add(node.Key);
@@ -380,6 +414,7 @@ public class BinarySearchTree<TKey>
         }
 
         var compareResult = comparer.Compare(node.Key, key);
+		_logger.LogDebug("Search(node={Node},key={Key}): compareResult → {CompareResult}", node, key, compareResult);
         if (compareResult > 0)
         {
             return Search(node.Left, key);
