@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class PrimeChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Checks if a number is a prime number or not using optimized trial division.
     ///     This method avoids checking multiples of 2 and 3, optimizing the loop by checking
@@ -14,6 +16,7 @@ public static class PrimeChecker
     /// <returns>True if the number is prime; False otherwise.</returns>
     public static bool IsPrime(int number)
     {
+		_logger.LogDebug(">>> Entering IsPrime(number={Number})", number);
         // Numbers less than or equal to 1 are not prime.
         if (number <= 1)
         {
@@ -50,6 +53,7 @@ public static class PrimeChecker
         }
 
         // If no divisors are found, the number is prime.
+		_logger.LogDebug("<<< Exiting IsPrime(number={Number})", number);
         return true;
     }
 }

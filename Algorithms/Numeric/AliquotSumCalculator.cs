@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class AliquotSumCalculator
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the aliquot sum of an integer number.
     /// </summary>
@@ -16,8 +18,10 @@ public static class AliquotSumCalculator
     /// <exception cref="ArgumentException">Error number is not on interval (0.0; int.MaxValue).</exception>
     public static int CalculateAliquotSum(int number)
     {
+		_logger.LogDebug(">>> Entering CalculateAliquotSum(number={Number})", number);
         if (number < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from CalculateAliquotSum(number={Number})", number);
             throw new ArgumentException($"{nameof(number)} cannot be negative");
         }
 
@@ -30,6 +34,7 @@ public static class AliquotSumCalculator
             }
         }
 
+		_logger.LogDebug("<<< Exiting CalculateAliquotSum(number={Number})", number);
         return sum;
     }
 }

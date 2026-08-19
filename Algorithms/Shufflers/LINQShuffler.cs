@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Shufflers;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace Algorithms.Shufflers;
 /// <typeparam name="T">Type array input.</typeparam>
 public class LinqShuffler<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// First, it will generate a random value for each element.
     /// Next, it will sort the elements based on these generated
@@ -17,7 +19,10 @@ public class LinqShuffler<T>
     /// <param name="seed">Random generator seed. Used to repeat the shuffle.</param>
     public T[] Shuffle(T[] array, int? seed = null)
     {
+		_logger.LogDebug(">>> Entering Shuffle(array={Array},seed={Seed})", array, seed);
         var random = seed is null ? new Random() : new Random(seed.Value);
+		_logger.LogDebug("Shuffle(array={Array},seed={Seed}): random → {Random}", array, seed, random);
+		_logger.LogDebug("<<< Exiting Shuffle(array={Array},seed={Seed})", array, seed);
         return array.OrderBy(x => random.Next()).ToArray();
     }
 }

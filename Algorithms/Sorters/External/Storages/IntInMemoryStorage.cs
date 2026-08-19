@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.External.Storages;
 
 public class IntInMemoryStorage(int[] array) : ISequentialStorage<int>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly int[] storage = array;
 
     public int Length => storage.Length;
@@ -17,7 +19,9 @@ public class IntInMemoryStorage(int[] array) : ISequentialStorage<int>
 
         public void Dispose()
         {
+			_logger.LogDebug(">>> Entering Dispose()");
             // Nothing to dispose here
+			_logger.LogDebug("<<< Exiting Dispose()");
         }
 
         public int Read() => storage[offset++];

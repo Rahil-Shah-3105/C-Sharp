@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Tries;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace DataStructures.Tries;
 /// </summary>
 internal class TrieNode
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Initializes a new instance of the <see cref="TrieNode"/> class. This instance was created with a character from the alphabet, and its parent will be null.
     /// </summary>
@@ -12,6 +14,8 @@ internal class TrieNode
     internal TrieNode(char value)
         : this(value, null)
     {
+	_logger.LogDebug(">>> Entering TrieNode(value={Value})", value);
+	_logger.LogDebug("<<< Exiting TrieNode(value={Value})", value);
     }
 
     /// <summary>
@@ -23,7 +27,9 @@ internal class TrieNode
     {
         Children = [];
         Parent = parent;
+		_logger.LogDebug("TrieNode(value={Value},parent={Parent}): Parent → {Parent1}", value, parent, Parent);
         Value = value;
+		_logger.LogDebug("TrieNode(value={Value},parent={Parent}): Value → {Value1}", value, parent, Value);
     }
 
     /// <summary>
@@ -60,6 +66,8 @@ internal class TrieNode
     /// <returns>Returns true if the current node has no children, false otherwise.</returns>
     public bool IsLeaf()
     {
+		_logger.LogDebug(">>> Entering IsLeaf()");
+		_logger.LogDebug("<<< Exiting IsLeaf()");
         return Children.Count == 0;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Problems.GraphColoring;
 
 /// <summary>
@@ -23,6 +24,7 @@ namespace Algorithms.Problems.GraphColoring;
 /// </para>
 /// <para>
 /// <b>Applications:</b> Graph coloring has numerous practical applications including:
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 /// register allocation in compilers, scheduling problems, frequency assignment in mobile networks,
 /// and solving Sudoku puzzles.
 /// </para>
@@ -66,15 +68,19 @@ public sealed class GraphColoringSolver
     /// </remarks>
     public int[] ColorGraph(bool[,] adjacencyMatrix, int numColors)
     {
+		_logger.LogDebug(">>> Entering ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
         if (adjacencyMatrix is null)
         {
+			_logger.LogWarning("Throwing ArgumentNullException from ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
             throw new ArgumentNullException(nameof(adjacencyMatrix));
         }
 
         var numVertices = adjacencyMatrix.GetLength(0);
+		_logger.LogDebug("ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors}): numVertices → {NumVertices}", adjacencyMatrix, numColors, numVertices);
 
         if (numVertices != adjacencyMatrix.GetLength(1))
         {
+			_logger.LogWarning("Throwing ArgumentException from ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
             throw new ArgumentException("Adjacency matrix must be square.", nameof(adjacencyMatrix));
         }
 
@@ -96,6 +102,7 @@ public sealed class GraphColoringSolver
 
         if (!ColorVertex(adjacencyMatrix, colors, 0, numColors))
         {
+		_logger.LogDebug("<<< Exiting ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
             throw new ArgumentException(
                 $"Graph cannot be colored with {numColors} color(s). " +
                 $"A larger number of colors may be required.");
@@ -119,8 +126,10 @@ public sealed class GraphColoringSolver
     /// </remarks>
     private bool ColorVertex(bool[,] adjacencyMatrix, int[] colors, int vertex, int numColors)
     {
+		_logger.LogDebug(">>> Entering ColorVertex(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},numColors={NumColors})", adjacencyMatrix, colors, vertex, numColors);
         var numVertices = adjacencyMatrix.GetLength(0);
 
+		_logger.LogDebug("ColorVertex(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},numColors={NumColors}): numVertices → {NumVertices}", adjacencyMatrix, colors, vertex, numColors, numVertices);
         // Base case: all vertices are colored
         if (vertex == numVertices)
         {
@@ -145,6 +154,7 @@ public sealed class GraphColoringSolver
             }
         }
 
+		_logger.LogDebug("<<< Exiting ColorVertex(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},numColors={NumColors})", adjacencyMatrix, colors, vertex, numColors);
         return false;
     }
 
@@ -165,8 +175,10 @@ public sealed class GraphColoringSolver
     /// </remarks>
     private bool IsSafeToColor(bool[,] adjacencyMatrix, int[] colors, int vertex, int color)
     {
+		_logger.LogDebug(">>> Entering IsSafeToColor(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},color={Color})", adjacencyMatrix, colors, vertex, color);
         var numVertices = adjacencyMatrix.GetLength(0);
 
+		_logger.LogDebug("IsSafeToColor(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},color={Color}): numVertices → {NumVertices}", adjacencyMatrix, colors, vertex, color, numVertices);
         for (var i = 0; i < numVertices; i++)
         {
             // Check if vertex i is adjacent to the current vertex and has the same color
@@ -176,6 +188,7 @@ public sealed class GraphColoringSolver
             }
         }
 
+		_logger.LogDebug("<<< Exiting IsSafeToColor(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},color={Color})", adjacencyMatrix, colors, vertex, color);
         return true;
     }
 }

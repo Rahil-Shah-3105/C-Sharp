@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 ﻿namespace Algorithms.Crypto.Paddings;
 
 /// <summary>
@@ -15,6 +16,7 @@
 /// </summary>
 public class TbcPadding : IBlockCipherPadding
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Adds padding to the input array according to the TBC standard.
     /// </summary>
@@ -24,13 +26,16 @@ public class TbcPadding : IBlockCipherPadding
     /// <exception cref="ArgumentException">Thrown when the input array does not have enough space for padding.</exception>
     public int AddPadding(byte[] input, int inputOffset)
     {
+		_logger.LogDebug(">>> Entering AddPadding(input={Input},inputOffset={InputOffset})", input, inputOffset);
         // Calculate the number of bytes to be padded.
         var count = input.Length - inputOffset;
+		_logger.LogDebug("AddPadding(input={Input},inputOffset={InputOffset}): count → {Count}", input, inputOffset, count);
         byte code;
 
         // Check if the input array has enough space for padding.
         if (count < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from AddPadding(input={Input},inputOffset={InputOffset})", input, inputOffset);
             throw new ArgumentException("Not enough space in input array for padding");
         }
 
@@ -41,6 +46,7 @@ public class TbcPadding : IBlockCipherPadding
 
             // Set the padding code to 0xFF if the last bit is 0, or 0x00 if the last bit is 1.
             code = (byte)(lastBit == 0 ? 0xff : 0x00);
+			_logger.LogDebug("AddPadding(input={Input},inputOffset={InputOffset}): code → {Code}", input, inputOffset, code);
         }
         else
         {
@@ -59,6 +65,7 @@ public class TbcPadding : IBlockCipherPadding
         }
 
         // Return the number of bytes that were padded.
+		_logger.LogDebug("<<< Exiting AddPadding(input={Input},inputOffset={InputOffset})", input, inputOffset);
         return count;
     }
 
@@ -75,6 +82,7 @@ public class TbcPadding : IBlockCipherPadding
     /// </remarks>
     public byte[] RemovePadding(byte[] input)
     {
+		_logger.LogDebug(">>> Entering RemovePadding(input={Input})", input);
         if (input.Length == 0)
         {
             return Array.Empty<byte>();
@@ -85,6 +93,7 @@ public class TbcPadding : IBlockCipherPadding
 
         // Determine the byte code
         var code = (byte)((lastByte & 0x01) == 0 ? 0x00 : 0xff);
+		_logger.LogDebug("RemovePadding(input={Input}): code → {Code}", input, code);
 
         // Start from the end of the array and move towards the front.
         int i;
@@ -104,6 +113,7 @@ public class TbcPadding : IBlockCipherPadding
         Array.Copy(input, unpadded, i + 1);
 
         // Return the new array.
+		_logger.LogDebug("<<< Exiting RemovePadding(input={Input})", input);
         return unpadded;
     }
 
@@ -121,10 +131,12 @@ public class TbcPadding : IBlockCipherPadding
     /// </remarks>
     public int GetPaddingCount(byte[] input)
     {
+		_logger.LogDebug(">>> Entering GetPaddingCount(input={Input})", input);
         var length = input.Length;
 
         if (length == 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from GetPaddingCount(input={Input})", input);
             throw new ArgumentException("No padding found.");
         }
 
@@ -146,6 +158,7 @@ public class TbcPadding : IBlockCipherPadding
 
             // Calculate matchMask. If currentByte equals paddingValue, matchMask will be 0, otherwise -1
             var matchMask = ((currentByte ^ paddingValue) - 1) >> 31;
+			_logger.LogDebug("GetPaddingCount(input={Input}): matchMask → {MatchMask}", input, matchMask);
 
             // Update countingMask. Once a non-matching byte is found, countingMask will remain -1
             countingMask &= matchMask;
@@ -154,6 +167,7 @@ public class TbcPadding : IBlockCipherPadding
             paddingCount -= countingMask;
         }
 
+		_logger.LogDebug("<<< Exiting GetPaddingCount(input={Input})", input);
         return paddingCount;
     }
 }

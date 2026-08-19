@@ -1,12 +1,15 @@
 using Algorithms.Sequences;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Sequences;
 
 public class DivisorsCountSequenceTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void First10ElementsCorrect()
     {
+		_logger.LogDebug(">>> Entering First10ElementsCorrect()");
         // These values are taken from https://oeis.org/A000005 for comparison.
         BigInteger[] oeisSource =
         [
@@ -21,6 +24,8 @@ public class DivisorsCountSequenceTests
         ];
 
         var sequence = new DivisorsCountSequence().Sequence.Take(oeisSource.Length);
+		_logger.LogDebug("First10ElementsCorrect(): sequence → {Sequence}", sequence);
         sequence.SequenceEqual(oeisSource).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting First10ElementsCorrect()");
     }
 }

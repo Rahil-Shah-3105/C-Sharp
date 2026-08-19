@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class DecisionsConvolutions
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// This method implements the linear method of decision selection. It is based on
     /// the calculation of the "value" for each decision and the selection of the most
@@ -17,8 +19,10 @@ public static class DecisionsConvolutions
     /// <returns>The most effective decision that is represented by a set of criterias.</returns>
     public static List<decimal> Linear(List<List<decimal>> matrix, List<decimal> priorities)
     {
+		_logger.LogDebug(">>> Entering Linear(matrix={Matrix},priorities={Priorities})", matrix, priorities);
         var decisionValues = new List<decimal>();
 
+		_logger.LogDebug("Linear(matrix={Matrix},priorities={Priorities}): decisionValues → {DecisionValues}", matrix, priorities, decisionValues);
         foreach (var decision in matrix)
         {
             decimal sum = 0;
@@ -32,7 +36,9 @@ public static class DecisionsConvolutions
 
         decimal bestDecisionValue = decisionValues.Max();
         int bestDecisionIndex = decisionValues.IndexOf(bestDecisionValue);
+		_logger.LogDebug("Linear(matrix={Matrix},priorities={Priorities}): bestDecisionIndex → {BestDecisionIndex}", matrix, priorities, bestDecisionIndex);
 
+		_logger.LogDebug("<<< Exiting Linear(matrix={Matrix},priorities={Priorities})", matrix, priorities);
         return matrix[bestDecisionIndex];
     }
 
@@ -46,11 +52,14 @@ public static class DecisionsConvolutions
     /// <returns>The most effective decision that is represented by a set of criterias.</returns>
     public static List<decimal> MaxMin(List<List<decimal>> matrix, List<decimal> priorities)
     {
+		_logger.LogDebug(">>> Entering MaxMin(matrix={Matrix},priorities={Priorities})", matrix, priorities);
         var decisionValues = new List<decimal>();
 
+		_logger.LogDebug("MaxMin(matrix={Matrix},priorities={Priorities}): decisionValues → {DecisionValues}", matrix, priorities, decisionValues);
         foreach (var decision in matrix)
         {
             decimal minValue = decimal.MaxValue;
+			_logger.LogDebug("MaxMin(matrix={Matrix},priorities={Priorities}): minValue → {MinValue}", matrix, priorities, minValue);
             for (int i = 0; i < decision.Count; i++)
             {
                 decimal result = decision[i] * priorities[i];
@@ -65,7 +74,9 @@ public static class DecisionsConvolutions
 
         decimal bestDecisionValue = decisionValues.Max();
         int bestDecisionIndex = decisionValues.IndexOf(bestDecisionValue);
+		_logger.LogDebug("MaxMin(matrix={Matrix},priorities={Priorities}): bestDecisionIndex → {BestDecisionIndex}", matrix, priorities, bestDecisionIndex);
 
+		_logger.LogDebug("<<< Exiting MaxMin(matrix={Matrix},priorities={Priorities})", matrix, priorities);
         return matrix[bestDecisionIndex];
     }
 }

@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 ﻿namespace Algorithms.Strings.Similarity;
 
 public static class DamerauLevenshteinDistance
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Calculates the Damerau-Levenshtein distance between two strings.
     /// The Damerau-Levenshtein distance is a string metric for measuring the difference between two sequences.
@@ -13,12 +15,14 @@ public static class DamerauLevenshteinDistance
     /// <returns>The Damerau-Levenshtein distance between the two strings.</returns>
     public static int Calculate(string left, string right)
     {
+		_logger.LogDebug(">>> Entering Calculate(left={Left},right={Right})", left, right);
         // Get the lengths of the input strings.
         var leftSize = left.Length;
         var rightSize = right.Length;
 
         // Initialize a matrix of distances between the two strings.
         var distances = InitializeDistanceArray(leftSize, rightSize);
+		_logger.LogDebug("Calculate(left={Left},right={Right}): distances → {Distances}", left, right, distances);
 
         // Iterate over each character in the left string.
         for (var i = 1; i < leftSize + 1; i++)
@@ -53,6 +57,7 @@ public static class DamerauLevenshteinDistance
         }
 
         // Return the distance between the two strings.
+		_logger.LogDebug("<<< Exiting Calculate(left={Left},right={Right})", left, right);
         return distances[leftSize, rightSize];
     }
 
@@ -79,6 +84,7 @@ public static class DamerauLevenshteinDistance
     /// <returns>A matrix of distances.</returns>
     private static int[,] InitializeDistanceArray(int leftSize, int rightSize)
     {
+		_logger.LogDebug(">>> Entering InitializeDistanceArray(leftSize={LeftSize},rightSize={RightSize})", leftSize, rightSize);
         // Initialize a matrix of distances with dimensions one larger than the input strings.
         var matrix = new int[leftSize + 1, rightSize + 1];
 
@@ -97,6 +103,7 @@ public static class DamerauLevenshteinDistance
         }
 
         // Return the initialized matrix of distances.
+		_logger.LogDebug("<<< Exiting InitializeDistanceArray(leftSize={LeftSize},rightSize={RightSize})", leftSize, rightSize);
         return matrix;
     }
 }

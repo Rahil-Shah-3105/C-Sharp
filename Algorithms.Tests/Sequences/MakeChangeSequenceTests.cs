@@ -1,12 +1,15 @@
 using Algorithms.Sequences;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Sequences;
 
 public class MakeChangeSequenceTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void First100ElementsCorrect()
     {
+		_logger.LogDebug(">>> Entering First100ElementsCorrect()");
         // Values from https://oeis.org/A000008/b000008.txt
         var test = new BigInteger[]
                    {
@@ -23,6 +26,8 @@ public class MakeChangeSequenceTests
                    };
 
         var sequence = new MakeChangeSequence().Sequence.Take(test.Length);
+		_logger.LogDebug("First100ElementsCorrect(): sequence → {Sequence}", sequence);
         sequence.SequenceEqual(test).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting First100ElementsCorrect()");
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.LinearAlgebra.Distances;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.LinearAlgebra.Distances;
 /// </summary>
 public static class Chebyshev
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Calculate Chebyshev distance for two N-Dimensional points.
     /// </summary>
@@ -17,8 +19,11 @@ public static class Chebyshev
     /// <returns>Calculated Chebyshev distance.</returns>
     public static double Distance(double[] point1, double[] point2)
     {
+		_logger.LogDebug(">>> Entering Distance(point1={Point1},point2={Point2})", point1, point2);
         if (point1.Length != point2.Length)
         {
+			_logger.LogWarning("Throwing ArgumentException from Distance(point1={Point1},point2={Point2})", point1, point2);
+		_logger.LogDebug("<<< Exiting Distance(point1={Point1},point2={Point2})", point1, point2);
             throw new ArgumentException("Both points should have the same dimensionality");
         }
 

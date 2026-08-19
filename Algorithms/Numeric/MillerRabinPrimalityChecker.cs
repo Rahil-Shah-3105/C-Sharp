@@ -1,8 +1,10 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
 /// https://en.wikipedia.org/wiki/Miller-Rabin_primality_test
 /// The Miller–Rabin primality test or Rabin–Miller primality test is a probabilistic primality test:
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 /// an algorithm which determines whether a given number is likely to be prime,
 /// similar to the Fermat primality test and the Solovay–Strassen primality test.
 /// It is of historical significance in the search for a polynomial-time deterministic primality test.
@@ -20,9 +22,11 @@ public static class MillerRabinPrimalityChecker
     /// <exception cref="ArgumentException">Error: number should be more than 3.</exception>
     public static bool IsProbablyPrimeNumber(BigInteger n, BigInteger rounds, int? seed = null)
     {
+		_logger.LogDebug(">>> Entering IsProbablyPrimeNumber(n={N},rounds={Rounds},seed={Seed})", n, rounds, seed);
         Random rand = seed is null
             ? new()
             : new(seed.Value);
+		_logger.LogDebug("<<< Exiting IsProbablyPrimeNumber(n={N},rounds={Rounds},rand={Rand})", n, rounds, rand);
         return IsProbablyPrimeNumber(n, rounds, rand);
     }
 

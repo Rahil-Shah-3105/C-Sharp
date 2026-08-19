@@ -1,22 +1,31 @@
 using Algorithms.Graph.Dijkstra;
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Graph.Dijkstra;
 
 [TestFixture]
 public class DijkstraTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void DijkstraTest1_Success()
     {
+		_logger.LogDebug(">>> Entering DijkstraTest1_Success()");
         // here test case is from https://www.youtube.com/watch?v=pVfj6mxhdMw
 
         var graph = new DirectedWeightedGraph<char>(5);
+		_logger.LogDebug("DijkstraTest1_Success(): graph → {Graph}", graph);
         var a = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraTest1_Success(): a → {A}", a);
         var b = graph.AddVertex('B');
+		_logger.LogDebug("DijkstraTest1_Success(): b → {B}", b);
         var c = graph.AddVertex('C');
+		_logger.LogDebug("DijkstraTest1_Success(): c → {C}", c);
         var d = graph.AddVertex('D');
+		_logger.LogDebug("DijkstraTest1_Success(): d → {D}", d);
         var e = graph.AddVertex('E');
+		_logger.LogDebug("DijkstraTest1_Success(): e → {E}", e);
 
         graph.AddEdge(a, b, 6);
         graph.AddEdge(b, a, 6);
@@ -40,6 +49,7 @@ public class DijkstraTests
         graph.AddEdge(b, c, 5);
 
         var shortestPathList = DijkstraAlgorithm.GenerateShortestPath(graph, a);
+		_logger.LogDebug("DijkstraTest1_Success(): shortestPathList → {ShortestPathList}", shortestPathList);
         shortestPathList.Length.Should().Be(5);
 
         shortestPathList[0].Vertex.Should().Be(a);
@@ -71,15 +81,21 @@ public class DijkstraTests
         shortestPathList[4].PreviousVertex.Should().Be(d);
         shortestPathList[4].ToString().Should()
             .Be($"Vertex: {e} - Distance: {2} - Previous: {d}");
+			_logger.LogDebug("<<< Exiting DijkstraTest1_Success()");
     }
 
     [Test]
     public void DijkstraTest2_Success()
     {
+		_logger.LogDebug(">>> Entering DijkstraTest2_Success()");
         var graph = new DirectedWeightedGraph<char>(5);
         var a = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraTest2_Success(): a → {A}", a);
         var b = graph.AddVertex('B');
+		_logger.LogDebug("DijkstraTest2_Success(): b → {B}", b);
         var c = graph.AddVertex('C');
+		_logger.LogDebug("DijkstraTest2_Success(): c → {C}", c);
+		_logger.LogDebug("DijkstraTest2_Success(): graph → {Graph}", graph);
 
         graph.AddEdge(a, b, 1);
         graph.AddEdge(b, a, 1);
@@ -91,6 +107,7 @@ public class DijkstraTests
         graph.AddEdge(c, a, 3);
 
         var shortestPathList = DijkstraAlgorithm.GenerateShortestPath(graph, a);
+		_logger.LogDebug("DijkstraTest2_Success(): shortestPathList → {ShortestPathList}", shortestPathList);
 
         shortestPathList.Length.Should().Be(3);
         shortestPathList[0].Vertex.Should().Be(a);
@@ -110,15 +127,21 @@ public class DijkstraTests
         shortestPathList[2].PreviousVertex.Should().Be(b);
         shortestPathList[2].ToString().Should()
             .Be($"Vertex: {c} - Distance: {2} - Previous: {b}");
+			_logger.LogDebug("<<< Exiting DijkstraTest2_Success()");
     }
 
     [Test]
     public void DijkstraTest3_Success()
     {
+		_logger.LogDebug(">>> Entering DijkstraTest3_Success()");
         var graph = new DirectedWeightedGraph<char>(5);
         var a = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraTest3_Success(): a → {A}", a);
         var b = graph.AddVertex('B');
+		_logger.LogDebug("DijkstraTest3_Success(): b → {B}", b);
         var c = graph.AddVertex('C');
+		_logger.LogDebug("DijkstraTest3_Success(): c → {C}", c);
+		_logger.LogDebug("DijkstraTest3_Success(): graph → {Graph}", graph);
 
         graph.AddEdge(a, b, 1);
         graph.AddEdge(b, a, 1);
@@ -127,6 +150,7 @@ public class DijkstraTests
         graph.AddEdge(c, a, 3);
 
         var shortestPathList = DijkstraAlgorithm.GenerateShortestPath(graph, a);
+		_logger.LogDebug("DijkstraTest3_Success(): shortestPathList → {ShortestPathList}", shortestPathList);
 
         shortestPathList.Length.Should().Be(3);
         shortestPathList[0].Vertex.Should().Be(a);
@@ -146,16 +170,23 @@ public class DijkstraTests
         shortestPathList[2].PreviousVertex.Should().Be(a);
         shortestPathList[2].ToString().Should()
             .Be($"Vertex: {c} - Distance: {3} - Previous: {a}");
+			_logger.LogDebug("<<< Exiting DijkstraTest3_Success()");
     }
 
     [Test]
     public void DijkstraTest4_Success()
     {
+		_logger.LogDebug(">>> Entering DijkstraTest4_Success()");
         var graph = new DirectedWeightedGraph<char>(5);
         var a = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraTest4_Success(): a → {A}", a);
         var b = graph.AddVertex('B');
+		_logger.LogDebug("DijkstraTest4_Success(): b → {B}", b);
         var c = graph.AddVertex('C');
+		_logger.LogDebug("DijkstraTest4_Success(): c → {C}", c);
         var d = graph.AddVertex('D');
+		_logger.LogDebug("DijkstraTest4_Success(): d → {D}", d);
+		_logger.LogDebug("DijkstraTest4_Success(): graph → {Graph}", graph);
 
         graph.AddEdge(a, b, 1);
         graph.AddEdge(b, a, 1);
@@ -167,6 +198,7 @@ public class DijkstraTests
         graph.AddEdge(d, c, 5);
 
         var shortestPathList = DijkstraAlgorithm.GenerateShortestPath(graph, a);
+		_logger.LogDebug("DijkstraTest4_Success(): shortestPathList → {ShortestPathList}", shortestPathList);
 
         shortestPathList.Length.Should().Be(4);
         shortestPathList[0].Vertex.Should().Be(a);
@@ -192,21 +224,31 @@ public class DijkstraTests
         shortestPathList[3].PreviousVertex.Should().Be(c);
         shortestPathList[3].ToString().Should()
             .Be($"Vertex: {d} - Distance: {8} - Previous: {c}");
+			_logger.LogDebug("<<< Exiting DijkstraTest4_Success()");
     }
 
     [Test]
     public void DijkstraTest5_Success()
     {
+		_logger.LogDebug(">>> Entering DijkstraTest5_Success()");
         // here test case is from https://www.youtube.com/watch?v=pVfj6mxhdMw
 
         var graph = new DirectedWeightedGraph<char>(7);
+		_logger.LogDebug("DijkstraTest5_Success(): graph → {Graph}", graph);
         var a = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraTest5_Success(): a → {A}", a);
         var b = graph.AddVertex('B');
+		_logger.LogDebug("DijkstraTest5_Success(): b → {B}", b);
         var c = graph.AddVertex('C');
+		_logger.LogDebug("DijkstraTest5_Success(): c → {C}", c);
         var d = graph.AddVertex('D');
+		_logger.LogDebug("DijkstraTest5_Success(): d → {D}", d);
         var e = graph.AddVertex('E');
+		_logger.LogDebug("DijkstraTest5_Success(): e → {E}", e);
         var w = graph.AddVertex('W');
+		_logger.LogDebug("DijkstraTest5_Success(): w → {W}", w);
         var z = graph.AddVertex('Z');
+		_logger.LogDebug("DijkstraTest5_Success(): z → {Z}", z);
 
         graph.AddEdge(a, b, 6);
         graph.AddEdge(b, a, 6);
@@ -236,6 +278,7 @@ public class DijkstraTests
         graph.AddEdge(z, w, 1);
 
         var shortestPathList = DijkstraAlgorithm.GenerateShortestPath(graph, a);
+		_logger.LogDebug("DijkstraTest5_Success(): shortestPathList → {ShortestPathList}", shortestPathList);
         shortestPathList.Length.Should().Be(7);
 
         shortestPathList[0].Vertex.Should().Be(a);
@@ -279,16 +322,23 @@ public class DijkstraTests
         shortestPathList[6].PreviousVertex.Should().Be(w);
         shortestPathList[6].ToString().Should()
             .Be($"Vertex: {z} - Distance: {51} - Previous: {w}");
+			_logger.LogDebug("<<< Exiting DijkstraTest5_Success()");
     }
 
     [Test]
     public void DijkstraTest6_Success()
     {
+		_logger.LogDebug(">>> Entering DijkstraTest6_Success()");
         var graph = new DirectedWeightedGraph<char>(5);
         var a = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraTest6_Success(): a → {A}", a);
         var b = graph.AddVertex('B');
+		_logger.LogDebug("DijkstraTest6_Success(): b → {B}", b);
         var c = graph.AddVertex('C');
+		_logger.LogDebug("DijkstraTest6_Success(): c → {C}", c);
         var d = graph.AddVertex('D');
+		_logger.LogDebug("DijkstraTest6_Success(): d → {D}", d);
+		_logger.LogDebug("DijkstraTest6_Success(): graph → {Graph}", graph);
 
         graph.AddEdge(a, b, 1);
         graph.AddEdge(b, a, 1);
@@ -297,6 +347,7 @@ public class DijkstraTests
         graph.AddEdge(d, c, 5);
 
         var shortestPathList = DijkstraAlgorithm.GenerateShortestPath(graph, a);
+		_logger.LogDebug("DijkstraTest6_Success(): shortestPathList → {ShortestPathList}", shortestPathList);
 
         shortestPathList.Length.Should().Be(4);
         shortestPathList[0].Vertex.Should().Be(a);
@@ -322,30 +373,39 @@ public class DijkstraTests
         shortestPathList[3].PreviousVertex.Should().BeNull();
         shortestPathList[3].ToString().Should()
             .Be($"Vertex: {d} - Distance: {double.MaxValue} - Previous: {null}");
+			_logger.LogDebug("<<< Exiting DijkstraTest6_Success()");
     }
 
     [Test]
     public void DijkstraMethodTest_ShouldThrow_GraphIsNull()
     {
+		_logger.LogDebug(">>> Entering DijkstraMethodTest_ShouldThrow_GraphIsNull()");
         var graph = new DirectedWeightedGraph<char>(5);
         var a = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraMethodTest_ShouldThrow_GraphIsNull(): a → {A}", a);
+		_logger.LogDebug("DijkstraMethodTest_ShouldThrow_GraphIsNull(): graph → {Graph}", graph);
 
         Func<DistanceModel<char>[]> action = () => DijkstraAlgorithm.GenerateShortestPath(null!, a);
 
         action.Should().Throw<ArgumentNullException>()
             .WithMessage($"Value cannot be null. (Parameter '{nameof(graph)}')");
+			_logger.LogDebug("<<< Exiting DijkstraMethodTest_ShouldThrow_GraphIsNull()");
     }
 
     [Test]
     public void DijkstraMethodTest_ShouldThrow_VertexDoesntBelongToGraph()
     {
+		_logger.LogDebug(">>> Entering DijkstraMethodTest_ShouldThrow_VertexDoesntBelongToGraph()");
         var graph = new DirectedWeightedGraph<char>(5);
         var startVertex = graph.AddVertex('A');
+		_logger.LogDebug("DijkstraMethodTest_ShouldThrow_VertexDoesntBelongToGraph(): startVertex → {StartVertex}", startVertex);
+		_logger.LogDebug("DijkstraMethodTest_ShouldThrow_VertexDoesntBelongToGraph(): graph → {Graph}", graph);
 
         Func<DistanceModel<char>[]> action = () => DijkstraAlgorithm.GenerateShortestPath(
             new DirectedWeightedGraph<char>(5), startVertex);
 
         action.Should().Throw<ArgumentNullException>()
             .WithMessage($"Value cannot be null. (Parameter '{nameof(graph)}')");
+			_logger.LogDebug("<<< Exiting DijkstraMethodTest_ShouldThrow_VertexDoesntBelongToGraph()");
     }
 }
