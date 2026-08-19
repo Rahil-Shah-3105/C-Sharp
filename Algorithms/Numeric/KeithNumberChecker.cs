@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class KeithNumberChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Checks if a number is a Keith number or not.
     /// </summary>
@@ -14,14 +16,17 @@ public static class KeithNumberChecker
     /// <returns>True if it is a Keith number; False otherwise.</returns>
     public static bool IsKeithNumber(int number)
     {
+		_logger.LogDebug(">>> Entering IsKeithNumber(number={Number})", number);
         if (number < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from IsKeithNumber(number={Number})", number);
             throw new ArgumentException($"{nameof(number)} cannot be negative");
         }
 
         var tempNumber = number;
 
         var stringNumber = number.ToString();
+		_logger.LogDebug("IsKeithNumber(number={Number}): stringNumber → {StringNumber}", number, stringNumber);
 
         var digitsInNumber = stringNumber.Length;
 
@@ -49,6 +54,7 @@ public static class KeithNumberChecker
             k++;
         }
 
+		_logger.LogDebug("<<< Exiting IsKeithNumber(number={Number})", number);
         return sum == number;
     }
 }

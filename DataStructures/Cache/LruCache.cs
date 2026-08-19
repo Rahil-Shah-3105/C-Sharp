@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Cache;
 
 /// <summary>
@@ -29,6 +30,7 @@ namespace DataStructures.Cache;
 /// <param name="capacity">The max number of items the cache can store.</param>
 public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.DefaultCapacity) where TKey : notnull
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private class CachedItem
     {
         public TKey Key { get; set; } = default!;
@@ -55,6 +57,7 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
     /// <remarks> Time complexity: O(1). </remarks>
     public TValue? Get(TKey key)
     {
+		_logger.LogDebug(">>> Entering Get(key={Key})", key);
         if (!cache.ContainsKey(key))
         {
             return default;
@@ -64,6 +67,7 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
         lruList.Remove(node);
         lruList.AddLast(node);
 
+		_logger.LogDebug("<<< Exiting Get(key={Key})", key);
         return node.Value.Value;
     }
 
@@ -80,6 +84,7 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
     /// </remarks>
     public void Put(TKey key, TValue value)
     {
+		_logger.LogDebug(">>> Entering Put(key={Key},value={Value})", key, value);
         if (cache.ContainsKey(key))
         {
             var existingNode = cache[key];
@@ -98,6 +103,8 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
 
         var item = new CachedItem { Key = key, Value = value };
         var newNode = lruList.AddLast(item);
+		_logger.LogDebug("Put(key={Key},value={Value}): newNode → {NewNode}", key, value, newNode);
         cache.Add(key, newNode);
+		_logger.LogDebug("<<< Exiting Put(key={Key},value={Value})", key, value);
     }
 }

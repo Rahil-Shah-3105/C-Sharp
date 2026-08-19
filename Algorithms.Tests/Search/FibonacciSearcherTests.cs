@@ -1,53 +1,72 @@
 using Algorithms.Search;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Search;
 
 public static class FibonacciSearcherTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void FindIndex_ItemPresent_IndexCorrect([Random(1, 1000, 10)] int n)
     {
+		_logger.LogDebug(">>> Entering FindIndex_ItemPresent_IndexCorrect(n={N})", n);
         // Arranges
         var searcher = new FibonacciSearcher<int>();
+		_logger.LogDebug("FindIndex_ItemPresent_IndexCorrect(n={N}): searcher → {Searcher}", n, searcher);
         var arrayToSearch = Helper.GetSortedArray(n);
+		_logger.LogDebug("FindIndex_ItemPresent_IndexCorrect(n={N}): arrayToSearch → {ArrayToSearch}", n, arrayToSearch);
         var present = Helper.GetItemIn(arrayToSearch);
+		_logger.LogDebug("FindIndex_ItemPresent_IndexCorrect(n={N}): present → {Present}", n, present);
 
         // Act
         var actualIndex = searcher.FindIndex(arrayToSearch, present);
+		_logger.LogDebug("FindIndex_ItemPresent_IndexCorrect(n={N}): actualIndex → {ActualIndex}", n, actualIndex);
 
         // Assert
         arrayToSearch[actualIndex].Should().Be(present);
+		_logger.LogDebug("<<< Exiting FindIndex_ItemPresent_IndexCorrect(n={N})", n);
     }
 
     [Test]
     public static void FindIndex_ItemMissing_MinusOneReturned([Random(1, 1000, 10)] int n)
     {
+		_logger.LogDebug(">>> Entering FindIndex_ItemMissing_MinusOneReturned(n={N})", n);
         // Arranges
         var searcher = new FibonacciSearcher<int>();
+		_logger.LogDebug("FindIndex_ItemMissing_MinusOneReturned(n={N}): searcher → {Searcher}", n, searcher);
         var arrayToSearch = Helper.GetSortedArray(n);
+		_logger.LogDebug("FindIndex_ItemMissing_MinusOneReturned(n={N}): arrayToSearch → {ArrayToSearch}", n, arrayToSearch);
         var present = Helper.GetItemNotIn(arrayToSearch);
+		_logger.LogDebug("FindIndex_ItemMissing_MinusOneReturned(n={N}): present → {Present}", n, present);
         var expectedIndex = -1;
 
         // Act
         var actualIndex = searcher.FindIndex(arrayToSearch, present);
+		_logger.LogDebug("FindIndex_ItemMissing_MinusOneReturned(n={N}): actualIndex → {ActualIndex}", n, actualIndex);
 
         // Assert
         actualIndex.Should().Be(expectedIndex);
+		_logger.LogDebug("<<< Exiting FindIndex_ItemMissing_MinusOneReturned(n={N})", n);
     }
 
     [Test]
     public static void FindIndex_ArrayEmpty_MinusOneReturned([Random(1, 1000, 10)] int missingItem)
     {
+		_logger.LogDebug(">>> Entering FindIndex_ArrayEmpty_MinusOneReturned(missingItem={MissingItem})", missingItem);
         // Arrange
         var searcher = new FibonacciSearcher<int>();
+		_logger.LogDebug("FindIndex_ArrayEmpty_MinusOneReturned(missingItem={MissingItem}): searcher → {Searcher}", missingItem, searcher);
         var sortedArray = Array.Empty<int>();
+		_logger.LogDebug("FindIndex_ArrayEmpty_MinusOneReturned(missingItem={MissingItem}): sortedArray → {SortedArray}", missingItem, sortedArray);
         var expectedIndex = -1;
 
         // Act
         var actualIndex = searcher.FindIndex(sortedArray, missingItem);
+		_logger.LogDebug("FindIndex_ArrayEmpty_MinusOneReturned(missingItem={MissingItem}): actualIndex → {ActualIndex}", missingItem, actualIndex);
 
         // Assert
         actualIndex.Should().Be(expectedIndex);
+		_logger.LogDebug("<<< Exiting FindIndex_ArrayEmpty_MinusOneReturned(missingItem={MissingItem})", missingItem);
     }
 
     [TestCase(null, "a")]
@@ -55,13 +74,17 @@ public static class FibonacciSearcherTests
     [TestCase(null, null)]
     public static void FindIndex_ArrayNull_ItemNull_ArgumentNullExceptionThrown(string[] sortedArray, string searchItem)
     {
+		_logger.LogDebug(">>> Entering FindIndex_ArrayNull_ItemNull_ArgumentNullExceptionThrown(sortedArray={SortedArray},searchItem={SearchItem})", sortedArray, searchItem);
         // Arranges
         var searcher = new FibonacciSearcher<string>();
+		_logger.LogDebug("FindIndex_ArrayNull_ItemNull_ArgumentNullExceptionThrown(sortedArray={SortedArray},searchItem={SearchItem}): searcher → {Searcher}", sortedArray, searchItem, searcher);
 
         // Act
         Action action = () => searcher.FindIndex(sortedArray, searchItem);
+		_logger.LogDebug("FindIndex_ArrayNull_ItemNull_ArgumentNullExceptionThrown(sortedArray={SortedArray},searchItem={SearchItem}): action → {Action}", sortedArray, searchItem, action);
 
         // Assert
         action.Should().Throw<ArgumentNullException>();
+		_logger.LogDebug("<<< Exiting FindIndex_ArrayNull_ItemNull_ArgumentNullExceptionThrown(sortedArray={SortedArray},searchItem={SearchItem})", sortedArray, searchItem);
     }
 }

@@ -1,4 +1,5 @@
 using Utilities.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Search;
 
@@ -8,6 +9,7 @@ namespace Algorithms.Search;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class LinearSearcher<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds first item in array that satisfies specified term
     ///     Time complexity: O(n)
@@ -18,6 +20,7 @@ public class LinearSearcher<T>
     /// <returns>First item that satisfies term.</returns>
     public T Find(T[] data, Func<T, bool> term)
     {
+		_logger.LogDebug(">>> Entering Find(data={Data},term={Term})", data, term);
         for (var i = 0; i < data.Length; i++)
         {
             if (term(data[i]))
@@ -26,6 +29,8 @@ public class LinearSearcher<T>
             }
         }
 
+		_logger.LogWarning("Throwing ItemNotFoundException from Find(data={Data},term={Term})", data, term);
+		_logger.LogDebug("<<< Exiting Find(data={Data},term={Term})", data, term);
         throw new ItemNotFoundException();
     }
 
@@ -39,6 +44,7 @@ public class LinearSearcher<T>
     /// <returns>Index of first item that satisfies term or -1 if none found.</returns>
     public int FindIndex(T[] data, Func<T, bool> term)
     {
+		_logger.LogDebug(">>> Entering FindIndex(data={Data},term={Term})", data, term);
         for (var i = 0; i < data.Length; i++)
         {
             if (term(data[i]))
@@ -47,6 +53,7 @@ public class LinearSearcher<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindIndex(data={Data},term={Term})", data, term);
         return -1;
     }
 }

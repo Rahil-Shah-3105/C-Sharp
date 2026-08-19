@@ -115,6 +115,7 @@
 // assumes: the input bit-arrays must have same length.
 
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures;
 
@@ -125,6 +126,7 @@ namespace DataStructures;
 /// </summary>
 public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly bool[] field; // the actual bit-field
     private int position = -1; // position for enumerator
 
@@ -135,7 +137,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <param name="n">length of the array.</param>
     public BitArray(int n)
     {
+		_logger.LogDebug(">>> Entering BitArray(n={N})", n);
         field = n <= 0 ? new bool[0] : new bool[n];
+		_logger.LogDebug("<<< Exiting BitArray(n={N})", n);
     }
 
     /// <summary>
@@ -148,9 +152,11 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <param name="sequence">A string sequence of 0's and 1's.</param>
     public BitArray(string sequence)
     {
+		_logger.LogDebug(">>> Entering BitArray(sequence={Sequence})", sequence);
         // precondition I
         if (sequence.Length <= 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from BitArray(sequence={Sequence})", sequence);
             throw new ArgumentException("Sequence must been greater than or equal to 1");
         }
 
@@ -158,7 +164,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
         ThrowIfSequenceIsInvalid(sequence);
 
         field = new bool[sequence.Length];
+		_logger.LogDebug("BitArray(sequence={Sequence}): field → {Field}", sequence, field);
         Compile(sequence);
+		_logger.LogDebug("<<< Exiting BitArray(sequence={Sequence})", sequence);
     }
 
     /// <summary>
@@ -190,13 +198,16 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>Bit-array clone.</returns>
     public object Clone()
     {
+		_logger.LogDebug(">>> Entering Clone()");
         var theClone = new BitArray(Length);
 
+		_logger.LogDebug("Clone(): theClone → {TheClone}", theClone);
         for (var i = 0; i < Length; i++)
         {
             theClone[i] = field[i];
         }
 
+		_logger.LogDebug("<<< Exiting Clone()");
         return theClone;
     }
 
@@ -228,12 +239,14 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>Returns True if 'position' successful increased; False otherwise.</returns>
     public bool MoveNext()
     {
+		_logger.LogDebug(">>> Entering MoveNext()");
         if (position + 1 >= field.Length)
         {
             return false;
         }
 
         position++;
+		_logger.LogDebug("<<< Exiting MoveNext()");
         return true;
     }
 
@@ -248,7 +261,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// </summary>
     public void Dispose()
     {
+		_logger.LogDebug(">>> Entering Dispose()");
         // Done
+		_logger.LogDebug("<<< Exiting Dispose()");
     }
 
     /// <summary>
@@ -530,9 +545,11 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <param name="sequence">A string sequence of 0's and 1's.</param>
     public void Compile(string sequence)
     {
+		_logger.LogDebug(">>> Entering Compile(sequence={Sequence})", sequence);
         // precondition I
         if (sequence.Length > field.Length)
         {
+			_logger.LogWarning("Throwing ArgumentException from Compile(sequence={Sequence})", sequence);
             throw new ArgumentException($"{nameof(sequence)} must be not longer than the bit array length");
         }
 
@@ -544,6 +561,7 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
         {
             var difference = field.Length - sequence.Length;
             sequence = new string('0', difference) + sequence;
+			_logger.LogDebug("Compile(sequence={Sequence}): sequence → {Sequence1}", sequence, sequence);
         }
 
         // actual compile procedure.
@@ -551,6 +569,7 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
         {
             field[i] = sequence[i] == '1';
         }
+		_logger.LogDebug("<<< Exiting Compile(sequence={Sequence})", sequence);
     }
 
     /// <summary>
@@ -587,6 +606,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
         {
             field[i] = binaryNumber[i] == '1';
         }
+		_logger.LogDebug(">>> Entering Compile(number={Number})", number);
+		_logger.LogWarning("Throwing ArgumentException from Compile(number={Number})", number);
+		_logger.LogDebug("<<< Exiting Compile(number={Number})", number);
     }
 
     /// <summary>
@@ -599,11 +621,13 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
         // precondition I
         if (number <= 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from Compile(number={Number})", number);
             throw new ArgumentException($"{nameof(number)} must be positive");
         }
 
         // converts to binary representation
         var binaryNumber = Convert.ToString(number, 2);
+		_logger.LogDebug("Compile(number={Number}): binaryNumber → {BinaryNumber}", number, binaryNumber);
 
         // precondition II
         if (binaryNumber.Length > field.Length)
@@ -631,7 +655,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>Returns a string representation of the inner data structure.</returns>
     public override string ToString()
     {
+		_logger.LogDebug(">>> Entering ToString()");
         // creates return-string
+		_logger.LogDebug("<<< Exiting ToString()");
         return field.Aggregate(string.Empty, (current, t) => current + (t ? "1" : "0"));
     }
 
@@ -641,7 +667,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>quantity of bits in current bit-array.</returns>
     public int NumberOfOneBits()
     {
+		_logger.LogDebug(">>> Entering NumberOfOneBits()");
         // counting one-bits.
+		_logger.LogDebug("<<< Exiting NumberOfOneBits()");
         return field.Count(bit => bit);
     }
 
@@ -651,7 +679,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>quantity of bits.</returns>
     public int NumberOfZeroBits()
     {
+		_logger.LogDebug(">>> Entering NumberOfZeroBits()");
         // counting zero-bits
+		_logger.LogDebug("<<< Exiting NumberOfZeroBits()");
         return field.Count(bit => !bit);
     }
 
@@ -674,13 +704,17 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>Long integer array.</returns>
     public long ToInt64()
     {
+		_logger.LogDebug(">>> Entering ToInt64()");
         // Precondition
         if (field.Length > 64)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from ToInt64()");
             throw new InvalidOperationException("Value is too big to fit into Int64");
         }
 
         var sequence = ToString();
+		_logger.LogDebug("ToInt64(): sequence → {Sequence}", sequence);
+		_logger.LogDebug("<<< Exiting ToInt64()");
         return Convert.ToInt64(sequence, 2);
     }
 
@@ -691,13 +725,17 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>integer array.</returns>
     public int ToInt32()
     {
+		_logger.LogDebug(">>> Entering ToInt32()");
         // Precondition
         if (field.Length > 32)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from ToInt32()");
             throw new InvalidOperationException("Value is too big to fit into Int32");
         }
 
         var sequence = ToString();
+		_logger.LogDebug("ToInt32(): sequence → {Sequence}", sequence);
+		_logger.LogDebug("<<< Exiting ToInt32()");
         return Convert.ToInt32(sequence, 2);
     }
 
@@ -706,10 +744,12 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// </summary>
     public void ResetField()
     {
+		_logger.LogDebug(">>> Entering ResetField()");
         for (var i = 0; i < field.Length; i++)
         {
             field[i] = false;
         }
+		_logger.LogDebug("<<< Exiting ResetField()");
     }
 
     /// <summary>
@@ -718,10 +758,12 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <param name="flag">Bollean flag (false-true).</param>
     public void SetAll(bool flag)
     {
+		_logger.LogDebug(">>> Entering SetAll(flag={Flag})", flag);
         for (var i = 0; i < field.Length; i++)
         {
             field[i] = flag;
         }
+		_logger.LogDebug("<<< Exiting SetAll(flag={Flag})", flag);
     }
 
     /// <summary>
@@ -732,12 +774,14 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     /// <returns>Returns true if there inputs are equal otherwise false.</returns>
     public override bool Equals(object? obj)
     {
+		_logger.LogDebug(">>> Entering Equals(obj={Obj})", obj);
         if (obj is null)
         {
             return false;
         }
 
         var otherBitArray = (BitArray)obj;
+		_logger.LogDebug("Equals(obj={Obj}): otherBitArray → {OtherBitArray}", obj, otherBitArray);
 
         if (Length != otherBitArray.Length)
         {
@@ -752,6 +796,7 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
             }
         }
 
+		_logger.LogDebug("<<< Exiting Equals(obj={Obj})", obj);
         return true;
     }
 
@@ -764,8 +809,11 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
 
     private static void ThrowIfSequenceIsInvalid(string sequence)
     {
+		_logger.LogDebug(">>> Entering ThrowIfSequenceIsInvalid(sequence={Sequence})", sequence);
         if (!Match(sequence))
         {
+			_logger.LogWarning("Throwing ArgumentException from ThrowIfSequenceIsInvalid(sequence={Sequence})", sequence);
+		_logger.LogDebug("<<< Exiting ThrowIfSequenceIsInvalid(sequence={Sequence})", sequence);
             throw new ArgumentException("The sequence may only contain ones or zeros");
         }
     }

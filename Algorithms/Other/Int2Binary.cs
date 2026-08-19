@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class Int2Binary
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Returns string of the binary representation of given Int.
     /// </summary>
@@ -12,8 +14,10 @@ public static class Int2Binary
     /// <returns>Binary representation of input.</returns>
     public static string Int2Bin(ushort input)
     {
+		_logger.LogDebug(">>> Entering Int2Bin(input={Input})", input);
         ushort msb = ushort.MaxValue / 2 + 1;
         var output = new StringBuilder();
+		_logger.LogDebug("Int2Bin(input={Input}): output → {Output}", input, output);
         for (var i = 0; i < 16; i++)
         {
             if (input >= msb)
@@ -29,6 +33,7 @@ public static class Int2Binary
             }
         }
 
+		_logger.LogDebug("<<< Exiting Int2Bin(input={Input})", input);
         return output.ToString();
     }
 

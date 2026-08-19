@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -10,6 +11,7 @@ namespace Algorithms.Graph;
 /// </summary>
 public static class ArticulationPoints
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Finds all articulation points in an undirected graph.
     /// </summary>
@@ -21,8 +23,10 @@ public static class ArticulationPoints
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogDebug(">>> Entering Find(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         if (vertices == null)
         {
+			_logger.LogWarning("Throwing ArgumentNullException from Find(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
             throw new ArgumentNullException(nameof(vertices));
         }
 
@@ -32,16 +36,22 @@ public static class ArticulationPoints
         }
 
         var vertexList = vertices.ToList();
+		_logger.LogDebug("Find(vertices={Vertices},getNeighbors={GetNeighbors}): vertexList → {VertexList}", vertices, getNeighbors, vertexList);
         if (vertexList.Count == 0)
         {
             return new HashSet<T>();
         }
 
         var articulationPoints = new HashSet<T>();
+		_logger.LogDebug("Find(vertices={Vertices},getNeighbors={GetNeighbors}): articulationPoints → {ArticulationPoints}", vertices, getNeighbors, articulationPoints);
         var visited = new HashSet<T>();
+		_logger.LogDebug("Find(vertices={Vertices},getNeighbors={GetNeighbors}): visited → {Visited}", vertices, getNeighbors, visited);
         var discoveryTime = new Dictionary<T, int>();
+		_logger.LogDebug("Find(vertices={Vertices},getNeighbors={GetNeighbors}): discoveryTime → {DiscoveryTime}", vertices, getNeighbors, discoveryTime);
         var low = new Dictionary<T, int>();
+		_logger.LogDebug("Find(vertices={Vertices},getNeighbors={GetNeighbors}): low → {Low}", vertices, getNeighbors, low);
         var parent = new Dictionary<T, T?>();
+		_logger.LogDebug("Find(vertices={Vertices},getNeighbors={GetNeighbors}): parent → {Parent}", vertices, getNeighbors, parent);
         var time = 0;
 
         foreach (var vertex in vertexList)
@@ -60,6 +70,7 @@ public static class ArticulationPoints
             }
         }
 
+		_logger.LogDebug("<<< Exiting Find(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         return articulationPoints;
     }
 
@@ -76,7 +87,10 @@ public static class ArticulationPoints
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogDebug(">>> Entering IsArticulationPoint(vertex={Vertex},vertices={Vertices},getNeighbors={GetNeighbors})", vertex, vertices, getNeighbors);
         var articulationPoints = Find(vertices, getNeighbors);
+		_logger.LogDebug("<<< Exiting IsArticulationPoint(vertex={Vertex},vertices={Vertices},getNeighbors={GetNeighbors})", vertex, vertices, getNeighbors);
+		_logger.LogDebug("IsArticulationPoint(vertex={Vertex},vertices={Vertices},getNeighbors={GetNeighbors}): articulationPoints → {ArticulationPoints}", vertex, vertices, getNeighbors, articulationPoints);
         return articulationPoints.Contains(vertex);
     }
 
@@ -91,6 +105,8 @@ public static class ArticulationPoints
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogDebug(">>> Entering Count(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
+		_logger.LogDebug("<<< Exiting Count(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         return Find(vertices, getNeighbors).Count;
     }
 
@@ -100,6 +116,7 @@ public static class ArticulationPoints
         DfsState<T> state,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogDebug(">>> Entering Dfs(u={U},time={Time},state={State},getNeighbors={GetNeighbors})", u, time, state, getNeighbors);
         state.Visited.Add(u);
         state.DiscoveryTime[u] = time;
         state.Low[u] = time;
@@ -140,6 +157,7 @@ public static class ArticulationPoints
                 // Edge to parent: no action needed
             }
         }
+		_logger.LogDebug("<<< Exiting Dfs(u={U},time={Time},state={State},getNeighbors={GetNeighbors})", u, time, state, getNeighbors);
     }
 
     /// <summary>

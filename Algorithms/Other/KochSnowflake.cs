@@ -1,4 +1,5 @@
 using SkiaSharp;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Other;
 
@@ -9,6 +10,7 @@ namespace Algorithms.Other;
 ///     successive stage is formed by adding outward bends to each side of the
 ///     previous stage, making smaller equilateral triangles.
 ///     This can be achieved through the following steps for each line:
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 ///     1. divide the line segment into three segments of equal length.
 ///     2. draw an equilateral triangle that has the middle segment from step 1
 ///     as its base and points outward.
@@ -33,12 +35,15 @@ public static class KochSnowflake
     /// <returns>The transformed vectors after the iteration-steps.</returns>
     public static List<Vector2> Iterate(List<Vector2> initialVectors, int steps = 5)
     {
+		_logger.LogDebug(">>> Entering Iterate(initialVectors={InitialVectors},steps={Steps})", initialVectors, steps);
         List<Vector2> vectors = initialVectors;
         for (var i = 0; i < steps; i++)
+		_logger.LogDebug("Iterate(initialVectors={InitialVectors},steps={Steps}): vectors → {Vectors}", initialVectors, steps, vectors);
         {
             vectors = IterationStep(vectors);
         }
 
+		_logger.LogDebug("<<< Exiting Iterate(initialVectors={InitialVectors},steps={Steps})", initialVectors, steps);
         return vectors;
     }
 
@@ -53,8 +58,10 @@ public static class KochSnowflake
         int bitmapWidth = 600,
         int steps = 5)
     {
+		_logger.LogDebug(">>> Entering GetKochSnowflake(bitmapWidth={BitmapWidth},steps={Steps})", bitmapWidth, steps);
         if (bitmapWidth <= 0)
         {
+			_logger.LogWarning("Throwing ArgumentOutOfRangeException from GetKochSnowflake(bitmapWidth={BitmapWidth},steps={Steps})", bitmapWidth, steps);
             throw new ArgumentOutOfRangeException(
                 nameof(bitmapWidth),
                 $"{nameof(bitmapWidth)} should be greater than zero");
@@ -63,10 +70,15 @@ public static class KochSnowflake
         var offsetX = bitmapWidth / 10f;
         var offsetY = bitmapWidth / 3.7f;
         var vector1 = new Vector2(offsetX, offsetY);
+		_logger.LogDebug("GetKochSnowflake(bitmapWidth={BitmapWidth},steps={Steps}): vector1 → {Vector1}", bitmapWidth, steps, vector1);
         var vector2 = new Vector2(bitmapWidth / 2, (float)Math.Sin(Math.PI / 3) * bitmapWidth * 0.8f + offsetY);
+		_logger.LogDebug("GetKochSnowflake(bitmapWidth={BitmapWidth},steps={Steps}): vector2 → {Vector2}", bitmapWidth, steps, vector2);
         var vector3 = new Vector2(bitmapWidth - offsetX, offsetY);
+		_logger.LogDebug("GetKochSnowflake(bitmapWidth={BitmapWidth},steps={Steps}): vector3 → {Vector3}", bitmapWidth, steps, vector3);
         List<Vector2> initialVectors = [vector1, vector2, vector3, vector1];
         List<Vector2> vectors = Iterate(initialVectors, steps);
+		_logger.LogDebug("GetKochSnowflake(bitmapWidth={BitmapWidth},steps={Steps}): vectors → {Vectors}", bitmapWidth, steps, vectors);
+		_logger.LogDebug("<<< Exiting GetKochSnowflake(bitmapWidth={BitmapWidth},steps={Steps})", bitmapWidth, steps);
         return GetBitmap(vectors, bitmapWidth, bitmapWidth);
     }
 
@@ -83,6 +95,7 @@ public static class KochSnowflake
     /// <returns>The transformed vectors after the iteration-step.</returns>
     private static List<Vector2> IterationStep(List<Vector2> vectors)
     {
+		_logger.LogDebug(">>> Entering IterationStep(vectors={Vectors})", vectors);
         List<Vector2> newVectors = [];
         for (var i = 0; i < vectors.Count - 1; i++)
         {
@@ -96,6 +109,7 @@ public static class KochSnowflake
         }
 
         newVectors.Add(vectors[^1]);
+		_logger.LogDebug("<<< Exiting IterationStep(vectors={Vectors})", vectors);
         return newVectors;
     }
 
@@ -108,9 +122,14 @@ public static class KochSnowflake
     /// <returns>The rotated vector.</returns>
     private static Vector2 Rotate(Vector2 vector, float angleInDegrees)
     {
+		_logger.LogDebug(">>> Entering Rotate(vector={Vector},angleInDegrees={AngleInDegrees})", vector, angleInDegrees);
         var radians = angleInDegrees * (float)Math.PI / 180;
         var ca = (float)Math.Cos(radians);
+		_logger.LogDebug("Rotate(vector={Vector},angleInDegrees={AngleInDegrees}): ca → {Ca}", vector, angleInDegrees, ca);
         var sa = (float)Math.Sin(radians);
+		_logger.LogDebug("Rotate(vector={Vector},angleInDegrees={AngleInDegrees}): sa → {Sa}", vector, angleInDegrees, sa);
+		_logger.LogDebug("Rotate(vector={Vector},angleInDegrees={AngleInDegrees}): radians → {Radians}", vector, angleInDegrees, radians);
+		_logger.LogDebug("<<< Exiting Rotate(vector={Vector},angleInDegrees={AngleInDegrees})", vector, angleInDegrees);
         return new Vector2(ca * vector.X - sa * vector.Y, sa * vector.X + ca * vector.Y);
     }
 
@@ -153,6 +172,7 @@ public static class KochSnowflake
             canvas.DrawLine(new SKPoint(x1, y1), new SKPoint(x2, y2), paint);
         }
 
+		_logger.LogDebug("<<< Exiting GetBitmap(vectors={Vectors},bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight})", vectors, bitmapWidth, bitmapHeight);
         return bitmap;
     }
 }

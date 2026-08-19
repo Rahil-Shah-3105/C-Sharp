@@ -1,4 +1,5 @@
 using Algorithms.Knapsack;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.DataCompression;
 
@@ -9,6 +10,7 @@ public class ShannonFanoCompressor(
     IHeuristicKnapsackSolver<(char Symbol, double Frequency)> splitter,
     Translator translator)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IHeuristicKnapsackSolver<(char Symbol, double Frequency)> splitter = splitter;
     private readonly Translator translator = translator;
 
@@ -20,6 +22,7 @@ public class ShannonFanoCompressor(
     /// <returns>Compressed string and keys to decompress it.</returns>
     public (string CompressedText, Dictionary<string, string> DecompressionKeys) Compress(string uncompressedText)
     {
+		_logger.LogDebug(">>> Entering Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys})", CompressedText, DecompressionKeys);
         if (string.IsNullOrEmpty(uncompressedText))
         {
             return (string.Empty, new Dictionary<string, string>());
@@ -35,16 +38,22 @@ public class ShannonFanoCompressor(
         }
 
         var node = GetListNodeFromText(uncompressedText);
+		_logger.LogDebug("Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys}): node → {Node}", CompressedText, DecompressionKeys, node);
         var tree = GenerateShannonFanoTree(node);
+		_logger.LogDebug("Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys}): tree → {Tree}", CompressedText, DecompressionKeys, tree);
         var (compressionKeys, decompressionKeys) = GetKeys(tree);
+		_logger.LogDebug("<<< Exiting Compress(CompressedText={CompressedText},DecompressionKeys={DecompressionKeys})", CompressedText, DecompressionKeys);
         return (translator.Translate(uncompressedText, compressionKeys), decompressionKeys);
     }
 
     private (Dictionary<string, string> CompressionKeys, Dictionary<string, string> DecompressionKeys) GetKeys(
         ListNode tree)
     {
+		_logger.LogDebug(">>> Entering GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys})", CompressionKeys, DecompressionKeys);
         var compressionKeys = new Dictionary<string, string>();
         var decompressionKeys = new Dictionary<string, string>();
+		_logger.LogDebug("GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys}): decompressionKeys → {DecompressionKeys1}", CompressionKeys, DecompressionKeys, decompressionKeys);
+		_logger.LogDebug("GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys}): compressionKeys → {CompressionKeys1}", CompressionKeys, DecompressionKeys, compressionKeys);
 
         if (tree.Data.Length == 1)
         {
@@ -67,22 +76,27 @@ public class ShannonFanoCompressor(
             decompressionKeys.AddMany(rsdk.Select(kvp => ("1" + kvp.Key, kvp.Value)));
         }
 
+		_logger.LogDebug("<<< Exiting GetKeys(CompressionKeys={CompressionKeys},DecompressionKeys={DecompressionKeys})", CompressionKeys, DecompressionKeys);
         return (compressionKeys, decompressionKeys);
     }
 
     private ListNode GenerateShannonFanoTree(ListNode node)
     {
+		_logger.LogDebug(">>> Entering GenerateShannonFanoTree(node={Node})", node);
         if (node.Data.Length == 1)
         {
             return node;
         }
 
         var left = splitter.Solve(node.Data, 0.5 * node.Data.Sum(x => x.Frequency), x => x.Frequency, _ => 1);
+		_logger.LogDebug("GenerateShannonFanoTree(node={Node}): left → {Left}", node, left);
         var right = node.Data.Except(left).ToArray();
+		_logger.LogDebug("GenerateShannonFanoTree(node={Node}): right → {Right}", node, right);
 
         node.LeftChild = GenerateShannonFanoTree(new ListNode(left));
         node.RightChild = GenerateShannonFanoTree(new ListNode(right));
 
+		_logger.LogDebug("<<< Exiting GenerateShannonFanoTree(node={Node})", node);
         return node;
     }
 
@@ -92,8 +106,10 @@ public class ShannonFanoCompressor(
     /// <returns>Symbol-frequency array.</returns>
     private ListNode GetListNodeFromText(string text)
     {
+		_logger.LogDebug(">>> Entering GetListNodeFromText(text={Text})", text);
         var occurenceCounts = new Dictionary<char, double>();
 
+		_logger.LogDebug("GetListNodeFromText(text={Text}): occurenceCounts → {OccurenceCounts}", text, occurenceCounts);
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
@@ -105,6 +121,7 @@ public class ShannonFanoCompressor(
             occurenceCounts[ch]++;
         }
 
+		_logger.LogDebug("<<< Exiting GetListNodeFromText(text={Text})", text);
         return new ListNode(occurenceCounts.Select(kvp => (kvp.Key, 1d * kvp.Value / text.Length)).ToArray());
     }
 

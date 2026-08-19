@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.LinearAlgebra.Eigenvalue;
 
 /// <summary>
 ///     Power iteration method - eigenvalue numeric algorithm, based on recurrent relation:
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 ///     Li+1 = (A * Li) / || A * Li ||, where Li - eigenvector approximation.
 /// </summary>
 public static class PowerIteration
@@ -28,8 +30,10 @@ public static class PowerIteration
         double[] startVector,
         double error = 0.00001)
     {
+		_logger.LogDebug(">>> Entering Dominant(Eigenvalue={Eigenvalue},Eigenvector={Eigenvector})", Eigenvalue, Eigenvector);
         if (source.GetLength(0) != source.GetLength(1))
         {
+			_logger.LogWarning("Throwing ArgumentException from Dominant(Eigenvalue={Eigenvalue},Eigenvector={Eigenvector})", Eigenvalue, Eigenvector);
             throw new ArgumentException("The source matrix is not square-shaped.");
         }
 
@@ -46,9 +50,11 @@ public static class PowerIteration
         do
         {
             previousEigenVector = currentEigenVector;
+			_logger.LogDebug("Dominant(Eigenvalue={Eigenvalue},Eigenvector={Eigenvector}): previousEigenVector → {PreviousEigenVector}", Eigenvalue, Eigenvector, previousEigenVector);
             currentEigenVector = source.Multiply(
                     previousEigenVector.ToColumnVector())
                 .ToRowVector();
+				_logger.LogDebug("Dominant(Eigenvalue={Eigenvalue},Eigenvector={Eigenvector}): currentEigenVector → {CurrentEigenVector}", Eigenvalue, Eigenvector, currentEigenVector);
 
             eigenNorm = currentEigenVector.Magnitude();
             currentEigenVector = currentEigenVector.Select(x => x / eigenNorm).ToArray();
@@ -56,7 +62,9 @@ public static class PowerIteration
         while (Math.Abs(currentEigenVector.Dot(previousEigenVector)) < 1.0 - error);
 
         var eigenvalue = source.Multiply(currentEigenVector.ToColumnVector()).ToRowVector().Magnitude();
+		_logger.LogDebug("Dominant(Eigenvalue={Eigenvalue},Eigenvector={Eigenvector}): eigenvalue → {Eigenvalue1}", Eigenvalue, Eigenvector, eigenvalue);
 
+		_logger.LogDebug("<<< Exiting Dominant(Eigenvalue={Eigenvalue},Eigenvector={Eigenvector})", Eigenvalue, Eigenvector);
         return (eigenvalue, Eigenvector: currentEigenVector);
     }
 

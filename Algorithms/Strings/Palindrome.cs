@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings;
 
 /// <summary>
@@ -6,12 +7,14 @@ namespace Algorithms.Strings;
 /// </summary>
 public static class Palindrome
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Function to check if a string is a palindrome.
     /// </summary>
     /// <param name="word">String being checked.</param>
     public static bool IsStringPalindrome(string word) =>
         TypifyString(word).Equals(TypifyString(ReverseString(word)));
+		_logger.LogDebug(">>> Entering IsStringPalindrome(word={Word})", word);
 
     /// <summary>
     ///     Typify string to lower and remove white spaces.
@@ -20,6 +23,7 @@ public static class Palindrome
     /// <returns>Returns original string without spaces.</returns>
     private static string TypifyString(string word) =>
         Regex.Replace(word.ToLowerInvariant(), @"\s+", string.Empty);
+		_logger.LogDebug(">>> Entering TypifyString(word={Word})", word);
 
     /// <summary>
     ///     Helper function that returns a reversed string inputed.
@@ -28,8 +32,11 @@ public static class Palindrome
     /// <returns>Returns s reversed.</returns>
     private static string ReverseString(string s)
     {
+		_logger.LogDebug(">>> Entering ReverseString(s={S})", s);
         var arr = s.ToCharArray();
         Array.Reverse(arr);
+		_logger.LogDebug("ReverseString(s={S}): arr → {Arr}", s, arr);
+		_logger.LogDebug("<<< Exiting ReverseString(s={S})", s);
         return new string(arr);
     }
 }

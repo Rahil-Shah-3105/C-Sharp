@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Search;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class FibonacciSearcher<T> where T : IComparable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the index of the item searched for in the array.
     ///     Time complexity:
@@ -19,8 +21,10 @@ public class FibonacciSearcher<T> where T : IComparable<T>
     /// <exception cref="ArgumentNullException">Gets thrown when the given array or item is null.</exception>
     public int FindIndex(T[] array, T item)
     {
+		_logger.LogDebug(">>> Entering FindIndex(array={Array},item={Item})", array, item);
         if (array is null)
         {
+			_logger.LogWarning("Throwing ArgumentNullException from FindIndex(array={Array},item={Item})", array, item);
             throw new ArgumentNullException("array");
         }
 
@@ -35,8 +39,11 @@ public class FibonacciSearcher<T> where T : IComparable<T>
         {
             // find the smallest Fibonacci number that equals or is greater than the array length
             var fibonacciNumberBeyondPrevious = 0;
+			_logger.LogDebug("FindIndex(array={Array},item={Item}): fibonacciNumberBeyondPrevious → {FibonacciNumberBeyondPrevious}", array, item, fibonacciNumberBeyondPrevious);
             var fibonacciNumPrevious = 1;
+			_logger.LogDebug("FindIndex(array={Array},item={Item}): fibonacciNumPrevious → {FibonacciNumPrevious}", array, item, fibonacciNumPrevious);
             var fibonacciNum = fibonacciNumPrevious;
+			_logger.LogDebug("FindIndex(array={Array},item={Item}): fibonacciNum → {FibonacciNum}", array, item, fibonacciNum);
 
             while (fibonacciNum <= arrayLength)
             {
@@ -47,6 +54,7 @@ public class FibonacciSearcher<T> where T : IComparable<T>
 
             // offset to drop the left part of the array
             var offset = -1;
+			_logger.LogDebug("FindIndex(array={Array},item={Item}): offset → {Offset}", array, item, offset);
 
             while (fibonacciNum > 1)
             {
@@ -82,6 +90,7 @@ public class FibonacciSearcher<T> where T : IComparable<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindIndex(array={Array},item={Item})", array, item);
         return -1;
     }
 }

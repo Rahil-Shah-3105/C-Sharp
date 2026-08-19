@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Input array type.</typeparam>
 public class HeapSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sorts input array using heap sort algorithm.
     /// </summary>
@@ -16,8 +18,10 @@ public class HeapSorter<T> : IComparisonSorter<T>
 
     private static void HeapSort(IList<T> data, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering HeapSort(data={Data},comparer={Comparer})", data, comparer);
         var heapSize = data.Count;
         for (var p = (heapSize - 1) / 2; p >= 0; p--)
+		_logger.LogDebug("HeapSort(data={Data},comparer={Comparer}): p → {P}", data, comparer, p);
         {
             MakeHeap(data, heapSize, p, comparer);
         }
@@ -31,17 +35,23 @@ public class HeapSorter<T> : IComparisonSorter<T>
             heapSize--;
             MakeHeap(data, heapSize, 0, comparer);
         }
+		_logger.LogDebug("<<< Exiting HeapSort(data={Data},comparer={Comparer})", data, comparer);
     }
 
     private static void MakeHeap(IList<T> input, int heapSize, int index, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering MakeHeap(input={Input},heapSize={HeapSize},index={Index},comparer={Comparer})", input, heapSize, index, comparer);
         var rIndex = index;
 
+		_logger.LogDebug("MakeHeap(input={Input},heapSize={HeapSize},index={Index},comparer={Comparer}): rIndex → {RIndex}", input, heapSize, index, comparer, rIndex);
         while (true)
         {
             var left = (rIndex + 1) * 2 - 1;
+			_logger.LogDebug("MakeHeap(input={Input},heapSize={HeapSize},index={Index},comparer={Comparer}): left → {Left}", input, heapSize, index, comparer, left);
             var right = (rIndex + 1) * 2;
+			_logger.LogDebug("MakeHeap(input={Input},heapSize={HeapSize},index={Index},comparer={Comparer}): right → {Right}", input, heapSize, index, comparer, right);
             var largest = left < heapSize && comparer.Compare(input[left], input[rIndex]) == 1 ? left : rIndex;
+			_logger.LogDebug("MakeHeap(input={Input},heapSize={HeapSize},index={Index},comparer={Comparer}): largest → {Largest}", input, heapSize, index, comparer, largest);
 
             // finds the index of the largest
             if (right < heapSize && comparer.Compare(input[right], input[largest]) == 1)
@@ -61,5 +71,6 @@ public class HeapSorter<T> : IComparisonSorter<T>
 
             rIndex = largest;
         }
+		_logger.LogDebug("<<< Exiting MakeHeap(input={Input},heapSize={HeapSize},index={Index},comparer={Comparer})", input, heapSize, index, comparer);
     }
 }
