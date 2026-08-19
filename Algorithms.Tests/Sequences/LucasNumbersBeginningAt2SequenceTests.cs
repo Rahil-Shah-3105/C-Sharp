@@ -1,12 +1,15 @@
+using Microsoft.Extensions.Logging;
 ﻿using Algorithms.Sequences;
 
 namespace Algorithms.Tests.Sequences;
 
 public class LucasNumbersBeginningAt2SequenceTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void FirstElementsCorrect()
     {
+		_logger.LogDebug(">>> Entering FirstElementsCorrect()");
         //  Initial test of 38 values from http://oeis.org/A000032/list which passed.
         //  Testing 200 Lucas numbers, with values from https://r-knott.surrey.ac.uk/Fibonacci/lucas200.html and
         //  compared to initial 38, which passed.
@@ -99,7 +102,10 @@ public class LucasNumbersBeginningAt2SequenceTests
                                };
 
         var check = bigNumbers.Select(BigInteger.Parse).ToArray();
+		_logger.LogDebug("FirstElementsCorrect(): check → {Check}", check);
         var sequence = new LucasNumbersBeginningAt2Sequence().Sequence.Take(check.Length);
+		_logger.LogDebug("FirstElementsCorrect(): sequence → {Sequence}", sequence);
         sequence.SequenceEqual(check).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting FirstElementsCorrect()");
     }
 }

@@ -1,5 +1,6 @@
 using Algorithms.Sorters.String;
 using Algorithms.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Sorters.String;
 
@@ -8,13 +9,16 @@ namespace Algorithms.Tests.Sorters.String;
 /// </summary>
 public static class MsdRadixStringSorterTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void ArraySorted(
         [Random(2, 1000, 100, Distinct = true)]
         int n)
     {
+		_logger.LogDebug(">>> Entering ArraySorted(Distinct={Distinct})", Distinct);
         // Arrange
         var sorter = new MsdRadixStringSorter();
+		_logger.LogDebug("ArraySorted(Distinct={Distinct}): sorter → {Sorter}", Distinct, sorter);
         var (correctArray, testArray) = RandomHelper.GetStringArrays(n, 100, false);
 
         // Act
@@ -23,5 +27,6 @@ public static class MsdRadixStringSorterTests
 
         // Assert
         Assert.That(testArray, Is.EqualTo(correctArray));
+		_logger.LogDebug("<<< Exiting ArraySorted(Distinct={Distinct})", Distinct);
     }
 }

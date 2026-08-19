@@ -1,4 +1,5 @@
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -10,6 +11,7 @@ namespace Algorithms.Graph;
 /// <typeparam name="T">Vertex data type.</typeparam>
 public class BreadthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Traverses graph from start vertex.
     /// </summary>
@@ -18,7 +20,9 @@ public class BreadthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
     /// <param name="action">Action that needs to be executed on each graph vertex.</param>
     public void VisitAll(IDirectedWeightedGraph<T> graph, Vertex<T> startVertex, Action<Vertex<T>>? action = default)
     {
+		_logger.LogDebug(">>> Entering VisitAll(graph={Graph},startVertex={StartVertex},action={Action})", graph, startVertex, action);
         Bfs(graph, startVertex, action, []);
+		_logger.LogDebug("<<< Exiting VisitAll(graph={Graph},startVertex={StartVertex},action={Action})", graph, startVertex, action);
     }
 
     /// <summary>
@@ -30,13 +34,16 @@ public class BreadthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
     /// <param name="visited">Hash set with visited vertices.</param>
     private void Bfs(IDirectedWeightedGraph<T> graph, Vertex<T> startVertex, Action<Vertex<T>>? action, HashSet<Vertex<T>> visited)
     {
+		_logger.LogDebug(">>> Entering Bfs(graph={Graph},startVertex={StartVertex},action={Action},visited={Visited})", graph, startVertex, action, visited);
         var queue = new Queue<Vertex<T>>();
 
+		_logger.LogDebug("Bfs(graph={Graph},startVertex={StartVertex},action={Action},visited={Visited}): queue → {Queue}", graph, startVertex, action, visited, queue);
         queue.Enqueue(startVertex);
 
         while (queue.Count > 0)
         {
             var currentVertex = queue.Dequeue();
+			_logger.LogDebug("Bfs(graph={Graph},startVertex={StartVertex},action={Action},visited={Visited}): currentVertex → {CurrentVertex}", graph, startVertex, action, visited, currentVertex);
 
             if (currentVertex == null || visited.Contains(currentVertex))
             {
@@ -52,5 +59,6 @@ public class BreadthFirstSearch<T> : IGraphSearch<T> where T : IComparable<T>
 
             visited.Add(currentVertex);
         }
+		_logger.LogDebug("<<< Exiting Bfs(graph={Graph},startVertex={StartVertex},action={Action},visited={Visited})", graph, startVertex, action, visited);
     }
 }

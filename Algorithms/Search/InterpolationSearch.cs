@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Search;
 /// </summary>
 public static class InterpolationSearch
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the index of the item searched for in the array.
     ///     Algorithm performance:
@@ -17,12 +19,15 @@ public static class InterpolationSearch
     /// <returns>If an item is found, return index, else return -1.</returns>
     public static int FindIndex(int[] sortedArray, int val)
     {
+		_logger.LogDebug(">>> Entering FindIndex(sortedArray={SortedArray},val={Val})", sortedArray, val);
         var start = 0;
         var end = sortedArray.Length - 1;
+		_logger.LogDebug("FindIndex(sortedArray={SortedArray},val={Val}): end → {End}", sortedArray, val, end);
 
         while (start <= end && val >= sortedArray[start] && val <= sortedArray[end])
         {
             var denominator = (sortedArray[end] - sortedArray[start]) * (val - sortedArray[start]);
+			_logger.LogDebug("FindIndex(sortedArray={SortedArray},val={Val}): denominator → {Denominator}", sortedArray, val, denominator);
 
             if (denominator == 0)
             {
@@ -30,6 +35,7 @@ public static class InterpolationSearch
             }
 
             var pos = start + (end - start) / denominator;
+			_logger.LogDebug("FindIndex(sortedArray={SortedArray},val={Val}): pos → {Pos}", sortedArray, val, pos);
 
             if (sortedArray[pos] == val)
             {
@@ -46,6 +52,7 @@ public static class InterpolationSearch
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindIndex(sortedArray={SortedArray},val={Val})", sortedArray, val);
         return -1;
     }
 }

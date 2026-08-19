@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.Other;
 /// </summary>
 public class ParetoOptimization
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Performs decision optimizations by using Paretor's optimization algorithm.
     /// </summary>
@@ -16,8 +18,10 @@ public class ParetoOptimization
     /// <returns>An optimized collection of the criterias sets.</returns>
     public List<List<decimal>> Optimize(List<List<decimal>> matrix)
     {
+		_logger.LogDebug(">>> Entering Optimize(matrix={Matrix})", matrix);
         var optimizedMatrix = new List<List<decimal>>(matrix.Select(i => i));
         int i = 0;
+		_logger.LogDebug("Optimize(matrix={Matrix}): optimizedMatrix → {OptimizedMatrix}", matrix, optimizedMatrix);
         while (i < optimizedMatrix.Count)
         {
             for (int j = i + 1; j < optimizedMatrix.Count; j++)
@@ -39,6 +43,7 @@ public class ParetoOptimization
             i++;
         }
 
+		_logger.LogDebug("<<< Exiting Optimize(matrix={Matrix})", matrix);
         return optimizedMatrix;
     }
 
@@ -50,8 +55,10 @@ public class ParetoOptimization
     /// <returns>Values that represent the smallest difference between criteria of input decisions.</returns>
     private decimal GetMinimalPairwiseDifference(List<decimal> arr1, List<decimal> arr2)
     {
+		_logger.LogDebug(">>> Entering GetMinimalPairwiseDifference(arr1={Arr1},arr2={Arr2})", arr1, arr2);
         decimal min = decimal.MaxValue;
         if (arr1.Count == arr2.Count)
+		_logger.LogDebug("GetMinimalPairwiseDifference(arr1={Arr1},arr2={Arr2}): min → {Min}", arr1, arr2, min);
         {
             for (int i = 0; i < arr1.Count; i++)
             {
@@ -63,6 +70,7 @@ public class ParetoOptimization
             }
         }
 
+		_logger.LogDebug("<<< Exiting GetMinimalPairwiseDifference(arr1={Arr1},arr2={Arr2})", arr1, arr2);
         return min;
     }
 }

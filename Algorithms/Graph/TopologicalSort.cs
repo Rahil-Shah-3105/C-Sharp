@@ -1,4 +1,5 @@
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -24,6 +25,7 @@ namespace Algorithms.Graph;
 /// <typeparam name="T">Vertex data type.</typeparam>
 public class TopologicalSort<T> where T : IComparable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Performs topological sort on a directed acyclic graph using DFS-based approach.
     ///
@@ -60,16 +62,20 @@ public class TopologicalSort<T> where T : IComparable<T>
     /// </exception>
     public List<Vertex<T>> Sort(IDirectedWeightedGraph<T> graph)
     {
+		_logger.LogDebug(">>> Entering Sort(graph={Graph})", graph);
         // Stack to store vertices in reverse topological order.
         // We use a stack because DFS naturally gives us reverse topological order.
         var stack = new Stack<Vertex<T>>();
+		_logger.LogDebug("Sort(graph={Graph}): stack → {Stack}", graph, stack);
 
         // Track visited vertices to avoid reprocessing and detect cycles.
         var visited = new HashSet<Vertex<T>>();
+		_logger.LogDebug("Sort(graph={Graph}): visited → {Visited}", graph, visited);
 
         // Track vertices currently in the recursion stack to detect cycles.
         // If we encounter a vertex that's in the recursion stack, we have a cycle.
         var recursionStack = new HashSet<Vertex<T>>();
+		_logger.LogDebug("Sort(graph={Graph}): recursionStack → {RecursionStack}", graph, recursionStack);
 
         // Process all vertices in the graph.
         // We need to iterate through all vertices because the graph might be disconnected.
@@ -93,11 +99,13 @@ public class TopologicalSort<T> where T : IComparable<T>
         // Convert stack to list. The stack contains vertices in reverse topological order,
         // so we need to reverse it to get the correct topological ordering.
         var result = new List<Vertex<T>>(stack.Count);
+		_logger.LogDebug("Sort(graph={Graph}): result → {Result}", graph, result);
         while (stack.Count > 0)
         {
             result.Add(stack.Pop());
         }
 
+		_logger.LogDebug("<<< Exiting Sort(graph={Graph})", graph);
         return result;
     }
 
@@ -133,18 +141,23 @@ public class TopologicalSort<T> where T : IComparable<T>
     /// </exception>
     public List<Vertex<T>> SortKahn(IDirectedWeightedGraph<T> graph)
     {
+		_logger.LogDebug(">>> Entering SortKahn(graph={Graph})", graph);
         // Calculate in-degree for each vertex.
         var inDegree = CalculateInDegrees(graph);
+		_logger.LogDebug("SortKahn(graph={Graph}): inDegree → {InDegree}", graph, inDegree);
 
         // Queue to process vertices with in-degree 0.
         var queue = InitializeQueueWithZeroInDegreeVertices(inDegree);
+		_logger.LogDebug("SortKahn(graph={Graph}): queue → {Queue}", graph, queue);
 
         // Process vertices in topological order.
         var result = ProcessVerticesInTopologicalOrder(graph, inDegree, queue);
+		_logger.LogDebug("SortKahn(graph={Graph}): result → {Result}", graph, result);
 
         // Verify all vertices were processed (no cycles).
         ValidateNoCycles(graph, result);
 
+		_logger.LogDebug("<<< Exiting SortKahn(graph={Graph})", graph);
         return result;
     }
 
@@ -192,6 +205,7 @@ public class TopologicalSort<T> where T : IComparable<T>
         Vertex<T> vertex,
         Dictionary<Vertex<T>, int> inDegree)
     {
+		_logger.LogDebug(">>> Entering IncrementNeighborInDegrees(graph={Graph},vertex={Vertex},inDegree={InDegree})", graph, vertex, inDegree);
         foreach (var neighbor in graph.GetNeighbors(vertex))
         {
             if (neighbor != null)
@@ -199,6 +213,7 @@ public class TopologicalSort<T> where T : IComparable<T>
                 inDegree[neighbor]++;
             }
         }
+		_logger.LogDebug("<<< Exiting IncrementNeighborInDegrees(graph={Graph},vertex={Vertex},inDegree={InDegree})", graph, vertex, inDegree);
     }
 
     /// <summary>
@@ -209,8 +224,10 @@ public class TopologicalSort<T> where T : IComparable<T>
     /// <returns>Queue containing all vertices with in-degree 0.</returns>
     private Queue<Vertex<T>> InitializeQueueWithZeroInDegreeVertices(Dictionary<Vertex<T>, int> inDegree)
     {
+		_logger.LogDebug(">>> Entering InitializeQueueWithZeroInDegreeVertices(inDegree={InDegree})", inDegree);
         var queue = new Queue<Vertex<T>>();
 
+		_logger.LogDebug("InitializeQueueWithZeroInDegreeVertices(inDegree={InDegree}): queue → {Queue}", inDegree, queue);
         foreach (var kvp in inDegree)
         {
             if (kvp.Value == 0)
@@ -219,6 +236,7 @@ public class TopologicalSort<T> where T : IComparable<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting InitializeQueueWithZeroInDegreeVertices(inDegree={InDegree})", inDegree);
         return queue;
     }
 
@@ -235,16 +253,20 @@ public class TopologicalSort<T> where T : IComparable<T>
         Dictionary<Vertex<T>, int> inDegree,
         Queue<Vertex<T>> queue)
     {
+		_logger.LogDebug(">>> Entering ProcessVerticesInTopologicalOrder(graph={Graph},inDegree={InDegree},queue={Queue})", graph, inDegree, queue);
         var result = new List<Vertex<T>>();
 
+		_logger.LogDebug("ProcessVerticesInTopologicalOrder(graph={Graph},inDegree={InDegree},queue={Queue}): result → {Result}", graph, inDegree, queue, result);
         while (queue.Count > 0)
         {
             var vertex = queue.Dequeue();
+			_logger.LogDebug("ProcessVerticesInTopologicalOrder(graph={Graph},inDegree={InDegree},queue={Queue}): vertex → {Vertex}", graph, inDegree, queue, vertex);
             result.Add(vertex);
 
             ProcessNeighbors(graph, vertex, inDegree, queue);
         }
 
+		_logger.LogDebug("<<< Exiting ProcessVerticesInTopologicalOrder(graph={Graph},inDegree={InDegree},queue={Queue})", graph, inDegree, queue);
         return result;
     }
 
@@ -262,6 +284,7 @@ public class TopologicalSort<T> where T : IComparable<T>
         Dictionary<Vertex<T>, int> inDegree,
         Queue<Vertex<T>> queue)
     {
+		_logger.LogDebug(">>> Entering ProcessNeighbors(graph={Graph},vertex={Vertex},inDegree={InDegree},queue={Queue})", graph, vertex, inDegree, queue);
         foreach (var neighbor in graph.GetNeighbors(vertex))
         {
             if (neighbor != null)
@@ -274,6 +297,7 @@ public class TopologicalSort<T> where T : IComparable<T>
                 }
             }
         }
+		_logger.LogDebug("<<< Exiting ProcessNeighbors(graph={Graph},vertex={Vertex},inDegree={InDegree},queue={Queue})", graph, vertex, inDegree, queue);
     }
 
     /// <summary>
@@ -286,8 +310,11 @@ public class TopologicalSort<T> where T : IComparable<T>
     /// </exception>
     private void ValidateNoCycles(IDirectedWeightedGraph<T> graph, List<Vertex<T>> result)
     {
+		_logger.LogDebug(">>> Entering ValidateNoCycles(graph={Graph},result={Result})", graph, result);
         if (result.Count != graph.Count)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from ValidateNoCycles(graph={Graph},result={Result})", graph, result);
+		_logger.LogDebug("<<< Exiting ValidateNoCycles(graph={Graph},result={Result})", graph, result);
             throw new InvalidOperationException(
                 "Graph contains a cycle. Topological sort is only possible for Directed Acyclic Graphs (DAGs).");
         }
@@ -325,8 +352,10 @@ public class TopologicalSort<T> where T : IComparable<T>
         // CYCLE DETECTION:
         // If the vertex is in the recursion stack, we've encountered it again
         // in the current DFS path, which means there's a cycle.
+		_logger.LogDebug(">>> Entering DfsTopologicalSort(graph={Graph},vertex={Vertex},visited={Visited},recursionStack={RecursionStack},stack={Stack})", graph, vertex, visited, recursionStack, stack);
         if (recursionStack.Contains(vertex))
         {
+			_logger.LogWarning("Throwing InvalidOperationException from DfsTopologicalSort(graph={Graph},vertex={Vertex},visited={Visited},recursionStack={RecursionStack},stack={Stack})", graph, vertex, visited, recursionStack, stack);
             throw new InvalidOperationException(
                 $"Graph contains a cycle involving vertex: {vertex}. " +
                 "Topological sort is only possible for Directed Acyclic Graphs (DAGs).");
@@ -359,5 +388,6 @@ public class TopologicalSort<T> where T : IComparable<T>
         // This ensures that all vertices that depend on the current vertex
         // are already in the stack (deeper in the stack).
         stack.Push(vertex);
+		_logger.LogDebug("<<< Exiting DfsTopologicalSort(graph={Graph},vertex={Vertex},visited={Visited},recursionStack={RecursionStack},stack={Stack})", graph, vertex, visited, recursionStack, stack);
     }
 }

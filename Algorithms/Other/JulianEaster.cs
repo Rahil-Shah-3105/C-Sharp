@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class JulianEaster
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates the date of Easter.
     /// </summary>
@@ -13,16 +15,23 @@ public static class JulianEaster
     /// <returns>Date of Easter as a DateTime.</returns>
     public static DateTime Calculate(int year)
     {
+		_logger.LogDebug(">>> Entering Calculate(year={Year})", year);
         var a = year % 4;
         var b = year % 7;
         var c = year % 19;
         var d = (19 * c + 15) % 30;
+		_logger.LogDebug("Calculate(year={Year}): d → {D}", year, d);
         var e = (2 * a + 4 * b - d + 34) % 7;
+		_logger.LogDebug("Calculate(year={Year}): e → {E}", year, e);
         var month = (int)Math.Floor((d + e + 114) / 31M);
+		_logger.LogDebug("Calculate(year={Year}): month → {Month}", year, month);
         var day = ((d + e + 114) % 31) + 1;
+		_logger.LogDebug("Calculate(year={Year}): day → {Day}", year, day);
 
         DateTime easter = new(year, month, day, 00, 00, 00, DateTimeKind.Utc);
+		_logger.LogDebug("Calculate(year={Year}): easter → {Easter}", year, easter);
 
+		_logger.LogDebug("<<< Exiting Calculate(year={Year})", year);
         return easter;
     }
 }

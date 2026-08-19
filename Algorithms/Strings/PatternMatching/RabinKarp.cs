@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.PatternMatching;
 
 /// <summary>
@@ -11,12 +12,14 @@ namespace Algorithms.Strings.PatternMatching;
 /// </summary>
 public static class RabinKarp
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the index of all occurrences of the pattern <c>p</c> int <c>t</c>.
     /// </summary>
     /// <returns>List of starting indices of the pattern in the text.</returns>
     public static List<int> FindAllOccurrences(string text, string pattern)
     {
+		_logger.LogDebug(">>> Entering FindAllOccurrences(text={Text},pattern={Pattern})", text, pattern);
         // Prime number
         const ulong p = 65537;
 
@@ -41,6 +44,7 @@ public static class RabinKarp
 
         // hash_s is equal to sum of the hash values of the pattern (mod M).
         ulong hashS = 0;
+		_logger.LogDebug("FindAllOccurrences(text={Text},pattern={Pattern}): hashS → {HashS}", text, pattern, hashS);
         for (var i = 0; i < pattern.Length; i++)
         {
             hashS = (hashS + pattern[i] * pPow[i]) % m;
@@ -53,6 +57,7 @@ public static class RabinKarp
             // In each step you calculate the hash value of the substring to be tested.
             // By storing the hash values of the letters as a prefixes you can do this in constant time.
             var currentHash = (hashT[i + pattern.Length] + m - hashT[i]) % m;
+			_logger.LogDebug("FindAllOccurrences(text={Text},pattern={Pattern}): currentHash → {CurrentHash}", text, pattern, currentHash);
 
             // Now you can compare the hash value of the substring with the product of the hash value of the pattern and p_pow[i].
             if (currentHash == hashS * pPow[i] % m)
@@ -73,6 +78,7 @@ public static class RabinKarp
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindAllOccurrences(text={Text},pattern={Pattern})", text, pattern);
         return occurrences;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Numeric;
 ///     of ordinary differential equations. The method proceeds in a series of steps. At each step
 ///     the y-value is calculated by evaluating the differential equation at the previous step,
 ///     multiplying the result with the step-size and adding it to the last y-value:
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 ///     y_n+1 = y_n + stepSize * f(x_n, y_n).
 ///     (description adapted from https://en.wikipedia.org/wiki/Euler_method )
 ///     (see also: https://www.geeksforgeeks.org/euler-method-solving-differential-equation/ ).
@@ -30,8 +32,10 @@ public static class EulerMethod
         double yStart,
         Func<double, double, double> yDerivative)
     {
+		_logger.LogDebug(">>> Entering EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative})", xStart, xEnd, stepSize, yStart, yDerivative);
         if (xStart >= xEnd)
         {
+			_logger.LogWarning("Throwing ArgumentOutOfRangeException from EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative})", xStart, xEnd, stepSize, yStart, yDerivative);
             throw new ArgumentOutOfRangeException(
                 nameof(xEnd),
                 $"{nameof(xEnd)} should be greater than {nameof(xStart)}");
@@ -48,6 +52,7 @@ public static class EulerMethod
         double[] firstPoint = [xStart, yStart];
         points.Add(firstPoint);
         var yCurrent = yStart;
+		_logger.LogDebug("EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative}): yCurrent → {YCurrent}", xStart, xEnd, stepSize, yStart, yDerivative, yCurrent);
         var xCurrent = xStart;
 
         while (xCurrent < xEnd)
@@ -58,6 +63,7 @@ public static class EulerMethod
             points.Add(point);
         }
 
+		_logger.LogDebug("<<< Exiting EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative})", xStart, xEnd, stepSize, yStart, yDerivative);
         return points;
     }
 
@@ -75,7 +81,10 @@ public static class EulerMethod
         double yCurrent,
         Func<double, double, double> yDerivative)
     {
+		_logger.LogDebug(">>> Entering EulerStep(xCurrent={XCurrent},stepSize={StepSize},yCurrent={YCurrent},yDerivative={YDerivative})", xCurrent, stepSize, yCurrent, yDerivative);
         var yNext = yCurrent + stepSize * yDerivative(xCurrent, yCurrent);
+		_logger.LogDebug("EulerStep(xCurrent={XCurrent},stepSize={StepSize},yCurrent={YCurrent},yDerivative={YDerivative}): yNext → {YNext}", xCurrent, stepSize, yCurrent, yDerivative, yNext);
+		_logger.LogDebug("<<< Exiting EulerStep(xCurrent={XCurrent},stepSize={StepSize},yCurrent={YCurrent},yDerivative={YDerivative})", xCurrent, stepSize, yCurrent, yDerivative);
         return yNext;
     }
 }
