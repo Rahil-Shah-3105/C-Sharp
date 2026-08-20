@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric.GreatestCommonDivisor;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Numeric.GreatestCommonDivisor;
 /// </summary>
 public class EuclideanGreatestCommonDivisorFinder : IGreatestCommonDivisorFinder
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds greatest common divisor for numbers a and b
     ///     using euclidean algorithm.
@@ -14,6 +16,7 @@ public class EuclideanGreatestCommonDivisorFinder : IGreatestCommonDivisorFinder
     /// <returns>Greatest common divisor.</returns>
     public int FindGcd(int a, int b)
     {
+		_logger.LogDebug(">>> Entering FindGcd(a={A},b={B})", a, b);
         if (a == 0 && b == 0)
         {
             return int.MaxValue;
@@ -25,8 +28,11 @@ public class EuclideanGreatestCommonDivisorFinder : IGreatestCommonDivisorFinder
         }
 
         var aa = a;
+		_logger.LogDebug("FindGcd(a={A},b={B}): aa → {Aa}", a, b, aa);
         var bb = b;
+		_logger.LogDebug("FindGcd(a={A},b={B}): bb → {Bb}", a, b, bb);
         var cc = aa % bb;
+		_logger.LogDebug("FindGcd(a={A},b={B}): cc → {Cc}", a, b, cc);
 
         while (cc != 0)
         {
@@ -35,6 +41,7 @@ public class EuclideanGreatestCommonDivisorFinder : IGreatestCommonDivisorFinder
             cc = aa % bb;
         }
 
+		_logger.LogDebug("<<< Exiting FindGcd(a={A},b={B})", a, b);
         return bb;
     }
 }

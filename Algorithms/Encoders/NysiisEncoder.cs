@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Encoders;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Encoders;
 /// </summary>
 public class NysiisEncoder
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly char[] Vowels = ['A', 'E', 'I', 'O', 'U'];
 
     /// <summary>
@@ -14,8 +16,10 @@ public class NysiisEncoder
     /// <returns>The NYSIIS encoded string (all uppercase).</returns>
     public string Encode(string text)
     {
+		_logger.LogDebug(">>> Entering Encode(text={Text})", text);
         text = text.ToUpper(CultureInfo.CurrentCulture);
         text = TrimSpaces(text);
+		_logger.LogDebug("Encode(text={Text}): text → {Text1}", text, text);
         text = StartReplace(text);
         text = EndReplace(text);
 
@@ -25,6 +29,7 @@ public class NysiisEncoder
         }
 
         text = RemoveDuplicates(text);
+		_logger.LogDebug("<<< Exiting Encode(text={Text})", text);
         return TrimEnd(text);
     }
 
@@ -32,8 +37,10 @@ public class NysiisEncoder
 
     private string RemoveDuplicates(string text)
     {
+		_logger.LogDebug(">>> Entering RemoveDuplicates(text={Text})", text);
         var sb = new StringBuilder();
         sb.Append(text[0]);
+		_logger.LogDebug("RemoveDuplicates(text={Text}): sb → {Sb}", text, sb);
         foreach (var c in text)
         {
             if (sb[^1] != c)
@@ -42,11 +49,13 @@ public class NysiisEncoder
             }
         }
 
+		_logger.LogDebug("<<< Exiting RemoveDuplicates(text={Text})", text);
         return sb.ToString();
     }
 
     private string TrimEnd(string text)
     {
+		_logger.LogDebug(">>> Entering TrimEnd(text={Text})", text);
         var checks = new (string From, string To)?[]
         {
             ("S", string.Empty),
@@ -54,17 +63,21 @@ public class NysiisEncoder
             ("A", string.Empty),
         };
         var replacement = checks.FirstOrDefault(t => text.EndsWith(t!.Value.From));
+		_logger.LogDebug("TrimEnd(text={Text}): replacement → {Replacement}", text, replacement);
         if (replacement is { })
         {
             var (from, to) = replacement!.Value;
             text = Replace(text, text.Length - from.Length, from.Length, to);
+			_logger.LogDebug("TrimEnd(text={Text}): text → {Text1}", text, text);
         }
 
+		_logger.LogDebug("<<< Exiting TrimEnd(text={Text})", text);
         return text;
     }
 
     private string ReplaceStep(string text, int i)
     {
+		_logger.LogDebug(">>> Entering ReplaceStep(text={Text},i={I})", text, i);
         (string From, string To)[] replacements =
         [
             ("EV", "AF"),
@@ -81,6 +94,7 @@ public class NysiisEncoder
             ("PH", "FF"),
         ];
         var replaced = TryReplace(text, i, replacements, out text);
+		_logger.LogDebug("ReplaceStep(text={Text},i={I}): replaced → {Replaced}", text, i, replaced);
         if (replaced)
         {
             return text;
@@ -106,6 +120,7 @@ public class NysiisEncoder
             return ReplaceWithPrevious();
         }
 
+		_logger.LogDebug("<<< Exiting ReplaceStep(text={Text},i={I})", text, i);
         return text;
 
         string ReplaceWithPrevious() => Replace(text, i, 1, text[i - 1].ToString());
@@ -113,6 +128,7 @@ public class NysiisEncoder
 
     private bool TryReplace(string text, int index, (string, string)[] opts, out string result)
     {
+		_logger.LogDebug(">>> Entering TryReplace(text={Text},index={Index},opts={Opts})", text, index, opts);
         for (var i = 0; i < opts.Length; i++)
         {
             var check = opts[i].Item1;
@@ -120,6 +136,7 @@ public class NysiisEncoder
             if (text.Length >= index + check.Length && text.Substring(index, check.Length) == check)
             {
                 result = Replace(text, index, check.Length, repl);
+				_logger.LogDebug("TryReplace(text={Text},index={Index},opts={Opts}): result → {Result}", text, index, opts, result);
                 return true;
             }
         }
@@ -130,6 +147,7 @@ public class NysiisEncoder
 
     private string StartReplace(string start)
     {
+		_logger.LogDebug(">>> Entering StartReplace(start={Start})", start);
         var checks = new (string From, string To)?[]
         {
             ("MAC", "MCC"),
@@ -140,6 +158,7 @@ public class NysiisEncoder
             ("SCH", "SSS"),
         };
         var replacement = checks.FirstOrDefault(t => start.StartsWith(t!.Value.From));
+		_logger.LogDebug("StartReplace(start={Start}): replacement → {Replacement}", start, replacement);
         if (replacement is { })
         {
             var (from, to) = replacement!.Value;
@@ -147,10 +166,12 @@ public class NysiisEncoder
         }
 
         return start;
+		_logger.LogDebug("<<< Exiting StartReplace(start={Start})", start);
     }
 
     private string EndReplace(string end)
     {
+		_logger.LogDebug(">>> Entering EndReplace(end={End})", end);
         var checks = new (string From, string To)?[]
         {
             ("EE", "Y"),
@@ -161,12 +182,15 @@ public class NysiisEncoder
             ("ND", "D"),
         };
         var replacement = checks.FirstOrDefault(t => end.EndsWith(t!.Value.From));
+		_logger.LogDebug("EndReplace(end={End}): replacement → {Replacement}", end, replacement);
         if (replacement is { })
         {
             var (from, to) = replacement!.Value;
             end = Replace(end, end.Length - from.Length, from.Length, to);
+			_logger.LogDebug("EndReplace(end={End}): end → {End1}", end, end);
         }
 
+		_logger.LogDebug("<<< Exiting EndReplace(end={End})", end);
         return end;
     }
 
