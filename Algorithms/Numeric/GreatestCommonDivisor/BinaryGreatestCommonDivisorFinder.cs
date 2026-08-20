@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric.GreatestCommonDivisor;
 
 /// <summary>
@@ -7,8 +8,10 @@ namespace Algorithms.Numeric.GreatestCommonDivisor;
 /// </summary>
 public class BinaryGreatestCommonDivisorFinder : IGreatestCommonDivisorFinder
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public int FindGcd(int u, int v)
     {
+		_logger.LogDebug(">>> Entering FindGcd(u={U},v={V})", u, v);
         // GCD(0, 0) = 0
         if (u == 0 && v == 0)
         {
@@ -23,7 +26,9 @@ public class BinaryGreatestCommonDivisorFinder : IGreatestCommonDivisorFinder
 
         // GCD(-a, -b) = GCD(-a, b) = GCD(a, -b) = GCD(a, b)
         u = Math.Sign(u) * u;
+		_logger.LogDebug("FindGcd(u={U},v={V}): u → {U1}", u, v, u);
         v = Math.Sign(v) * v;
+		_logger.LogDebug("FindGcd(u={U},v={V}): v → {V1}", u, v, v);
 
         // Let shift := lg K, where K is the greatest power of 2 dividing both u and v
         var shift = 0;
@@ -63,6 +68,7 @@ public class BinaryGreatestCommonDivisorFinder : IGreatestCommonDivisorFinder
         while (v != 0);
 
         // Restore common factors of 2
+		_logger.LogDebug("<<< Exiting FindGcd(u={U},v={V})", u, v);
         return u << shift;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Graph.MinimumSpanningTree;
 
 /// <summary>
@@ -11,6 +12,7 @@ namespace Algorithms.Graph.MinimumSpanningTree;
 /// </summary>
 public static class PrimMatrix
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Determine the minimum spanning tree for a given weighted undirected graph.
     /// </summary>
@@ -19,9 +21,11 @@ public static class PrimMatrix
     /// <returns>Adjacency matrix of the found MST.</returns>
     public static float[,] Solve(float[,] adjacencyMatrix, int start)
     {
+		_logger.LogDebug(">>> Entering Solve(adjacencyMatrix={AdjacencyMatrix},start={Start})", adjacencyMatrix, start);
         ValidateMatrix(adjacencyMatrix);
 
         var numNodes = adjacencyMatrix.GetLength(0);
+		_logger.LogDebug("Solve(adjacencyMatrix={AdjacencyMatrix},start={Start}): numNodes → {NumNodes}", adjacencyMatrix, start, numNodes);
 
         // Create array to represent minimum spanning tree
         var mst = new float[numNodes, numNodes];
@@ -31,6 +35,7 @@ public static class PrimMatrix
 
         // Create array to keep track of smallest edge weight for node
         var key = new float[numNodes];
+		_logger.LogWarning("Solve(adjacencyMatrix={AdjacencyMatrix},start={Start}): key → {Key}", adjacencyMatrix, start, key);
 
         // Create array to store parent of node
         var parent = new int[numNodes];
@@ -68,6 +73,7 @@ public static class PrimMatrix
             mst[parent[i], i] = adjacencyMatrix[i, parent[i]];
         }
 
+		_logger.LogDebug("<<< Exiting Solve(adjacencyMatrix={AdjacencyMatrix},start={Start})", adjacencyMatrix, start);
         return mst;
     }
 
@@ -77,9 +83,11 @@ public static class PrimMatrix
     /// <param name="adjacencyMatrix">Adjacency matric to check.</param>
     private static void ValidateMatrix(float[,] adjacencyMatrix)
     {
+		_logger.LogDebug(">>> Entering ValidateMatrix(adjacencyMatrix={AdjacencyMatrix})", adjacencyMatrix);
         // Matrix should be square
         if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
         {
+			_logger.LogWarning("Throwing ArgumentException from ValidateMatrix(adjacencyMatrix={AdjacencyMatrix})", adjacencyMatrix);
             throw new ArgumentException("Adjacency matrix must be square!");
         }
 
@@ -87,6 +95,7 @@ public static class PrimMatrix
         for (var i = 0; i < adjacencyMatrix.GetLength(0); i++)
         {
             var connection = false;
+			_logger.LogDebug("ValidateMatrix(adjacencyMatrix={AdjacencyMatrix}): connection → {Connection}", adjacencyMatrix, connection);
             for (var j = 0; j < adjacencyMatrix.GetLength(0); j++)
             {
                 if (Math.Abs(adjacencyMatrix[i, j] - adjacencyMatrix[j, i]) > 1e-6)
@@ -105,6 +114,7 @@ public static class PrimMatrix
                 throw new ArgumentException("Graph must be connected!");
             }
         }
+		_logger.LogDebug("<<< Exiting ValidateMatrix(adjacencyMatrix={AdjacencyMatrix})", adjacencyMatrix);
     }
 
     /// <summary>
@@ -116,10 +126,14 @@ public static class PrimMatrix
     /// <param name="parent">The node that added the node to the MST. Used for building MST adjacency matrix.</param>
     private static void GetNextNode(float[,] adjacencyMatrix, float[] key, bool[] added, int[] parent)
     {
+		_logger.LogDebug(">>> Entering GetNextNode(adjacencyMatrix={AdjacencyMatrix},key={Key},added={Added},parent={Parent})", adjacencyMatrix, key, added, parent);
         var numNodes = adjacencyMatrix.GetLength(0);
         var minWeight = float.PositiveInfinity;
+		_logger.LogDebug("GetNextNode(adjacencyMatrix={AdjacencyMatrix},key={Key},added={Added},parent={Parent}): minWeight → {MinWeight}", adjacencyMatrix, key, added, parent, minWeight);
+		_logger.LogDebug("GetNextNode(adjacencyMatrix={AdjacencyMatrix},key={Key},added={Added},parent={Parent}): numNodes → {NumNodes}", adjacencyMatrix, key, added, parent, numNodes);
 
         var node = -1;
+		_logger.LogDebug("GetNextNode(adjacencyMatrix={AdjacencyMatrix},key={Key},added={Added},parent={Parent}): node → {Node}", adjacencyMatrix, key, added, parent, node);
 
         // Find node with smallest node with known edge weight not in tree. Will always start with starting node
         for (var i = 0; i < numNodes; i++)
@@ -143,5 +157,6 @@ public static class PrimMatrix
                 parent[i] = node;
             }
         }
+		_logger.LogDebug("<<< Exiting GetNextNode(adjacencyMatrix={AdjacencyMatrix},key={Key},added={Added},parent={Parent})", adjacencyMatrix, key, added, parent);
     }
 }

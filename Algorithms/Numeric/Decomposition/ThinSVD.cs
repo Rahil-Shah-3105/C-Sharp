@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric.Decomposition;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Numeric.Decomposition;
 /// </summary>
 public static class ThinSvd
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Computes a random unit vector.
     /// </summary>
@@ -13,15 +15,20 @@ public static class ThinSvd
     /// <returns>The unit vector.</returns>
     public static double[] RandomUnitVector(int dimensions)
     {
+		_logger.LogDebug(">>> Entering RandomUnitVector(dimensions={Dimensions})", dimensions);
         Random random = new();
         double[] result = new double[dimensions];
+		_logger.LogDebug("RandomUnitVector(dimensions={Dimensions}): result → {Result}", dimensions, result);
+		_logger.LogDebug("RandomUnitVector(dimensions={Dimensions}): random → {Random}", dimensions, random);
         for (var i = 0; i < dimensions; i++)
         {
             result[i] = 2 * random.NextDouble() - 1;
         }
 
         var magnitude = result.Magnitude();
+		_logger.LogDebug("RandomUnitVector(dimensions={Dimensions}): magnitude → {Magnitude}", dimensions, magnitude);
         result = result.Scale(1 / magnitude);
+		_logger.LogDebug("<<< Exiting RandomUnitVector(dimensions={Dimensions})", dimensions);
         return result;
     }
 
@@ -44,6 +51,7 @@ public static class ThinSvd
     {
         var n = matrix.GetLength(1);
         var iterations = 0;
+		_logger.LogDebug("Decompose1D(matrix={Matrix},epsilon={Epsilon},maxIterations={MaxIterations}): n → {N}", matrix, epsilon, maxIterations, n);
         double mag;
         double[] lastIteration;
         double[] currIteration = RandomUnitVector(n);
@@ -59,10 +67,12 @@ public static class ThinSvd
                 currIteration = currIteration.Scale(1 / mag);
             }
 
+			_logger.LogDebug("Decompose1D(matrix={Matrix},epsilon={Epsilon},maxIterations={MaxIterations}): mag → {Mag}", matrix, epsilon, maxIterations, mag);
             iterations++;
         }
         while (lastIteration.Dot(currIteration) < 1 - epsilon && iterations < maxIterations);
 
+		_logger.LogDebug("<<< Exiting Decompose1D(matrix={Matrix})", matrix);
         return currIteration;
     }
 

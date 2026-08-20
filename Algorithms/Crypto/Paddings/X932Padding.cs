@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Crypto.Paddings;
 
 /// <summary>
@@ -21,6 +22,7 @@ namespace Algorithms.Crypto.Paddings;
 /// <param name="useRandomPadding">A boolean value that indicates whether to use random bytes as padding or not.</param>
 public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly bool useRandomPadding = useRandomPadding;
 
     /// <summary>
@@ -34,14 +36,17 @@ public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
     /// </exception>
     public int AddPadding(byte[] inputData, int inputOffset)
     {
+		_logger.LogDebug(">>> Entering AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
         // Check if the input offset is valid.
         if (inputOffset >= inputData.Length)
         {
+			_logger.LogWarning("Throwing ArgumentException from AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
             throw new ArgumentException("Not enough space in input array for padding");
         }
 
         // Calculate the number of padding bytes needed.
         var code = (byte)(inputData.Length - inputOffset);
+		_logger.LogDebug("AddPadding(inputData={InputData},inputOffset={InputOffset}): code → {Code}", inputData, inputOffset, code);
 
         // Fill the remaining bytes with random or zero bytes
         while (inputOffset < inputData.Length - 1)
@@ -64,6 +69,7 @@ public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
         inputData[inputOffset] = code;
 
         // Return the number of padding bytes.
+		_logger.LogDebug("<<< Exiting AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
         return code;
     }
 
@@ -77,6 +83,7 @@ public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
     /// </exception>
     public byte[] RemovePadding(byte[] inputData)
     {
+		_logger.LogDebug(">>> Entering RemovePadding(inputData={InputData})", inputData);
         // Check if the array is empty.
         if (inputData.Length == 0)
         {
@@ -89,6 +96,7 @@ public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
         // Check if the padding length is valid.
         if (paddingLength < 1 || paddingLength > inputData.Length)
         {
+			_logger.LogWarning("Throwing ArgumentException from RemovePadding(inputData={InputData})", inputData);
             throw new ArgumentException("Invalid padding length");
         }
 
@@ -99,6 +107,7 @@ public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
         Array.Copy(inputData, output, output.Length);
 
         // Return the output array.
+		_logger.LogDebug("<<< Exiting RemovePadding(inputData={InputData})", inputData);
         return output;
     }
 
@@ -112,8 +121,10 @@ public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
     /// </exception>
     public int GetPaddingCount(byte[] input)
     {
+		_logger.LogDebug(">>> Entering GetPaddingCount(input={Input})", input);
         // Get the last byte of the input data, which is the padding length.
         var count = input[^1] & 0xFF;
+		_logger.LogDebug("GetPaddingCount(input={Input}): count → {Count}", input, count);
 
         // Calculate the position of the first padding byte.
         var position = input.Length - count;
@@ -121,10 +132,13 @@ public class X932Padding(bool useRandomPadding) : IBlockCipherPadding
         // Check if the position and count are valid using bitwise operations.
         // If either of them is negative or zero, the result will be negative.
         var failed = (position | (count - 1)) >> 31;
+		_logger.LogDebug("GetPaddingCount(input={Input}): failed → {Failed}", input, failed);
 
         // Throw an exception if the result is negative.
         if (failed != 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from GetPaddingCount(input={Input})", input);
+		_logger.LogDebug("<<< Exiting GetPaddingCount(input={Input})", input);
             throw new ArgumentException("Pad block corrupted");
         }
 

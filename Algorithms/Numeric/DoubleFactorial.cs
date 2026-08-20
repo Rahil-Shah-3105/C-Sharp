@@ -1,4 +1,5 @@
 using System.Numerics;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Numeric;
 
@@ -9,6 +10,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class DoubleFactorial
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates the double factorial of a non-negative integer number.
     /// </summary>
@@ -16,9 +18,11 @@ public static class DoubleFactorial
     /// <returns>Double factorial of the integer input number.</returns>
     public static BigInteger Calculate(int inputNum)
     {
+		_logger.LogDebug(">>> Entering Calculate(inputNum={InputNum})", inputNum);
         // Don't calculate double factorial if input is a negative number.
         if (inputNum < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from Calculate(inputNum={InputNum})", inputNum);
             throw new ArgumentException("Double factorial is only defined for non-negative integers (num >= 0).");
         }
 
@@ -30,6 +34,7 @@ public static class DoubleFactorial
 
         // Initialize result.
         BigInteger result = BigInteger.One;
+		_logger.LogDebug("Calculate(inputNum={InputNum}): result → {Result}", inputNum, result);
 
         // Start the iteration from the input number and step down by 2.
         // This handles both odd (n, n-2, ..., 3, 1) and even (n, n-2, ..., 4, 2) cases naturally.
@@ -43,6 +48,7 @@ public static class DoubleFactorial
             current -= 2;
         }
 
+		_logger.LogDebug("<<< Exiting Calculate(inputNum={InputNum})", inputNum);
         return result;
     }
 }

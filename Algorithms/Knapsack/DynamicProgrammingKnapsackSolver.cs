@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Knapsack;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Knapsack;
 /// <typeparam name="T">Type of items in knapsack.</typeparam>
 public class DynamicProgrammingKnapsackSolver<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Returns the knapsack containing the items that
     ///     maximize value while not exceeding weight capacity.
@@ -31,15 +33,20 @@ public class DynamicProgrammingKnapsackSolver<T>
     /// </returns>
     public T[] Solve(T[] items, int capacity, Func<T, int> weightSelector, Func<T, double> valueSelector)
     {
+		_logger.LogDebug(">>> Entering Solve(items={Items},capacity={Capacity},weightSelector={WeightSelector},valueSelector={ValueSelector})", items, capacity, weightSelector, valueSelector);
         var cache = Tabulate(items, weightSelector, valueSelector, capacity);
+		_logger.LogDebug("Solve(items={Items},capacity={Capacity},weightSelector={WeightSelector},valueSelector={ValueSelector}): cache → {Cache}", items, capacity, weightSelector, valueSelector, cache);
+		_logger.LogDebug("<<< Exiting Solve(items={Items},capacity={Capacity},weightSelector={WeightSelector},valueSelector={ValueSelector})", items, capacity, weightSelector, valueSelector);
         return GetOptimalItems(items, weightSelector, cache, capacity);
     }
 
     private static T[] GetOptimalItems(T[] items, Func<T, int> weightSelector, double[,] cache, int capacity)
     {
+		_logger.LogDebug(">>> Entering GetOptimalItems(items={Items},weightSelector={WeightSelector},cache={Cache},capacity={Capacity})", items, weightSelector, cache, capacity);
         var currentCapacity = capacity;
 
         var result = new List<T>();
+		_logger.LogDebug("GetOptimalItems(items={Items},weightSelector={WeightSelector},cache={Cache},capacity={Capacity}): result → {Result}", items, weightSelector, cache, capacity, result);
         for (var i = items.Length - 1; i >= 0; i--)
         {
             if (cache[i + 1, currentCapacity] > cache[i, currentCapacity])
@@ -51,6 +58,7 @@ public class DynamicProgrammingKnapsackSolver<T>
         }
 
         result.Reverse(); // we added items back to front
+		_logger.LogDebug("<<< Exiting GetOptimalItems(items={Items},weightSelector={WeightSelector},cache={Cache},capacity={Capacity})", items, weightSelector, cache, capacity);
         return result.ToArray();
     }
 
@@ -61,8 +69,10 @@ public class DynamicProgrammingKnapsackSolver<T>
         int maxCapacity)
     {
         // Store the incremental results in a bottom up manner
+		_logger.LogDebug(">>> Entering Tabulate(items={Items},weightSelector={WeightSelector},valueSelector={ValueSelector},maxCapacity={MaxCapacity})", items, weightSelector, valueSelector, maxCapacity);
         var n = items.Length;
         var results = new double[n + 1, maxCapacity + 1];
+		_logger.LogDebug("Tabulate(items={Items},weightSelector={WeightSelector},valueSelector={ValueSelector},maxCapacity={MaxCapacity}): results → {Results}", items, weightSelector, valueSelector, maxCapacity, results);
         for (var i = 0; i <= n; i++)
         {
             for (var w = 0; w <= maxCapacity; w++)
@@ -79,7 +89,9 @@ public class DynamicProgrammingKnapsackSolver<T>
                     // Decide if it is better to take or not take this item
                     var iut = items[i - 1]; // iut = Item under test
                     var vut = valueSelector(iut); // vut = Value of item under test
+					_logger.LogDebug("Tabulate(items={Items},weightSelector={WeightSelector},valueSelector={ValueSelector},maxCapacity={MaxCapacity}): vut → {Vut}", items, weightSelector, valueSelector, maxCapacity, vut);
                     var wut = weightSelector(iut); // wut = Weight of item under test
+					_logger.LogDebug("Tabulate(items={Items},weightSelector={WeightSelector},valueSelector={ValueSelector},maxCapacity={MaxCapacity}): wut → {Wut}", items, weightSelector, valueSelector, maxCapacity, wut);
                     var valueIfTaken = vut + results[i - 1, w - wut];
                     var valueIfNotTaken = results[i - 1, w];
                     results[i, w] = Math.Max(valueIfTaken, valueIfNotTaken);
@@ -92,6 +104,7 @@ public class DynamicProgrammingKnapsackSolver<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting Tabulate(items={Items},weightSelector={WeightSelector},valueSelector={ValueSelector},maxCapacity={MaxCapacity})", items, weightSelector, valueSelector, maxCapacity);
         return results;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class BinomialCoefficient
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates Binomial coefficients for given input.
     /// </summary>
@@ -14,8 +16,10 @@ public static class BinomialCoefficient
     /// <returns>Binimial Coefficients.</returns>
     public static BigInteger Calculate(BigInteger num, BigInteger k)
     {
+		_logger.LogDebug(">>> Entering Calculate(num={Num},k={K})", num, k);
         if (num < k || k < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from Calculate(num={Num},k={K})", num, k);
             throw new ArgumentException("num ≥ k ≥ 0");
         }
 
@@ -40,6 +44,7 @@ public static class BinomialCoefficient
             denominator *= val;
         }
 
+		_logger.LogDebug("<<< Exiting Calculate(num={Num},k={K})", num, k);
         return numerator / denominator;
     }
 }
