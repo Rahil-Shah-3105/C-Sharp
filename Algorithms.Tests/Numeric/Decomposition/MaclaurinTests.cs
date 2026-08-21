@@ -1,22 +1,28 @@
 using Algorithms.Numeric.Series;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric.Decomposition;
 
 public class MaclaurinTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase(0.01, 3, 0.01)]
     [TestCase(1, 7, 0.001)]
     [TestCase(-1.2, 7, 0.001)]
     public void Exp_TermsForm_ValidCases(double point, int terms, double expectedError)
     {
+		_logger.LogDebug(">>> Entering Exp_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError})", point, terms, expectedError);
         // Arrange
         var expected = Math.Exp(point);
+		_logger.LogDebug("Exp_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError}): expected → {Expected}", point, terms, expectedError, expected);
 
         // Act
         var actual = Maclaurin.Exp(point, terms);
+		_logger.LogDebug("Exp_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError}): actual → {Actual}", point, terms, expectedError, actual);
 
         // Assert
         Assert.That(Math.Abs(expected - actual) < expectedError, Is.True);
+		_logger.LogDebug("<<< Exiting Exp_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError})", point, terms, expectedError);
     }
 
     [Test]
@@ -29,14 +35,18 @@ public class MaclaurinTests
     [TestCase(3.14, 7, 0.001)]
     public void Sin_TermsForm_ValidCases(double point, int terms, double expectedError)
     {
+		_logger.LogDebug(">>> Entering Sin_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError})", point, terms, expectedError);
         // Arrange
         var expected = Math.Sin(point);
+		_logger.LogDebug("Sin_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError}): expected → {Expected}", point, terms, expectedError, expected);
 
         // Act
         var actual = Maclaurin.Sin(point, terms);
+		_logger.LogDebug("Sin_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError}): actual → {Actual}", point, terms, expectedError, actual);
 
         // Assert
         Assert.That(Math.Abs(expected - actual) < expectedError, Is.True);
+		_logger.LogDebug("<<< Exiting Sin_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError})", point, terms, expectedError);
     }
 
     [Test]
@@ -49,14 +59,18 @@ public class MaclaurinTests
     [TestCase(3.14, 7, 0.001)]
     public void Cos_TermsForm_ValidCases(double point, int terms, double expectedError)
     {
+		_logger.LogDebug(">>> Entering Cos_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError})", point, terms, expectedError);
         // Arrange
         var expected = Math.Cos(point);
+		_logger.LogDebug("Cos_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError}): expected → {Expected}", point, terms, expectedError, expected);
 
         // Act
         var actual = Maclaurin.Cos(point, terms);
+		_logger.LogDebug("Cos_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError}): actual → {Actual}", point, terms, expectedError, actual);
 
         // Assert
         Assert.That(Math.Abs(expected - actual) < expectedError, Is.True);
+		_logger.LogDebug("<<< Exiting Cos_TermsForm_ValidCases(point={Point},terms={Terms},expectedError={ExpectedError})", point, terms, expectedError);
     }
 
     [Test]
@@ -69,14 +83,18 @@ public class MaclaurinTests
     [TestCase(-1.2, 0.001)]
     public void Exp_ErrorForm_ValidCases(double point, double error)
     {
+		_logger.LogDebug(">>> Entering Exp_ErrorForm_ValidCases(point={Point},error={Error})", point, error);
         // Arrange
         var expected = Math.Exp(point);
+		_logger.LogDebug("Exp_ErrorForm_ValidCases(point={Point},error={Error}): expected → {Expected}", point, error, expected);
 
         // Act
         var actual = Maclaurin.Exp(point, error);
+		_logger.LogDebug("Exp_ErrorForm_ValidCases(point={Point},error={Error}): actual → {Actual}", point, error, actual);
 
         // Assert
         Assert.That(Math.Abs(expected - actual) < error, Is.True);
+		_logger.LogDebug("<<< Exiting Exp_ErrorForm_ValidCases(point={Point},error={Error})", point, error);
     }
 
     [TestCase(0.0)]
@@ -90,14 +108,18 @@ public class MaclaurinTests
     [TestCase(3.14, 0.0001)]
     public void Sin_ErrorForm_ValidCases(double point, double error)
     {
+		_logger.LogDebug(">>> Entering Sin_ErrorForm_ValidCases(point={Point},error={Error})", point, error);
         // Arrange
         var expected = Math.Sin(point);
+		_logger.LogDebug("Sin_ErrorForm_ValidCases(point={Point},error={Error}): expected → {Expected}", point, error, expected);
 
         // Act
         var actual = Maclaurin.Sin(point, error);
+		_logger.LogDebug("Sin_ErrorForm_ValidCases(point={Point},error={Error}): actual → {Actual}", point, error, actual);
 
         // Assert
         Assert.That(Math.Abs(expected - actual) < error, Is.True);
+		_logger.LogDebug("<<< Exiting Sin_ErrorForm_ValidCases(point={Point},error={Error})", point, error);
     }
 
     [TestCase(0.0)]
@@ -111,14 +133,18 @@ public class MaclaurinTests
     [TestCase(3.14, 0.0001)]
     public void Cos_ErrorForm_ValidCases(double point, double error)
     {
+		_logger.LogDebug(">>> Entering Cos_ErrorForm_ValidCases(point={Point},error={Error})", point, error);
         // Arrange
         var expected = Math.Cos(point);
+		_logger.LogDebug("Cos_ErrorForm_ValidCases(point={Point},error={Error}): expected → {Expected}", point, error, expected);
 
         // Act
         var actual = Maclaurin.Cos(point, error);
+		_logger.LogDebug("Cos_ErrorForm_ValidCases(point={Point},error={Error}): actual → {Actual}", point, error, actual);
 
         // Assert
         Assert.That(Math.Abs(expected - actual) < error, Is.True);
+		_logger.LogDebug("<<< Exiting Cos_ErrorForm_ValidCases(point={Point},error={Error})", point, error);
     }
 
     [TestCase(0.0)]

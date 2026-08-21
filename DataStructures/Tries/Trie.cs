@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Tries;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace DataStructures.Tries;
 /// </summary>
 public class Trie
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// This character marks the end of a string.
     /// </summary>
@@ -23,7 +25,10 @@ public class Trie
     /// </summary>
     public Trie()
     {
+		_logger.LogDebug(">>> Entering Trie()");
         root = new TrieNode(Mark);
+		_logger.LogWarning("Trie(): root → {Root}", root);
+		_logger.LogDebug("<<< Exiting Trie()");
     }
 
     /// <summary>
@@ -45,17 +50,21 @@ public class Trie
     /// <param name="s">The string to insert into the trie.</param>
     public void Insert(string s)
     {
+		_logger.LogDebug(">>> Entering Insert(s={S})", s);
         s += Mark;
 
         int index = 0;
         TrieNode match = PrefixQuery(s, ref index);
+		_logger.LogDebug("Insert(s={S}): match → {Match}", s, match);
 
         for (int i = index; i < s.Length; i++)
         {
             TrieNode t = new(s[i], match);
+			_logger.LogDebug("Insert(s={S}): t → {T}", s, t);
             match[s[i]] = t;
             match = t;
         }
+		_logger.LogDebug("<<< Exiting Insert(s={S})", s);
     }
 
     /// <summary>
@@ -64,9 +73,11 @@ public class Trie
     /// <param name="s">The text string to be removed from the trie.</param>
     public void Remove(string s)
     {
+		_logger.LogDebug(">>> Entering Remove(s={S})", s);
         s += Mark;
         int index = 0;
         TrieNode match = PrefixQuery(s, ref index);
+		_logger.LogDebug("Remove(s={S}): match → {Match}", s, match);
         while (match.IsLeaf())
         {
             char c = match.Value;
@@ -78,6 +89,7 @@ public class Trie
             match = match.Parent;
             match.Children.Remove(c);
         }
+		_logger.LogDebug("<<< Exiting Remove(s={S})", s);
     }
 
     /// <summary>
@@ -87,7 +99,9 @@ public class Trie
     /// <returns>If the string is found, it returns true, otherwise false.</returns>
     public bool Find(string s)
     {
+		_logger.LogDebug(">>> Entering Find(s={S})", s);
         int index = 0;
+		_logger.LogDebug("<<< Exiting Find(s={S})", s);
         return PrefixQuery(s + Mark, ref index).IsLeaf();
     }
 
@@ -101,6 +115,7 @@ public class Trie
     /// </returns>
     private TrieNode PrefixQuery(string s, ref int index)
     {
+		_logger.LogDebug(">>> Entering PrefixQuery(s={S},index={Index})", s, index);
         TrieNode current = root;
         for (int i = 0; i < s.Length && current != null; i++)
         {
@@ -115,6 +130,7 @@ public class Trie
             }
         }
 
+		_logger.LogDebug("<<< Exiting PrefixQuery(s={S},index={Index})", s, index);
         return current ?? throw new NullReferenceException();
     }
 }

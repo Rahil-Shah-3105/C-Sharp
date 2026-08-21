@@ -1,12 +1,15 @@
 using Algorithms.Sequences;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Sequences;
 
 public class EulerTotientSequenceTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void FirstElementsCorrect()
     {
+		_logger.LogDebug(">>> Entering FirstElementsCorrect()");
         //  Let's be thorough.  500 phi values!
         //  Initial test of 69 number from table at https://oeis.org/A000010/list and passed test.
         //  Extended out to 500 values from https://primefan.tripod.com/Phi500.html and passed initial 69
@@ -41,6 +44,8 @@ public class EulerTotientSequenceTests
         ];
 
         var sequence = new EulerTotientSequence().Sequence.Take(check.Length);
+		_logger.LogDebug("FirstElementsCorrect(): sequence → {Sequence}", sequence);
         sequence.SequenceEqual(check).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting FirstElementsCorrect()");
     }
 }

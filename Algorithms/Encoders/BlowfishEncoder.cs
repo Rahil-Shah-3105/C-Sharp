@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Encoders;
 
 /// <summary>
@@ -21,6 +22,7 @@ namespace Algorithms.Encoders;
 /// </summary>
 public class BlowfishEncoder
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // Initialize modVal to 2^32
     private const ulong ModVal = 4294967296L;
 
@@ -178,15 +180,18 @@ public class BlowfishEncoder
     /// <param name="key">The key to generate the subkey from.</param>
     public void GenerateKey(string key)
     {
+		_logger.LogDebug(">>> Entering GenerateKey(key={Key})", key);
         var j = 0;
         for (var i = 0; i < p.Length; i++)
         {
             // Perform the key expansion
             var subKey = key.Substring(j % key.Length, 8);
+			_logger.LogDebug("GenerateKey(key={Key}): subKey → {SubKey}", key, subKey);
             p[i] = Xor(p[i], subKey);
 
             j += 8;
         }
+		_logger.LogDebug("<<< Exiting GenerateKey(key={Key})", key);
     }
 
     /// <summary>
@@ -196,15 +201,19 @@ public class BlowfishEncoder
     /// <returns>The encrypted string, represented as a hexadecimal string.</returns>
     public string Encrypt(string plainText)
     {
+		_logger.LogDebug(">>> Entering Encrypt(plainText={PlainText})", plainText);
         // Perform the 16 rounds of the blowfish algorithm on the plainText.
         for (var i = 0; i < 16; i++)
         {
             plainText = Round(i, plainText);
+			_logger.LogDebug("Encrypt(plainText={PlainText}): plainText → {PlainText1}", plainText, plainText);
         }
 
         // Swap the left and right parts of the plainText.
         var left = plainText.Substring(8, 8);
+		_logger.LogDebug("Encrypt(plainText={PlainText}): left → {Left}", plainText, left);
         var right = plainText[..8];
+		_logger.LogDebug("Encrypt(plainText={PlainText}): right → {Right}", plainText, right);
 
         // XOR the left half with the last subkey of the P-array.
         left = Xor(left, p[17]);
@@ -213,6 +222,7 @@ public class BlowfishEncoder
         right = Xor(right, p[16]);
 
         // Return the encrypted string as a concatenated string.
+		_logger.LogDebug("<<< Exiting Encrypt(plainText={PlainText})", plainText);
         return left + right;
     }
 
@@ -223,15 +233,19 @@ public class BlowfishEncoder
     /// <returns>The decrypted string, represented as a hexadecimal string.</returns>
     public string Decrypt(string cipherText)
     {
+		_logger.LogDebug(">>> Entering Decrypt(cipherText={CipherText})", cipherText);
         // Perform 16 rounds of the blowfish algorithm on the cipherText in reverse order.
         for (var i = 17; i > 1; i--)
         {
             cipherText = Round(i, cipherText);
+			_logger.LogDebug("Decrypt(cipherText={CipherText}): cipherText → {CipherText1}", cipherText, cipherText);
         }
 
         // Swap the left and right halves of the cipherText.
         var left = cipherText.Substring(8, 8);
+		_logger.LogDebug("Decrypt(cipherText={CipherText}): left → {Left}", cipherText, left);
         var right = cipherText.Substring(0, 8);
+		_logger.LogDebug("Decrypt(cipherText={CipherText}): right → {Right}", cipherText, right);
 
         // XOR the left half with the first subkey from the P-array.
         left = Xor(left, p[0]);
@@ -240,6 +254,7 @@ public class BlowfishEncoder
         right = Xor(right, p[1]);
 
         // Return the decrypted string as a concatenated string.
+		_logger.LogDebug("<<< Exiting Decrypt(cipherText={CipherText})", cipherText);
         return left + right;
     }
 
@@ -250,6 +265,8 @@ public class BlowfishEncoder
     /// <returns>A multiple of 4 binary string representing the hexadecimal input.</returns>
     private string HexadecimalToBinary(string hex)
     {
+		_logger.LogDebug(">>> Entering HexadecimalToBinary(hex={Hex})", hex);
+		_logger.LogDebug("<<< Exiting HexadecimalToBinary(hex={Hex})", hex);
         return hex.Select(t =>
 
                 // Convert each character to an integer using base 16
@@ -269,6 +286,8 @@ public class BlowfishEncoder
     /// <returns>A hexadecimal string representing the binary input.</returns>
     private string BinaryToHexadecimal(string binaryInput)
     {
+		_logger.LogDebug(">>> Entering BinaryToHexadecimal(binaryInput={BinaryInput})", binaryInput);
+		_logger.LogDebug("<<< Exiting BinaryToHexadecimal(binaryInput={BinaryInput})", binaryInput);
         return string.Concat(
             Enumerable.Range(0, binaryInput.Length / 4)
 
@@ -290,11 +309,15 @@ public class BlowfishEncoder
     /// <returns>A hexadecimal string representing the XOR of the inputs.</returns>
     private string Xor(string left, string right)
     {
+		_logger.LogDebug(">>> Entering Xor(left={Left},right={Right})", left, right);
         // Convert the hexadecimal strings to binary strings using a helper method
         left = HexadecimalToBinary(left);
+		_logger.LogDebug("Xor(left={Left},right={Right}): left → {Left1}", left, right, left);
         right = HexadecimalToBinary(right);
+		_logger.LogDebug("Xor(left={Left},right={Right}): right → {Right1}", left, right, right);
 
         var xor = new StringBuilder();
+		_logger.LogDebug("Xor(left={Left},right={Right}): xor → {Xor}", left, right, xor);
 
         // Loop through each bit in the binary strings
         for (var i = 0; i < left.Length; i++)
@@ -305,6 +328,8 @@ public class BlowfishEncoder
 
         // Convert the binary string to a hexadecimal string
         var result = BinaryToHexadecimal(xor.ToString());
+		_logger.LogDebug("Xor(left={Left},right={Right}): result → {Result}", left, right, result);
+		_logger.LogDebug("<<< Exiting Xor(left={Left},right={Right})", left, right);
         return result;
     }
 
@@ -316,20 +341,26 @@ public class BlowfishEncoder
     /// <returns>A hexadecimal string representing the sum of the inputs modulo _modVal.</returns>
     private string AddAndMod(string left, string right)
     {
+		_logger.LogDebug(">>> Entering AddAndMod(left={Left},right={Right})", left, right);
         // Convert the hexadecimal strings to unsigned 64-bit integers using base 16
         var leftNumber = Convert.ToUInt64(left, 16);
+		_logger.LogDebug("AddAndMod(left={Left},right={Right}): leftNumber → {LeftNumber}", left, right, leftNumber);
         var rightNumber = Convert.ToUInt64(right, 16);
+		_logger.LogDebug("AddAndMod(left={Left},right={Right}): rightNumber → {RightNumber}", left, right, rightNumber);
 
         // Add the two integers and calculate the remainder after dividing by _modVal
         var total = (leftNumber + rightNumber) % ModVal;
+		_logger.LogDebug("AddAndMod(left={Left},right={Right}): total → {Total}", left, right, total);
 
         // Convert the result to a hexadecimal string using base 16
         var result = total.ToString("x");
+		_logger.LogDebug("AddAndMod(left={Left},right={Right}): result → {Result}", left, right, result);
 
         // Pad the result with leading zeros to make it 8 characters long
         result = "00000000" + result;
 
         // Return the last 8 characters of the result
+		_logger.LogDebug("<<< Exiting AddAndMod(left={Left},right={Right})", left, right);
         return result[^8..];
     }
 
@@ -344,17 +375,21 @@ public class BlowfishEncoder
     /// </remarks>
     private string F(string plainText)
     {
+		_logger.LogDebug(">>> Entering F(plainText={PlainText})", plainText);
         var a = new string[4];
 
         for (var i = 0; i < 8; i += 2)
         {
             var col = Convert.ToUInt64(HexadecimalToBinary(plainText.Substring(i, 2)), 2);
+			_logger.LogDebug("F(plainText={PlainText}): col → {Col}", plainText, col);
             a[i / 2] = s[i / 2][col];
         }
 
         var answer = AddAndMod(a[0], a[1]);
+		_logger.LogDebug("F(plainText={PlainText}): answer → {Answer}", plainText, answer);
         answer = Xor(answer, a[2]);
         answer = AddAndMod(answer, a[3]);
+		_logger.LogDebug("<<< Exiting F(plainText={PlainText})", plainText);
         return answer;
     }
 
@@ -366,20 +401,25 @@ public class BlowfishEncoder
     /// <returns>The encrypted or decrypted block of data, represented as a hexadecimal string.</returns>
     private string Round(int feistelRound, string plainText)
     {
+		_logger.LogDebug(">>> Entering Round(feistelRound={FeistelRound},plainText={PlainText})", feistelRound, plainText);
         // Split the plainText into two 32-bit halves.
         var left = plainText[..8];
+		_logger.LogDebug("Round(feistelRound={FeistelRound},plainText={PlainText}): left → {Left}", feistelRound, plainText, left);
         var right = plainText.Substring(8, 8);
+		_logger.LogDebug("Round(feistelRound={FeistelRound},plainText={PlainText}): right → {Right}", feistelRound, plainText, right);
 
         // XOR the left half with the subkey from the P-array.
         left = Xor(left, p[feistelRound]);
 
         // Apply the F function to the left half.
         var fOutput = F(left);
+		_logger.LogDebug("Round(feistelRound={FeistelRound},plainText={PlainText}): fOutput → {FOutput}", feistelRound, plainText, fOutput);
 
         // XOR the output of the F function with the right half.
         right = Xor(fOutput, right);
 
         // Swap the left and right halves and return them as a concatenated string.
+		_logger.LogDebug("<<< Exiting Round(feistelRound={FeistelRound},plainText={PlainText})", feistelRound, plainText);
         return right + left;
     }
 }

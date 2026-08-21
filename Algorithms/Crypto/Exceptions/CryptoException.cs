@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Crypto.Exceptions;
 
 /// <summary>
@@ -5,11 +6,14 @@ namespace Algorithms.Crypto.Exceptions;
 /// </summary>
 public class CryptoException : Exception
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Initializes a new instance of the <see cref="CryptoException"/> class.
     /// </summary>
     public CryptoException()
     {
+	_logger.LogDebug(">>> Entering CryptoException()");
+	_logger.LogDebug("<<< Exiting CryptoException(message={Message})", message);
     }
 
     /// <summary>
@@ -19,6 +23,7 @@ public class CryptoException : Exception
     public CryptoException(string message)
         : base(message)
     {
+		_logger.LogDebug("<<< Exiting CryptoException(message={Message})", message);
     }
 
     /// <summary>

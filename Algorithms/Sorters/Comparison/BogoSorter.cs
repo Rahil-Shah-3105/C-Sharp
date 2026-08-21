@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class BogoSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly Random random = new();
 
     /// <summary>
@@ -21,14 +23,17 @@ public class BogoSorter<T> : IComparisonSorter<T>
     /// <param name="comparer">Compares elements.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         while (!IsSorted(array, comparer))
         {
             Shuffle(array);
         }
+		_logger.LogDebug("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 
     private bool IsSorted(T[] array, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering IsSorted(array={Array},comparer={Comparer})", array, comparer);
         for (var i = 0; i < array.Length - 1; i++)
         {
             if (comparer.Compare(array[i], array[i + 1]) > 0)
@@ -37,11 +42,13 @@ public class BogoSorter<T> : IComparisonSorter<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting IsSorted(array={Array},comparer={Comparer})", array, comparer);
         return true;
     }
 
     private void Shuffle(T[] array)
     {
+		_logger.LogDebug(">>> Entering Shuffle(array={Array})", array);
         var taken = new bool[array.Length];
         var newArray = new T[array.Length];
         for (var i = 0; i < array.Length; i++)
@@ -61,5 +68,6 @@ public class BogoSorter<T> : IComparisonSorter<T>
         {
             array[i] = newArray[i];
         }
+		_logger.LogDebug("<<< Exiting Shuffle(array={Array})", array);
     }
 }

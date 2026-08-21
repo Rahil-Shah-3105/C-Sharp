@@ -1,12 +1,15 @@
 using DataStructures.ScapegoatTree;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Tests.ScapegoatTree;
 
 public class ExtensionsTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void RebuildFlatTree_ValidFlatTree_RebuildsTree()
     {
+		_logger.LogDebug(">>> Entering RebuildFlatTree_ValidFlatTree_RebuildsTree()");
         var expected = new Node<int>(3)
         {
             Left = new Node<int>(1)
@@ -32,6 +35,7 @@ public class ExtensionsTests
         };
 
         var tree = Extensions.RebuildFromList(list, 0, list.Count - 1);
+		_logger.LogDebug("RebuildFlatTree_ValidFlatTree_RebuildsTree(): tree → {Tree}", tree);
 
         Assert.That(list.Count, Is.EqualTo(tree.GetSize()));
         Assert.That(expected.Key, Is.EqualTo(tree.Key));
@@ -45,11 +49,14 @@ public class ExtensionsTests
         Assert.That(expected.Left.Right.Key, Is.EqualTo(tree.Left!.Right!.Key));
         Assert.That(tree.Right.Left, Is.Not.Null);
         Assert.That(expected.Right.Left.Key, Is.EqualTo(tree.Right!.Left!.Key));
+		_logger.LogDebug("<<< Exiting RebuildFlatTree_ValidFlatTree_RebuildsTree()");
     }
 
     [Test]
     public void RebuildFromList_RangeIsInvalid_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering RebuildFromList_RangeIsInvalid_ThrowsException()");
         Assert.Throws<ArgumentException>(() => Extensions.RebuildFromList(new List<Node<int>>(), 1, 0));
+		_logger.LogDebug("<<< Exiting RebuildFromList_RangeIsInvalid_ThrowsException()");
     }
 }

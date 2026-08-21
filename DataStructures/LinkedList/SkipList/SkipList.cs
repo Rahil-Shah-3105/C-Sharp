@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.LinkedList.SkipList;
 
@@ -29,6 +30,7 @@ namespace DataStructures.LinkedList.SkipList;
 [DebuggerDisplay("Count = {Count}")]
 public class SkipList<TValue>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private const double Probability = 0.5;
     private readonly int maxLevels;
     private readonly SkipListNode<TValue> head;
@@ -41,15 +43,20 @@ public class SkipList<TValue>
     /// <param name="capacity">Expected number of elements the list might contain.</param>
     public SkipList(int capacity = 255)
     {
+		_logger.LogDebug(">>> Entering SkipList(capacity={Capacity})", capacity);
         maxLevels = (int)Math.Log2(capacity) + 1;
 
+		_logger.LogDebug("SkipList(capacity={Capacity}): maxLevels → {MaxLevels}", capacity, maxLevels);
         head = new(int.MinValue, default(TValue), maxLevels);
         tail = new(int.MaxValue, default(TValue), maxLevels);
 
+		_logger.LogDebug("SkipList(capacity={Capacity}): head → {Head}", capacity, head);
+		_logger.LogDebug("SkipList(capacity={Capacity}): tail → {Tail}", capacity, tail);
         for (int i = 0; i < maxLevels; i++)
         {
             head.Next[i] = tail;
         }
+		_logger.LogDebug("<<< Exiting SkipList(capacity={Capacity})", capacity);
     }
 
     /// <summary>
@@ -90,9 +97,12 @@ public class SkipList<TValue>
     /// </remarks>
     public void AddOrUpdate(int key, TValue value)
     {
+		_logger.LogDebug(">>> Entering AddOrUpdate(key={Key},value={Value})", key, value);
         var skipNodes = GetSkipNodes(key);
 
+		_logger.LogDebug("AddOrUpdate(key={Key},value={Value}): skipNodes → {SkipNodes}", key, value, skipNodes);
         var previousNode = skipNodes.First();
+		_logger.LogDebug("AddOrUpdate(key={Key},value={Value}): previousNode → {PreviousNode}", key, value, previousNode);
         if (previousNode.Next[0].Key == key)
         {
             // Node with the given key already exists.
@@ -104,6 +114,7 @@ public class SkipList<TValue>
         // Node with the given key does not exist.
         // Insert the new one and update the skip nodes.
         var newNode = new SkipListNode<TValue>(key, value, GetRandomHeight());
+		_logger.LogDebug("AddOrUpdate(key={Key},value={Value}): newNode → {NewNode}", key, value, newNode);
         for (var level = 0; level < newNode.Height; level++)
         {
             newNode.Next[level] = skipNodes[level].Next[level];
@@ -111,6 +122,7 @@ public class SkipList<TValue>
         }
 
         Count++;
+		_logger.LogDebug("<<< Exiting AddOrUpdate(key={Key},value={Value})", key, value);
     }
 
     /// <summary>
@@ -121,7 +133,10 @@ public class SkipList<TValue>
     /// </remarks>
     public bool Contains(int key)
     {
+		_logger.LogDebug(">>> Entering Contains(key={Key})", key);
         var previousNode = GetSkipNodes(key).First();
+		_logger.LogDebug("Contains(key={Key}): previousNode → {PreviousNode}", key, previousNode);
+		_logger.LogDebug("<<< Exiting Contains(key={Key})", key);
         return previousNode.Next[0].Key == key;
     }
 
@@ -136,8 +151,11 @@ public class SkipList<TValue>
     /// </remarks>
     public bool Remove(int key)
     {
+		_logger.LogDebug(">>> Entering Remove(key={Key})", key);
         var skipNodes = GetSkipNodes(key);
         var previousNode = skipNodes.First();
+		_logger.LogDebug("Remove(key={Key}): previousNode → {PreviousNode}", key, previousNode);
+		_logger.LogDebug("Remove(key={Key}): skipNodes → {SkipNodes}", key, skipNodes);
         if (previousNode.Next[0].Key != key)
         {
             return false;
@@ -152,6 +170,7 @@ public class SkipList<TValue>
 
         Count--;
 
+		_logger.LogDebug("<<< Exiting Remove(key={Key})", key);
         return true;
     }
 
@@ -164,12 +183,14 @@ public class SkipList<TValue>
     /// </remarks>
     public IEnumerable<TValue> GetValues()
     {
+		_logger.LogDebug(">>> Entering GetValues()");
         var current = head.Next[0];
         while (current.Key != tail.Key)
         {
             yield return current.Value!;
             current = current.Next[0];
         }
+		_logger.LogDebug("<<< Exiting GetValues()");
     }
 
     /// <summary>
@@ -182,8 +203,10 @@ public class SkipList<TValue>
     /// </remarks>
     private SkipListNode<TValue>[] GetSkipNodes(int key)
     {
+		_logger.LogDebug(">>> Entering GetSkipNodes(key={Key})", key);
         var skipNodes = new SkipListNode<TValue>[maxLevels];
         var current = head;
+		_logger.LogDebug("GetSkipNodes(key={Key}): current → {Current}", key, current);
         for (var level = head.Height - 1; level >= 0; level--)
         {
             while (current.Next[level].Key < key)
@@ -194,6 +217,7 @@ public class SkipList<TValue>
             skipNodes[level] = current;
         }
 
+		_logger.LogDebug("<<< Exiting GetSkipNodes(key={Key})", key);
         return skipNodes;
     }
 
@@ -205,12 +229,14 @@ public class SkipList<TValue>
     /// </remarks>
     private int GetRandomHeight()
     {
+		_logger.LogDebug(">>> Entering GetRandomHeight()");
         int height = 1;
         while (random.NextDouble() < Probability && height < maxLevels)
         {
             height++;
         }
 
+		_logger.LogDebug("<<< Exiting GetRandomHeight()");
         return height;
     }
 }

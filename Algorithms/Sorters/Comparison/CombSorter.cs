@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class CombSorter<T>(double shrinkFactor = 1.3) : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private double ShrinkFactor { get; } = shrinkFactor;
 
     /// <summary>
@@ -22,8 +24,11 @@ public class CombSorter<T>(double shrinkFactor = 1.3) : IComparisonSorter<T>
     /// <param name="comparer">Compares elements.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         var gap = array.Length;
         var sorted = false;
+		_logger.LogDebug("Sort(array={Array},comparer={Comparer}): sorted → {Sorted}", array, comparer, sorted);
+		_logger.LogDebug("Sort(array={Array},comparer={Comparer}): gap → {Gap}", array, comparer, gap);
         while (!sorted)
         {
             gap = (int)Math.Floor(gap / ShrinkFactor);
@@ -42,5 +47,6 @@ public class CombSorter<T>(double shrinkFactor = 1.3) : IComparisonSorter<T>
                 }
             }
         }
+		_logger.LogDebug("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 }

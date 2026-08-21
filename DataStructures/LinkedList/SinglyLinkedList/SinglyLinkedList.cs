@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.LinkedList.SinglyLinkedList;
 
 public class SinglyLinkedList<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // points to the start of the list
     private SinglyLinkedListNode<T>? Head { get; set; }
 
@@ -14,12 +16,15 @@ public class SinglyLinkedList<T>
     /// <returns>Added list node.</returns>
     public SinglyLinkedListNode<T> AddFirst(T data)
     {
+		_logger.LogDebug(">>> Entering AddFirst(data={Data})", data);
         var newListElement = new SinglyLinkedListNode<T>(data)
         {
             Next = Head,
         };
 
         Head = newListElement;
+		_logger.LogDebug("AddFirst(data={Data}): Head → {Head}", data, Head);
+		_logger.LogDebug("<<< Exiting AddFirst(data={Data})", data);
         return newListElement;
     }
 
@@ -33,17 +38,21 @@ public class SinglyLinkedList<T>
     /// <returns>Added list node.</returns>
     public SinglyLinkedListNode<T> AddLast(T data)
     {
+		_logger.LogDebug(">>> Entering AddLast(data={Data})", data);
         var newListElement = new SinglyLinkedListNode<T>(data);
 
+		_logger.LogDebug("AddLast(data={Data}): newListElement → {NewListElement}", data, newListElement);
         // if head is null, the added element is the first, hence it is the head
         if (Head is null)
         {
             Head = newListElement;
+			_logger.LogDebug("AddLast(data={Data}): Head → {Head}", data, Head);
             return newListElement;
         }
 
         // temp ListElement to avoid overwriting the original
         var tempElement = Head;
+		_logger.LogDebug("AddLast(data={Data}): tempElement → {TempElement}", data, tempElement);
 
         // iterates through all elements
         while (tempElement.Next is not null)
@@ -53,6 +62,8 @@ public class SinglyLinkedList<T>
 
         // adds the new element to the last one
         tempElement.Next = newListElement;
+		_logger.LogDebug("AddLast(data={Data}): tempElement.Next → {Arg1}", data, tempElement.Next);
+		_logger.LogDebug("<<< Exiting AddLast(data={Data})", data);
         return newListElement;
     }
 
@@ -63,12 +74,15 @@ public class SinglyLinkedList<T>
     /// <returns>Element at index <paramref name="index" />.</returns>
     public T GetElementByIndex(int index)
     {
+		_logger.LogDebug(">>> Entering GetElementByIndex(index={Index})", index);
         if (index < 0)
         {
+			_logger.LogWarning("Throwing ArgumentOutOfRangeException from GetElementByIndex(index={Index})", index);
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         var tempElement = Head;
+		_logger.LogDebug("GetElementByIndex(index={Index}): tempElement → {TempElement}", index, tempElement);
 
         for (var i = 0; tempElement is not null && i < index; i++)
         {
@@ -77,6 +91,7 @@ public class SinglyLinkedList<T>
 
         if (tempElement is null)
         {
+		_logger.LogDebug("<<< Exiting GetElementByIndex(index={Index})", index);
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
@@ -85,6 +100,7 @@ public class SinglyLinkedList<T>
 
     public int Length()
     {
+		_logger.LogDebug(">>> Entering Length()");
         // checks if there is a head
         if (Head is null)
         {
@@ -92,6 +108,7 @@ public class SinglyLinkedList<T>
         }
 
         var tempElement = Head;
+		_logger.LogDebug("Length(): tempElement → {TempElement}", tempElement);
         var length = 1;
 
         while (tempElement.Next is not null)
@@ -100,13 +117,16 @@ public class SinglyLinkedList<T>
             length++;
         }
 
+		_logger.LogDebug("<<< Exiting Length()");
         return length;
     }
 
     public IEnumerable<T> GetListData()
     {
+		_logger.LogDebug(">>> Entering GetListData()");
         // temp ListElement to avoid overwriting the original
         var tempElement = Head;
+		_logger.LogDebug("GetListData(): tempElement → {TempElement}", tempElement);
 
         // all elements where a next attribute exists
         while (tempElement is not null)
@@ -114,12 +134,15 @@ public class SinglyLinkedList<T>
             yield return tempElement.Data;
             tempElement = tempElement.Next;
         }
+		_logger.LogDebug("<<< Exiting GetListData()");
     }
 
     public bool DeleteElement(T element)
     {
+		_logger.LogDebug(">>> Entering DeleteElement(element={Element})", element);
         var currentElement = Head;
         SinglyLinkedListNode<T>? previousElement = null;
+		_logger.LogDebug("DeleteElement(element={Element}): currentElement → {CurrentElement}", element, currentElement);
 
         // iterates through all elements
         while (currentElement is not null)
@@ -132,6 +155,7 @@ public class SinglyLinkedList<T>
                 if (currentElement.Equals(Head))
                 {
                     Head = Head.Next;
+					_logger.LogDebug("DeleteElement(element={Element}): Head → {Head}", element, Head);
                     return true;
                 }
 
@@ -139,15 +163,18 @@ public class SinglyLinkedList<T>
                 if (previousElement is not null)
                 {
                     previousElement.Next = currentElement.Next;
+					_logger.LogDebug("DeleteElement(element={Element}): previousElement.Next → {Arg1}", element, previousElement.Next);
                     return true;
                 }
             }
 
             // iterating
             previousElement = currentElement;
+			_logger.LogDebug("DeleteElement(element={Element}): previousElement → {PreviousElement}", element, previousElement);
             currentElement = currentElement.Next;
         }
 
+		_logger.LogDebug("<<< Exiting DeleteElement(element={Element})", element);
         return false;
     }
 
@@ -157,6 +184,7 @@ public class SinglyLinkedList<T>
     /// <returns> true if the operation is successul.</returns>
     public bool DeleteFirst()
     {
+		_logger.LogDebug(">>> Entering DeleteFirst()");
         // checks if the List is empty
         if (Head is null)
         {
@@ -165,6 +193,8 @@ public class SinglyLinkedList<T>
 
         // if not, the head is overwritten with the next element and the old head is deleted
         Head = Head.Next;
+		_logger.LogDebug("DeleteFirst(): Head → {Head}", Head);
+		_logger.LogDebug("<<< Exiting DeleteFirst()");
         return true;
     }
 
@@ -174,6 +204,7 @@ public class SinglyLinkedList<T>
     /// <returns> returns true if the operation is successful. </returns>
     public bool DeleteLast()
     {
+		_logger.LogDebug(">>> Entering DeleteLast()");
         // checks if the List is empty
         if (Head is null)
         {
@@ -184,6 +215,7 @@ public class SinglyLinkedList<T>
         if (Head.Next is null)
         {
             Head = null;
+			_logger.LogDebug("DeleteLast(): Head → {Head}", Head);
             return true;
         }
 
@@ -192,9 +224,12 @@ public class SinglyLinkedList<T>
         while (secondlast.Next?.Next is not null)
         {
             secondlast = secondlast.Next;
+			_logger.LogDebug("DeleteLast(): secondlast → {Secondlast}", secondlast);
         }
 
         secondlast.Next = null;
+		_logger.LogDebug("DeleteLast(): secondlast.Next → {Arg0}", secondlast.Next);
+		_logger.LogDebug("<<< Exiting DeleteLast()");
         return true;
     }
 }

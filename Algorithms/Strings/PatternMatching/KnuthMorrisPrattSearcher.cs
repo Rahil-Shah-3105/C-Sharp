@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.PatternMatching;
 
 public class KnuthMorrisPrattSearcher
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     An implementation of Knuth–Morris–Pratt Algorithm.
     ///     Worst case time complexity: O(n + k)
@@ -14,8 +16,10 @@ public class KnuthMorrisPrattSearcher
     /// </returns>
     public IEnumerable<int> FindIndexes(string str, string pat)
     {
+		_logger.LogDebug(">>> Entering FindIndexes(str={Str},pat={Pat})", str, pat);
         var lps = FindLongestPrefixSuffixValues(pat);
 
+		_logger.LogDebug("FindIndexes(str={Str},pat={Pat}): lps → {Lps}", str, pat, lps);
         for (int i = 0, j = 0; i < str.Length;)
         {
             if (pat[j] == str[i])
@@ -43,6 +47,7 @@ public class KnuthMorrisPrattSearcher
                 }
             }
         }
+		_logger.LogDebug("<<< Exiting FindIndexes(str={Str},pat={Pat})", str, pat);
     }
 
     /// <summary>
@@ -52,6 +57,7 @@ public class KnuthMorrisPrattSearcher
     /// <returns>The longest prefix suffix values for <paramref name="pat" />.</returns>
     public int[] FindLongestPrefixSuffixValues(string pat)
     {
+		_logger.LogDebug(">>> Entering FindLongestPrefixSuffixValues(pat={Pat})", pat);
         var lps = new int[pat.Length];
         for (int i = 1, len = 0; i < pat.Length;)
         {
@@ -66,6 +72,7 @@ public class KnuthMorrisPrattSearcher
             if (len != 0)
             {
                 len = lps[len - 1];
+				_logger.LogDebug("FindLongestPrefixSuffixValues(pat={Pat}): len → {Len}", pat, len);
             }
             else
             {
@@ -74,6 +81,7 @@ public class KnuthMorrisPrattSearcher
             }
         }
 
+		_logger.LogDebug("<<< Exiting FindLongestPrefixSuffixValues(pat={Pat})", pat);
         return lps;
     }
 }

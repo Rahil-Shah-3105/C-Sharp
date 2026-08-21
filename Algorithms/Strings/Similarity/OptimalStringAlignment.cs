@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.Similarity
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Provides methods to calculate the Optimal String Alignment distance between two strings.
     ///
@@ -54,6 +56,7 @@ namespace Algorithms.Strings.Similarity
         /// <exception cref="ArgumentNullException">Thrown when either of the input strings is null.</exception>
         public static double Calculate(string firstString, string secondString)
         {
+			_logger.LogDebug(">>> Entering Calculate(firstString={FirstString},secondString={SecondString})", firstString, secondString);
             ArgumentNullException.ThrowIfNull(nameof(firstString));
             ArgumentNullException.ThrowIfNull(nameof(secondString));
 
@@ -73,8 +76,10 @@ namespace Algorithms.Strings.Similarity
             }
 
             var distanceMatrix = GenerateDistanceMatrix(firstString.Length, secondString.Length);
+			_logger.LogDebug("Calculate(firstString={FirstString},secondString={SecondString}): distanceMatrix → {DistanceMatrix}", firstString, secondString, distanceMatrix);
             distanceMatrix = CalculateDistance(firstString, secondString, distanceMatrix);
 
+			_logger.LogDebug("<<< Exiting Calculate(firstString={FirstString},secondString={SecondString})", firstString, secondString);
             return distanceMatrix[firstString.Length, secondString.Length];
         }
 
@@ -86,6 +91,7 @@ namespace Algorithms.Strings.Similarity
         /// <returns>The initialized distance matrix.</returns>
         private static int[,] GenerateDistanceMatrix(int firstLength, int secondLength)
         {
+			_logger.LogDebug(">>> Entering GenerateDistanceMatrix(firstLength={FirstLength},secondLength={SecondLength})", firstLength, secondLength);
             var distanceMatrix = new int[firstLength + 2, secondLength + 2];
 
             for (var i = 0; i <= firstLength; i++)
@@ -98,6 +104,7 @@ namespace Algorithms.Strings.Similarity
                 distanceMatrix[0, j] = j;
             }
 
+			_logger.LogDebug("<<< Exiting GenerateDistanceMatrix(firstLength={FirstLength},secondLength={SecondLength})", firstLength, secondLength);
             return distanceMatrix;
         }
 
@@ -110,11 +117,13 @@ namespace Algorithms.Strings.Similarity
         /// <returns>The calculated distance matrix.</returns>
         private static int[,] CalculateDistance(string firstString, string secondString, int[,] distanceMatrix)
         {
+			_logger.LogDebug(">>> Entering CalculateDistance(firstString={FirstString},secondString={SecondString},distanceMatrix={DistanceMatrix})", firstString, secondString, distanceMatrix);
             for (var i = 1; i <= firstString.Length; i++)
             {
                 for (var j = 1; j <= secondString.Length; j++)
                 {
                     var cost = 1;
+					_logger.LogDebug("CalculateDistance(firstString={FirstString},secondString={SecondString},distanceMatrix={DistanceMatrix}): cost → {Cost}", firstString, secondString, distanceMatrix, cost);
 
                     if (firstString[i - 1] == secondString[j - 1])
                     {
@@ -137,6 +146,7 @@ namespace Algorithms.Strings.Similarity
                 }
             }
 
+			_logger.LogDebug("<<< Exiting CalculateDistance(firstString={FirstString},secondString={SecondString},distanceMatrix={DistanceMatrix})", firstString, secondString, distanceMatrix);
             return distanceMatrix;
         }
 
@@ -149,6 +159,7 @@ namespace Algorithms.Strings.Similarity
         /// <returns>The minimum of the three integers.</returns>
         private static int Minimum(int a, int b, int c)
         {
+			_logger.LogDebug(">>> Entering Minimum(a={A},b={B},c={C})", a, b, c);
             return Math.Min(a, Math.Min(b, c));
         }
     }
