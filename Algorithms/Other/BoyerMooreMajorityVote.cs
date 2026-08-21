@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class BoyerMooreMajorityVote
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Finds the majority element.
     /// </summary>
@@ -13,19 +15,25 @@ public static class BoyerMooreMajorityVote
     /// <returns>Majority element or null.</returns>
     public static int? FindMajority(int[] nums)
     {
+		_logger.LogDebug(">>> Entering FindMajority(nums={Nums})", nums);
         if (nums == null || nums.Length == 0)
         {
             return null;
         }
 
         var candidate = FindCandidate(nums);
+		_logger.LogDebug("FindMajority(nums={Nums}): candidate → {Candidate}", nums, candidate);
+		_logger.LogDebug("<<< Exiting FindMajority(nums={Nums})", nums);
         return IsMajority(nums, candidate) ? candidate : null;
     }
 
     private static int FindCandidate(int[] nums)
     {
+		_logger.LogDebug(">>> Entering FindCandidate(nums={Nums})", nums);
         int candidate = nums[0];
         int count = 1;
+		_logger.LogDebug("FindCandidate(nums={Nums}): count → {Count}", nums, count);
+		_logger.LogDebug("FindCandidate(nums={Nums}): candidate → {Candidate}", nums, candidate);
 
         for (int i = 1; i < nums.Length; i++)
         {
@@ -37,6 +45,7 @@ public static class BoyerMooreMajorityVote
             count += nums[i] == candidate ? 1 : -1;
         }
 
+		_logger.LogDebug("<<< Exiting FindCandidate(nums={Nums})", nums);
         return candidate;
     }
 

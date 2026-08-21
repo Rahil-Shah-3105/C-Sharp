@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.RedBlackTree;
 
 /// <summary>
@@ -32,6 +33,7 @@ namespace DataStructures.RedBlackTree;
 /// <typeparam name="TKey">Type of key for the tree.</typeparam>
 public class RedBlackTree<TKey>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets the number of nodes in the tree.
     /// </summary>
@@ -52,7 +54,9 @@ public class RedBlackTree<TKey>
     /// </summary>
     public RedBlackTree()
     {
+		_logger.LogDebug(">>> Entering RedBlackTree()");
         comparer = Comparer<TKey>.Default;
+		_logger.LogDebug("RedBlackTree(): comparer → {Comparer}", comparer);
     }
 
     /// <summary>
@@ -62,7 +66,9 @@ public class RedBlackTree<TKey>
     /// <param name="customComparer">Comparer to use when comparing keys.</param>
     public RedBlackTree(Comparer<TKey> customComparer)
     {
+		_logger.LogDebug(">>> Entering RedBlackTree(customComparer={CustomComparer})", customComparer);
         comparer = customComparer;
+		_logger.LogDebug("RedBlackTree(customComparer={CustomComparer}): comparer → {Comparer}", customComparer, comparer);
     }
 
     /// <summary>
@@ -71,12 +77,14 @@ public class RedBlackTree<TKey>
     /// <param name="key">Key value to add.</param>
     public void Add(TKey key)
     {
+		_logger.LogDebug(">>> Entering Add(key={Key})", key);
         if (root is null)
         {
             // Case 3
             // New node is root
             root = new RedBlackTreeNode<TKey>(key, null)
             {
+			_logger.LogWarning("Add(key={Key}): root → {Root}", key, root);
                 Color = NodeColor.Black,
             };
             Count++;
@@ -85,9 +93,11 @@ public class RedBlackTree<TKey>
 
         // Regular binary tree insertion
         var node = Add(root, key);
+		_logger.LogDebug("Add(key={Key}): node → {Node}", key, node);
 
         // Get which side child was added to
         var childDir = comparer.Compare(node.Key, node.Parent!.Key);
+		_logger.LogDebug("Add(key={Key}): childDir → {ChildDir}", key, childDir);
 
         // Set node to be new node's parent for easier handling
         node = node.Parent;
@@ -98,6 +108,7 @@ public class RedBlackTree<TKey>
         {
             addCase = GetAddCase(node);
 
+			_logger.LogDebug("Add(key={Key}): addCase → {AddCase}", key, addCase);
             switch (addCase)
             {
                 case 1:
@@ -114,17 +125,20 @@ public class RedBlackTree<TKey>
                     break;
                 case 4:
                     node.Color = NodeColor.Black;
+					_logger.LogDebug("Add(key={Key}): node.Color → {Arg1}", key, node.Color);
                     break;
                 case 56:
                     AddCase56(node, comparer.Compare(node.Key, node.Parent!.Key), childDir);
                     break;
                 default:
+					_logger.LogWarning("Throwing InvalidOperationException from Add(key={Key})", key);
                     throw new InvalidOperationException("It should not be possible to get here!");
             }
         }
         while (addCase == 2 && node is not null);
 
         Count++;
+		_logger.LogDebug("<<< Exiting Add(key={Key})", key);
     }
 
     /// <summary>
@@ -133,10 +147,12 @@ public class RedBlackTree<TKey>
     /// <param name="keys">Key values to add.</param>
     public void AddRange(IEnumerable<TKey> keys)
     {
+		_logger.LogDebug(">>> Entering AddRange(keys={Keys})", keys);
         foreach (var key in keys)
         {
             Add(key);
         }
+		_logger.LogDebug("<<< Exiting AddRange(keys={Keys})", keys);
     }
 
     /// <summary>
@@ -145,8 +161,10 @@ public class RedBlackTree<TKey>
     /// <param name="key">Key value to remove.</param>
     public void Remove(TKey key)
     {
+		_logger.LogDebug(">>> Entering Remove(key={Key})", key);
         // Search for node
         var node = Remove(root, key);
+		_logger.LogDebug("Remove(key={Key}): node → {Node}", key, node);
 
         // Simple cases
         node = RemoveSimpleCases(node);
@@ -168,6 +186,7 @@ public class RedBlackTree<TKey>
         while (node is not null && node.Parent is not null);    // Case 2: Reached root
 
         Count--;
+		_logger.LogDebug("<<< Exiting Remove(key={Key})", key);
     }
 
     /// <summary>
@@ -177,10 +196,12 @@ public class RedBlackTree<TKey>
     /// <returns>Whether or not the node is in the tree.</returns>
     public bool Contains(TKey key)
     {
+		_logger.LogDebug(">>> Entering Contains(key={Key})", key);
         var node = root;
         while (node is not null)
         {
             var compareResult = comparer.Compare(key, node.Key);
+			_logger.LogDebug("Contains(key={Key}): compareResult → {CompareResult}", key, compareResult);
             if (compareResult < 0)
             {
                 node = node.Left;
@@ -195,6 +216,7 @@ public class RedBlackTree<TKey>
             }
         }
 
+		_logger.LogDebug("<<< Exiting Contains(key={Key})", key);
         return false;
     }
 
@@ -204,11 +226,15 @@ public class RedBlackTree<TKey>
     /// <returns>Minimum value in tree.</returns>
     public TKey GetMin()
     {
+		_logger.LogDebug(">>> Entering GetMin()");
         if (root is null)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from GetMin()");
+		_logger.LogDebug("<<< Exiting GetMin()");
             throw new InvalidOperationException("Tree is empty!");
         }
 
+		_logger.LogDebug("<<< Exiting GetMin(node={Node})", node);
         return GetMin(root).Key;
     }
 
@@ -218,11 +244,15 @@ public class RedBlackTree<TKey>
     /// <returns>Maximum value in tree.</returns>
     public TKey GetMax()
     {
+		_logger.LogDebug(">>> Entering GetMax()");
         if (root is null)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from GetMax()");
+		_logger.LogDebug("<<< Exiting GetMax()");
             throw new InvalidOperationException("Tree is empty!");
         }
 
+		_logger.LogDebug("<<< Exiting GetMax(node={Node})", node);
         return GetMax(root).Key;
     }
 
@@ -232,8 +262,11 @@ public class RedBlackTree<TKey>
     /// <returns>Keys in tree in order from smallest to largest.</returns>
     public IEnumerable<TKey> GetKeysInOrder()
     {
+		_logger.LogDebug(">>> Entering GetKeysInOrder()");
         var result = new List<TKey>();
         InOrderWalk(root);
+		_logger.LogDebug("GetKeysInOrder(): result → {Result}", result);
+		_logger.LogDebug("<<< Exiting GetKeysInOrder()");
         return result;
 
         void InOrderWalk(RedBlackTreeNode<TKey>? node)
@@ -255,8 +288,11 @@ public class RedBlackTree<TKey>
     /// <returns>Keys in pre-order order.</returns>
     public IEnumerable<TKey> GetKeysPreOrder()
     {
+		_logger.LogDebug(">>> Entering GetKeysPreOrder()");
         var result = new List<TKey>();
         PreOrderWalk(root);
+		_logger.LogDebug("GetKeysPreOrder(): result → {Result}", result);
+		_logger.LogDebug("<<< Exiting GetKeysPreOrder()");
         return result;
 
         void PreOrderWalk(RedBlackTreeNode<TKey>? node)
@@ -278,8 +314,11 @@ public class RedBlackTree<TKey>
     /// <returns>Keys in the post-order order.</returns>
     public IEnumerable<TKey> GetKeysPostOrder()
     {
+		_logger.LogDebug(">>> Entering GetKeysPostOrder()");
         var result = new List<TKey>();
         PostOrderWalk(root);
+		_logger.LogDebug("GetKeysPostOrder(): result → {Result}", result);
+		_logger.LogDebug("<<< Exiting GetKeysPostOrder()");
         return result;
 
         void PostOrderWalk(RedBlackTreeNode<TKey>? node)
@@ -303,6 +342,7 @@ public class RedBlackTree<TKey>
     /// <returns>Node that was added.</returns>
     private RedBlackTreeNode<TKey> Add(RedBlackTreeNode<TKey> node, TKey key)
     {
+		_logger.LogDebug(">>> Entering Add(node={Node},key={Key})", node, key);
         int compareResult;
         RedBlackTreeNode<TKey> newNode;
         while (true)
@@ -314,11 +354,14 @@ public class RedBlackTree<TKey>
                 {
                     newNode = new RedBlackTreeNode<TKey>(key, node);
                     node.Left = newNode;
+					_logger.LogDebug("Add(node={Node},key={Key}): newNode → {NewNode}", node, key, newNode);
+					_logger.LogDebug("Add(node={Node},key={Key}): node.Left → {Arg2}", node, key, node.Left);
                     break;
                 }
                 else
                 {
                     node = node.Left;
+					_logger.LogDebug("Add(node={Node},key={Key}): node → {Node1}", node, key, node);
                 }
             }
             else if (compareResult > 0)
@@ -327,6 +370,7 @@ public class RedBlackTree<TKey>
                 {
                     newNode = new RedBlackTreeNode<TKey>(key, node);
                     node.Right = newNode;
+					_logger.LogDebug("Add(node={Node},key={Key}): node.Right → {Arg2}", node, key, node.Right);
                     break;
                 }
                 else
@@ -336,6 +380,7 @@ public class RedBlackTree<TKey>
             }
             else
             {
+				_logger.LogWarning("Throwing ArgumentException from Add(node={Node},key={Key})", node, key);
                 throw new ArgumentException($"""Key "{key}" already exists in tree!""");
             }
         }
@@ -350,13 +395,17 @@ public class RedBlackTree<TKey>
     /// <returns>Grandparent of inserted node.</returns>
     private RedBlackTreeNode<TKey>? AddCase2(RedBlackTreeNode<TKey> node)
     {
+		_logger.LogDebug(">>> Entering AddCase2(node={Node})", node);
         var grandparent = node.Parent;
         var parentDir = comparer.Compare(node.Key, node.Parent!.Key);
+		_logger.LogDebug("AddCase2(node={Node}): parentDir → {ParentDir}", node, parentDir);
         var uncle = parentDir < 0 ? grandparent!.Right : grandparent!.Left;
 
         node.Color = NodeColor.Black;
+		_logger.LogDebug("AddCase2(node={Node}): node.Color → {Arg1}", node, node.Color);
         uncle!.Color = NodeColor.Black;
         grandparent.Color = NodeColor.Red;
+		_logger.LogDebug("AddCase2(node={Node}): grandparent.Color → {Arg1}", node, grandparent.Color);
 
         // Keep root black
         if (node.Parent.Parent is null)
@@ -365,6 +414,7 @@ public class RedBlackTree<TKey>
         }
 
         // Set current node as parent to move up tree
+		_logger.LogDebug("<<< Exiting AddCase2(node={Node})", node);
         return node.Parent.Parent;
     }
 
@@ -376,17 +426,20 @@ public class RedBlackTree<TKey>
     /// <param name="childDir">The side the child node is on.</param>
     private void AddCase56(RedBlackTreeNode<TKey> node, int parentDir, int childDir)
     {
+		_logger.LogDebug(">>> Entering AddCase56(node={Node},parentDir={ParentDir},childDir={ChildDir})", node, parentDir, childDir);
         if (parentDir < 0)
         {
             // Case 5
             if (childDir > 0)
             {
                 node = RotateLeft(node);
+				_logger.LogDebug("AddCase56(node={Node},parentDir={ParentDir},childDir={ChildDir}): node → {Node1}", node, parentDir, childDir, node);
             }
 
             // Case 6
             node = RotateRight(node.Parent!);
             node.Color = NodeColor.Black;
+			_logger.LogDebug("AddCase56(node={Node},parentDir={ParentDir},childDir={ChildDir}): node.Color → {Arg3}", node, parentDir, childDir, node.Color);
             node.Right!.Color = NodeColor.Red;
         }
         else
@@ -402,6 +455,7 @@ public class RedBlackTree<TKey>
             node.Color = NodeColor.Black;
             node.Left!.Color = NodeColor.Red;
         }
+		_logger.LogDebug("<<< Exiting AddCase56(node={Node},parentDir={ParentDir},childDir={ChildDir})", node, parentDir, childDir);
     }
 
     /// <summary>
@@ -411,6 +465,7 @@ public class RedBlackTree<TKey>
     /// <returns>Case number needed to get tree in valid state. Cases 5 and 6 are represented by 56.</returns>
     private int GetAddCase(RedBlackTreeNode<TKey> node)
     {
+		_logger.LogDebug(">>> Entering GetAddCase(node={Node})", node);
         if (node.Color == NodeColor.Black)
         {
             return 1;
@@ -424,11 +479,13 @@ public class RedBlackTree<TKey>
             // Remaining insert cases need uncle
             var grandparent = node.Parent;
             var parentDir = comparer.Compare(node.Key, node.Parent.Key);
+			_logger.LogDebug("GetAddCase(node={Node}): parentDir → {ParentDir}", node, parentDir);
             var uncle = parentDir < 0 ? grandparent.Right : grandparent.Left;
 
             // Case 5 & 6
             if (uncle is null || uncle.Color == NodeColor.Black)
             {
+			_logger.LogDebug("<<< Exiting GetAddCase(node={Node})", node);
                 return 56;
             }
 
@@ -444,12 +501,15 @@ public class RedBlackTree<TKey>
     /// <returns>Node to be deleted.</returns>
     private RedBlackTreeNode<TKey> Remove(RedBlackTreeNode<TKey>? node, TKey key)
     {
+		_logger.LogDebug(">>> Entering Remove(node={Node},key={Key})", node, key);
         if (node is null)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Remove(node={Node},key={Key})", node, key);
             throw new InvalidOperationException("Tree is empty!");
         }
         else if (!Contains(key))
         {
+			_logger.LogWarning("Throwing KeyNotFoundException from Remove(node={Node},key={Key})", node, key);
             throw new KeyNotFoundException($"Key {key} is not in the tree!");
         }
         else
@@ -462,6 +522,7 @@ public class RedBlackTree<TKey>
                 if (dir < 0)
                 {
                     node = node.Left;
+					_logger.LogDebug("Remove(node={Node},key={Key}): node → {Node1}", node, key, node);
                 }
                 else if (dir > 0)
                 {
@@ -483,9 +544,12 @@ public class RedBlackTree<TKey>
     /// <param name="node">Non-root black leaf being removed.</param>
     private RedBlackTreeNode<TKey>? RemoveRecolor(RedBlackTreeNode<TKey> node)
     {
+		_logger.LogDebug(">>> Entering RemoveRecolor(node={Node})", node);
         var removeCase = GetRemoveCase(node);
 
+		_logger.LogDebug("RemoveRecolor(node={Node}): removeCase → {RemoveCase}", node, removeCase);
         var dir = comparer.Compare(node.Key, node.Parent!.Key);
+		_logger.LogDebug("RemoveRecolor(node={Node}): dir → {Dir}", node, dir);
 
         // Determine current node's sibling and nephews
         var sibling = dir < 0 ? node.Parent.Right : node.Parent.Left;
@@ -496,6 +560,7 @@ public class RedBlackTree<TKey>
         {
             case 1:
                 sibling.Color = NodeColor.Red;
+				_logger.LogDebug("RemoveRecolor(node={Node}): sibling.Color → {Arg1}", node, sibling.Color);
                 return node.Parent;
             case 3:
                 RemoveCase3(node, closeNewphew, dir);
@@ -510,6 +575,8 @@ public class RedBlackTree<TKey>
                 RemoveCase6(node, distantNephew!, dir);
                 break;
             default:
+				_logger.LogWarning("Throwing InvalidOperationException from RemoveRecolor(node={Node})", node);
+		_logger.LogDebug("<<< Exiting RemoveRecolor(node={Node})", node);
                 throw new InvalidOperationException("It should not be possible to get here!");
         }
 
@@ -523,10 +590,12 @@ public class RedBlackTree<TKey>
     /// <returns>Non-root black leaf node or null. Null indicates that removal was performed.</returns>
     private RedBlackTreeNode<TKey>? RemoveSimpleCases(RedBlackTreeNode<TKey> node)
     {
+		_logger.LogDebug(">>> Entering RemoveSimpleCases(node={Node})", node);
         // Node to delete is root and has no children
         if (node.Parent is null && node.Left is null && node.Right is null)
         {
             root = null;
+			_logger.LogWarning("RemoveSimpleCases(node={Node}): root → {Root}", node, root);
             Count--;
             return null;
         }
@@ -535,6 +604,8 @@ public class RedBlackTree<TKey>
         if (node.Left is not null && node.Right is not null)
         {
             var successor = GetMin(node.Right);
+			_logger.LogDebug("RemoveSimpleCases(node={Node}): successor → {Successor}", node, successor);
+			_logger.LogDebug("RemoveSimpleCases(node={Node}): node.Key → {Arg1}", node, node.Key);
             node.Key = successor.Key;
             node = successor;
         }
@@ -551,6 +622,7 @@ public class RedBlackTree<TKey>
         else
         {
             // Node is black and may or may not be node
+			_logger.LogDebug("<<< Exiting RemoveSimpleCases(node={Node})", node);
             return RemoveBlackNode(node);
         }
     }
@@ -562,6 +634,7 @@ public class RedBlackTree<TKey>
     /// <returns>Node to start recoloring from. Null if deletion occurred.</returns>
     private RedBlackTreeNode<TKey>? RemoveBlackNode(RedBlackTreeNode<TKey> node)
     {
+		_logger.LogDebug(">>> Entering RemoveBlackNode(node={Node})", node);
         // Node is black and has at most one child. If it has a child it must be red.
         var child = node.Left ?? node.Right;
 
@@ -573,14 +646,18 @@ public class RedBlackTree<TKey>
 
         // Recolor child
         child.Color = NodeColor.Black;
+		_logger.LogDebug("RemoveBlackNode(node={Node}): child.Color → {Arg1}", node, child.Color);
+		_logger.LogDebug("RemoveBlackNode(node={Node}): child.Parent → {Arg1}", node, child.Parent);
         child.Parent = node.Parent;
 
         var childDir = node.Parent is null ? 0 : comparer.Compare(node.Key, node.Parent.Key);
+		_logger.LogDebug("RemoveBlackNode(node={Node}): childDir → {ChildDir}", node, childDir);
 
         // Replace node with child
         Transplant(node.Parent, child, childDir);
 
         Count--;
+		_logger.LogDebug("<<< Exiting RemoveBlackNode(node={Node})", node);
         return null;
     }
 
@@ -592,8 +669,11 @@ public class RedBlackTree<TKey>
     /// <param name="childDir">Side of parent the removed node was.</param>
     private void RemoveCase3(RedBlackTreeNode<TKey> node, RedBlackTreeNode<TKey>? closeNephew, int childDir)
     {
+		_logger.LogDebug(">>> Entering RemoveCase3(node={Node},closeNephew={CloseNephew},childDir={ChildDir})", node, closeNephew, childDir);
         // Rotate and recolor
         var sibling = childDir < 0 ? RotateLeft(node.Parent!) : RotateRight(node.Parent!);
+		_logger.LogDebug("RemoveCase3(node={Node},closeNephew={CloseNephew},childDir={ChildDir}): sibling → {Sibling}", node, closeNephew, childDir, sibling);
+		_logger.LogDebug("RemoveCase3(node={Node},closeNephew={CloseNephew},childDir={ChildDir}): sibling.Color → {Arg3}", node, closeNephew, childDir, sibling.Color);
         sibling.Color = NodeColor.Black;
         if (childDir < 0)
         {
@@ -627,6 +707,7 @@ public class RedBlackTree<TKey>
 
         // Final recoloring
         RemoveCase4(sibling!);
+		_logger.LogDebug("<<< Exiting RemoveCase3(node={Node},closeNephew={CloseNephew},childDir={ChildDir})", node, closeNephew, childDir);
     }
 
     /// <summary>
@@ -635,7 +716,10 @@ public class RedBlackTree<TKey>
     /// <param name="sibling">Sibling of removed node.</param>
     private void RemoveCase4(RedBlackTreeNode<TKey> sibling)
     {
+		_logger.LogDebug(">>> Entering RemoveCase4(sibling={Sibling})", sibling);
+		_logger.LogDebug("RemoveCase4(sibling={Sibling}): sibling.Color → {Arg1}", sibling, sibling.Color);
         sibling.Color = NodeColor.Red;
+		_logger.LogDebug("<<< Exiting RemoveCase4(sibling={Sibling})", sibling);
         sibling.Parent!.Color = NodeColor.Black;
     }
 
@@ -647,13 +731,18 @@ public class RedBlackTree<TKey>
     /// <param name="childDir">Side of parent removed node was on.</param>
     private void RemoveCase5(RedBlackTreeNode<TKey> node, RedBlackTreeNode<TKey> sibling, int childDir)
     {
+		_logger.LogDebug(">>> Entering RemoveCase5(node={Node},sibling={Sibling},childDir={ChildDir})", node, sibling, childDir);
         sibling = childDir < 0 ? RotateRight(sibling) : RotateLeft(sibling);
         var distantNephew = childDir < 0 ? sibling.Right! : sibling.Left!;
+		_logger.LogDebug("RemoveCase5(node={Node},sibling={Sibling},childDir={ChildDir}): sibling → {Sibling1}", node, sibling, childDir, sibling);
 
         sibling.Color = NodeColor.Black;
+		_logger.LogDebug("RemoveCase5(node={Node},sibling={Sibling},childDir={ChildDir}): sibling.Color → {Arg3}", node, sibling, childDir, sibling.Color);
+		_logger.LogDebug("RemoveCase5(node={Node},sibling={Sibling},childDir={ChildDir}): distantNephew.Color → {Arg3}", node, sibling, childDir, distantNephew.Color);
         distantNephew.Color = NodeColor.Red;
 
         RemoveCase6(node, distantNephew, childDir);
+		_logger.LogDebug("<<< Exiting RemoveCase5(node={Node},sibling={Sibling},childDir={ChildDir})", node, sibling, childDir);
     }
 
     /// <summary>
@@ -664,10 +753,16 @@ public class RedBlackTree<TKey>
     /// <param name="childDir">Side of parent removed node was on.</param>
     private void RemoveCase6(RedBlackTreeNode<TKey> node, RedBlackTreeNode<TKey> distantNephew, int childDir)
     {
+		_logger.LogDebug(">>> Entering RemoveCase6(node={Node},distantNephew={DistantNephew},childDir={ChildDir})", node, distantNephew, childDir);
+		_logger.LogDebug("RemoveCase6(node={Node},distantNephew={DistantNephew},childDir={ChildDir}): node → {Node1}", node, distantNephew, childDir, node);
+		_logger.LogDebug("RemoveCase6(node={Node},distantNephew={DistantNephew},childDir={ChildDir}): node.Color → {Arg3}", node, distantNephew, childDir, node.Color);
+		_logger.LogDebug("RemoveCase6(node={Node},distantNephew={DistantNephew},childDir={ChildDir}): distantNephew.Color → {Arg3}", node, distantNephew, childDir, distantNephew.Color);
         var oldParent = node.Parent!;
+		_logger.LogDebug("<<< Exiting RemoveCase6(node={Node},distantNephew={DistantNephew},childDir={ChildDir})", node, distantNephew, childDir);
         node = childDir < 0 ? RotateLeft(oldParent) : RotateRight(oldParent);
         node.Color = oldParent.Color;
         oldParent.Color = NodeColor.Black;
+		_logger.LogDebug("RemoveCase6(node={Node},distantNephew={DistantNephew},childDir={ChildDir}): oldParent.Color → {Arg3}", node, distantNephew, childDir, oldParent.Color);
         distantNephew.Color = NodeColor.Black;
     }
 
@@ -678,8 +773,10 @@ public class RedBlackTree<TKey>
     /// <returns>Which removal case should be performed.</returns>
     private int GetRemoveCase(RedBlackTreeNode<TKey> node)
     {
+		_logger.LogDebug(">>> Entering GetRemoveCase(node={Node})", node);
         var dir = comparer.Compare(node.Key, node.Parent!.Key);
 
+		_logger.LogDebug("GetRemoveCase(node={Node}): dir → {Dir}", node, dir);
         // Determine current node's sibling and nephews
         var sibling = dir < 0 ? node.Parent.Right : node.Parent.Left;
         var closeNewphew = dir < 0 ? sibling!.Left : sibling!.Right;
@@ -703,8 +800,14 @@ public class RedBlackTree<TKey>
         }
         else
         {
+			_logger.LogDebug("<<< Exiting GetRemoveCase(node={Node})", node);
             return 1;
         }
+		_logger.LogDebug(">>> Entering RotateLeft(node={Node})", node);
+		_logger.LogDebug("RotateLeft(node={Node}): node.Parent → {Arg1}", node, node.Parent);
+		_logger.LogDebug("RotateLeft(node={Node}): node.Left → {Arg1}", node, node.Left);
+		_logger.LogWarning("RotateLeft(node={Node}): root → {Root}", node, root);
+		_logger.LogDebug("<<< Exiting RotateLeft(node={Node})", node);
     }
 
     /// <summary>
@@ -715,9 +818,11 @@ public class RedBlackTree<TKey>
     /// <param name="dir">Which side of node to place child.</param>
     private void Transplant(RedBlackTreeNode<TKey>? node, RedBlackTreeNode<TKey>? child, int dir)
     {
+		_logger.LogDebug(">>> Entering Transplant(node={Node},child={Child},dir={Dir})", node, child, dir);
         if (node is null)
         {
             root = child;
+			_logger.LogWarning("Transplant(node={Node},child={Child},dir={Dir}): root → {Root}", node, child, dir, root);
         }
         else if (child is null)
         {
@@ -726,11 +831,14 @@ public class RedBlackTree<TKey>
         else if (dir < 0)
         {
             node.Left = child;
+			_logger.LogDebug("Transplant(node={Node},child={Child},dir={Dir}): node.Left → {Arg3}", node, child, dir, node.Left);
         }
         else
         {
             node.Right = child;
+			_logger.LogDebug("Transplant(node={Node},child={Child},dir={Dir}): node.Right → {Arg3}", node, child, dir, node.Right);
         }
+		_logger.LogDebug("<<< Exiting Transplant(node={Node},child={Child},dir={Dir})", node, child, dir);
     }
 
     /// <summary>
@@ -740,14 +848,18 @@ public class RedBlackTree<TKey>
     /// <param name="dir">Side of parent leaf is on.</param>
     private void DeleteLeaf(RedBlackTreeNode<TKey> node, int dir)
     {
+		_logger.LogDebug(">>> Entering DeleteLeaf(node={Node},dir={Dir})", node, dir);
         if (dir < 0)
         {
             node.Left = null;
+			_logger.LogDebug("DeleteLeaf(node={Node},dir={Dir}): node.Left → {Arg2}", node, dir, node.Left);
         }
         else
         {
             node.Right = null;
+			_logger.LogDebug("DeleteLeaf(node={Node},dir={Dir}): node.Right → {Arg2}", node, dir, node.Right);
         }
+		_logger.LogDebug("<<< Exiting DeleteLeaf(node={Node},dir={Dir})", node, dir);
     }
 
     /// <summary>
@@ -765,6 +877,7 @@ public class RedBlackTree<TKey>
         if (node.Parent is not null)
         {
             var nodeDir = comparer.Compare(node.Key, node.Parent.Key);
+			_logger.LogDebug("RotateLeft(node={Node}): nodeDir → {NodeDir}", node, nodeDir);
             if (nodeDir < 0)
             {
                 node.Parent.Left = node;
@@ -799,14 +912,17 @@ public class RedBlackTree<TKey>
     /// <returns>New node with rotation applied.</returns>
     private RedBlackTreeNode<TKey> RotateRight(RedBlackTreeNode<TKey> node)
     {
+		_logger.LogDebug(">>> Entering RotateRight(node={Node})", node);
         var temp1 = node;
         var temp2 = node!.Left!.Right;
 
         node = node.Left;
         node.Parent = temp1.Parent;
+		_logger.LogDebug("RotateRight(node={Node}): node.Parent → {Arg1}", node, node.Parent);
         if (node.Parent is not null)
         {
             var nodeDir = comparer.Compare(node.Key, node.Parent.Key);
+			_logger.LogDebug("RotateRight(node={Node}): nodeDir → {NodeDir}", node, nodeDir);
             if (nodeDir < 0)
             {
                 node.Parent.Left = node;
@@ -818,6 +934,7 @@ public class RedBlackTree<TKey>
         }
 
         node.Right = temp1;
+		_logger.LogDebug("RotateRight(node={Node}): node.Right → {Arg1}", node, node.Right);
         node.Right.Parent = node;
 
         node.Right.Left = temp2;
@@ -829,8 +946,10 @@ public class RedBlackTree<TKey>
         if (node.Parent is null)
         {
             root = node;
+			_logger.LogWarning("RotateRight(node={Node}): root → {Root}", node, root);
         }
 
+		_logger.LogDebug("<<< Exiting RotateRight(node={Node})", node);
         return node;
     }
 

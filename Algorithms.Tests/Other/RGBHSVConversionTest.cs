@@ -1,27 +1,38 @@
 using Algorithms.Other;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
 public static class RgbHsvConversionTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void HueOutOfRange_ThrowsArgumentOutOfRangeException()
     {
+		_logger.LogDebug(">>> Entering HueOutOfRange_ThrowsArgumentOutOfRangeException()");
         Action act = () => RgbHsvConversion.HsvToRgb(400, 0, 0);
+		_logger.LogDebug("<<< Exiting HueOutOfRange_ThrowsArgumentOutOfRangeException()");
+		_logger.LogDebug("HueOutOfRange_ThrowsArgumentOutOfRangeException(): act → {Act}", act);
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
     public static void SaturationOutOfRange_ThrowsArgumentOutOfRangeException()
     {
+		_logger.LogDebug(">>> Entering SaturationOutOfRange_ThrowsArgumentOutOfRangeException()");
         Action act = () => RgbHsvConversion.HsvToRgb(0, 2, 0);
+		_logger.LogDebug("<<< Exiting SaturationOutOfRange_ThrowsArgumentOutOfRangeException()");
+		_logger.LogDebug("SaturationOutOfRange_ThrowsArgumentOutOfRangeException(): act → {Act}", act);
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
     public static void ValueOutOfRange_ThrowsArgumentOutOfRangeException()
     {
+		_logger.LogDebug(">>> Entering ValueOutOfRange_ThrowsArgumentOutOfRangeException()");
         Action act = () => RgbHsvConversion.HsvToRgb(0, 0, 2);
+		_logger.LogDebug("<<< Exiting ValueOutOfRange_ThrowsArgumentOutOfRangeException()");
+		_logger.LogDebug("ValueOutOfRange_ThrowsArgumentOutOfRangeException(): act → {Act}", act);
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
@@ -44,10 +55,13 @@ public static class RgbHsvConversionTest
         byte exptectedGreen,
         byte exptectedBlue)
     {
+		_logger.LogDebug(">>> Entering TestRgbOutput(hue={Hue},saturation={Saturation},value={Value},expectedRed={ExpectedRed},exptectedGreen={ExptectedGreen},exptectedBlue={ExptectedBlue})", hue, saturation, value, expectedRed, exptectedGreen, exptectedBlue);
         var rgb = RgbHsvConversion.HsvToRgb(hue, saturation, value);
+		_logger.LogDebug("TestRgbOutput(hue={Hue},saturation={Saturation},value={Value},expectedRed={ExpectedRed},exptectedGreen={ExptectedGreen},exptectedBlue={ExptectedBlue}): rgb → {Rgb}", hue, saturation, value, expectedRed, exptectedGreen, exptectedBlue, rgb);
         rgb.Item1.Should().Be(expectedRed);
         rgb.Item2.Should().Be(exptectedGreen);
         rgb.Item3.Should().Be(exptectedBlue);
+		_logger.LogDebug("<<< Exiting TestRgbOutput(hue={Hue},saturation={Saturation},value={Value},expectedRed={ExpectedRed},exptectedGreen={ExptectedGreen},exptectedBlue={ExptectedBlue})", hue, saturation, value, expectedRed, exptectedGreen, exptectedBlue);
     }
 
     // Parameters of test-cases for TestRGBOutput reversed
@@ -69,11 +83,14 @@ public static class RgbHsvConversionTest
         double expectedSaturation,
         double expectedValue)
     {
+		_logger.LogDebug(">>> Entering TestHsvOutput(red={Red},green={Green},blue={Blue},expectedHue={ExpectedHue},expectedSaturation={ExpectedSaturation},expectedValue={ExpectedValue})", red, green, blue, expectedHue, expectedSaturation, expectedValue);
         var hsv = RgbHsvConversion.RgbToHsv(red, green, blue);
+		_logger.LogDebug("TestHsvOutput(red={Red},green={Green},blue={Blue},expectedHue={ExpectedHue},expectedSaturation={ExpectedSaturation},expectedValue={ExpectedValue}): hsv → {Hsv}", red, green, blue, expectedHue, expectedSaturation, expectedValue, hsv);
 
         // approximate-assertions needed because of small deviations due to converting between byte-values and double-values.
         hsv.Item1.Should().BeApproximately(expectedHue, 0.2);
         hsv.Item2.Should().BeApproximately(expectedSaturation, 0.002);
         hsv.Item3.Should().BeApproximately(expectedValue, 0.002);
+		_logger.LogDebug("<<< Exiting TestHsvOutput(red={Red},green={Green},blue={Blue},expectedHue={ExpectedHue},expectedSaturation={ExpectedSaturation},expectedValue={ExpectedValue})", red, green, blue, expectedHue, expectedSaturation, expectedValue);
     }
 }

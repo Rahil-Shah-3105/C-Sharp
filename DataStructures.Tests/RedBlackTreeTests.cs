@@ -1,48 +1,64 @@
 using DataStructures.RedBlackTree;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Tests;
 
 internal class RedBlackTreeTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void Constructor_UseCustomComparer_FormsCorrect_Tree()
     {
+		_logger.LogDebug(">>> Entering Constructor_UseCustomComparer_FormsCorrect_Tree()");
         var tree = new RedBlackTree<int>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("Constructor_UseCustomComparer_FormsCorrect_Tree(): tree → {Tree}", tree);
         tree.GetMin().Should().Be(10);
         tree.GetMax().Should().Be(1);
         tree.GetKeysInOrder().SequenceEqual(new[] { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Constructor_UseCustomComparer_FormsCorrect_Tree()");
     }
 
     [Test]
     public void Add_Case3_FormsCorrectTree()
     {
+		_logger.LogDebug(">>> Entering Add_Case3_FormsCorrectTree()");
         var tree = new RedBlackTree<int>();
         tree.Add(5);
+		_logger.LogDebug("Add_Case3_FormsCorrectTree(): tree → {Tree}", tree);
         tree.Count.Should().Be(1);
+		_logger.LogDebug("<<< Exiting Add_Case3_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_Case24_FormsCorrectTree()
     {
+		_logger.LogDebug(">>> Entering Add_Case24_FormsCorrectTree()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 5, 4, 6, 3 });
+		_logger.LogDebug("Add_Case24_FormsCorrectTree(): tree → {Tree}", tree);
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 4, 3, 6 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Add_Case24_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_Case1_FormsCorrectTree()
     {
+		_logger.LogDebug(">>> Entering Add_Case1_FormsCorrectTree()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 5, 4, 6, 3, 7 });
+		_logger.LogDebug("Add_Case1_FormsCorrectTree(): tree → {Tree}", tree);
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 4, 3, 6, 7 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Add_Case1_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_Case6_FormsCorrectTree()
     {
+		_logger.LogDebug(">>> Entering Add_Case6_FormsCorrectTree()");
         // Right rotation
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("Add_Case6_FormsCorrectTree(): tree → {Tree}", tree);
         tree.AddRange(new[] { 5, 4, 6, 3, 2 });
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 3, 2, 4, 6 }).Should().BeTrue();
 
@@ -50,13 +66,16 @@ internal class RedBlackTreeTests
         tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 5, 4, 6, 7, 8 });
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 4, 7, 6, 8 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Add_Case6_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_Case5_FormsCorrectTree()
     {
+		_logger.LogDebug(">>> Entering Add_Case5_FormsCorrectTree()");
         // Left-right rotation
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("Add_Case5_FormsCorrectTree(): tree → {Tree}", tree);
         tree.AddRange(new[] { 5, 4, 6, 2, 3 });
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 3, 2, 4, 6 }).Should().BeTrue();
 
@@ -64,13 +83,16 @@ internal class RedBlackTreeTests
         tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 5, 4, 6, 8, 7 });
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 4, 7, 6, 8 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Add_Case5_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_MultipleKeys_FormsCorrectTree()
     {
+		_logger.LogDebug(">>> Entering Add_MultipleKeys_FormsCorrectTree()");
         var tree = new RedBlackTree<int>();
 
+		_logger.LogDebug("Add_MultipleKeys_FormsCorrectTree(): tree → {Tree}", tree);
         foreach (var value in new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
         {
             tree.Add(value);
@@ -79,31 +101,40 @@ internal class RedBlackTreeTests
 
         tree.GetKeysInOrder().SequenceEqual(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 4, 2, 1, 3, 6, 5, 8, 7, 9, 10 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Add_MultipleKeys_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_KeyAlreadyInTree_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering Add_KeyAlreadyInTree_ThrowsException()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5 });
+		_logger.LogDebug("Add_KeyAlreadyInTree_ThrowsException(): tree → {Tree}", tree);
         Assert.Throws<ArgumentException>(() => tree.Add(1));
+		_logger.LogDebug("<<< Exiting Add_KeyAlreadyInTree_ThrowsException()");
     }
 
     [Test]
     public void AddRange_MultipleKeys_FormsCorrectTree()
     {
+		_logger.LogDebug(">>> Entering AddRange_MultipleKeys_FormsCorrectTree()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 9, 0, 1, 6, 7, 5, 2, 8, 4, 3 });
+		_logger.LogDebug("AddRange_MultipleKeys_FormsCorrectTree(): tree → {Tree}", tree);
         tree.Count.Should().Be(10);
         tree.GetKeysInOrder().SequenceEqual(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 1, 0, 3, 2, 4, 7, 6, 9, 8 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting AddRange_MultipleKeys_FormsCorrectTree()");
     }
 
     [Test]
     public void Remove_SimpleCases_TreeStillValid()
     {
+		_logger.LogDebug(">>> Entering Remove_SimpleCases_TreeStillValid()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 13, 8, 17, 1, 11, 15, 25, 6, 22, 27 });
+		_logger.LogDebug("Remove_SimpleCases_TreeStillValid(): tree → {Tree}", tree);
         tree.Remove(6);
         tree.Count.Should().Be(9);
         tree.Contains(6).Should().BeFalse();
@@ -149,25 +180,31 @@ internal class RedBlackTreeTests
         tree.Count.Should().Be(1);
         tree.GetKeysInOrder().SequenceEqual(new[] { 2 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 2 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Remove_SimpleCases_TreeStillValid()");
     }
 
     [Test]
     public void Remove_Case1_TreeStillValid()
     {
+		_logger.LogDebug(">>> Entering Remove_Case1_TreeStillValid()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 5, 2, 8, 1 });
+		_logger.LogDebug("Remove_Case1_TreeStillValid(): tree → {Tree}", tree);
         tree.Remove(1);
         tree.Remove(2);
         tree.Contains(2).Should().BeFalse();
         tree.GetKeysInOrder().SequenceEqual(new[] { 5, 8 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 8 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Remove_Case1_TreeStillValid()");
     }
 
     [Test]
     public void Remove_Case3_TreeStillValid()
     {
+		_logger.LogDebug(">>> Entering Remove_Case3_TreeStillValid()");
         // Move to case 6
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("Remove_Case3_TreeStillValid(): tree → {Tree}", tree);
         tree.AddRange(new[] { 7, 3, 18, 1, 10, 22, 8, 11, 26 });
         tree.Remove(1);
         tree.Remove(3);
@@ -196,13 +233,16 @@ internal class RedBlackTreeTests
         tree.Count.Should().Be(6);
         tree.GetKeysInOrder().SequenceEqual(new[] { 0, 1, 2, 3, 4, 7 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 3, 1, 0, 2, 7, 4 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Remove_Case3_TreeStillValid()");
     }
 
     [Test]
     public void Remove_Case4_TreeStillValid()
     {
+		_logger.LogDebug(">>> Entering Remove_Case4_TreeStillValid()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 5, 2, 8, 1, 4, 7, 9, 0, 3 });
+		_logger.LogDebug("Remove_Case4_TreeStillValid(): tree → {Tree}", tree);
         tree.Remove(0);
         tree.Remove(3);
         tree.Remove(2);
@@ -210,13 +250,16 @@ internal class RedBlackTreeTests
         tree.Contains(2).Should().BeFalse();
         tree.GetKeysInOrder().SequenceEqual(new[] { 1, 4, 5, 7, 8, 9 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 5, 4, 1, 8, 7, 9 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Remove_Case4_TreeStillValid()");
     }
 
     [Test]
     public void Remove_Case5_TreeStillValid()
     {
+		_logger.LogDebug(">>> Entering Remove_Case5_TreeStillValid()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 13, 8, 17, 1, 11, 15, 25, 6, 22, 27 });
+		_logger.LogDebug("Remove_Case5_TreeStillValid(): tree → {Tree}", tree);
         tree.Remove(8);
         tree.Count.Should().Be(9);
         tree.Contains(8).Should().BeFalse();
@@ -240,13 +283,16 @@ internal class RedBlackTreeTests
         tree.Remove(8);
         tree.GetKeysInOrder().SequenceEqual(new[] { 2, 3, 5, 6, 9 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 3, 2, 6, 5, 9 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Remove_Case5_TreeStillValid()");
     }
 
     [Test]
     public void Remove_Case6_TreeStillValid()
     {
+		_logger.LogDebug(">>> Entering Remove_Case6_TreeStillValid()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 13, 8, 17, 1, 11, 15, 25, 6, 22, 27 });
+		_logger.LogDebug("Remove_Case6_TreeStillValid(): tree → {Tree}", tree);
         tree.Remove(13);
         tree.Count.Should().Be(9);
         tree.Contains(13).Should().BeFalse();
@@ -260,114 +306,157 @@ internal class RedBlackTreeTests
         tree.Contains(8).Should().BeFalse();
         tree.GetKeysInOrder().SequenceEqual(new[] { 0, 1, 6, 11, 13, 15, 17, 22, 25 }).Should().BeTrue();
         tree.GetKeysPreOrder().SequenceEqual(new[] { 13, 1, 0, 11, 6, 17, 15, 25, 22 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting Remove_Case6_TreeStillValid()");
     }
 
     [Test]
     public void Remove_EmptyTree_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering Remove_EmptyTree_ThrowsException()");
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("<<< Exiting Remove_EmptyTree_ThrowsException()");
+		_logger.LogDebug("Remove_EmptyTree_ThrowsException(): tree → {Tree}", tree);
         Assert.Throws<InvalidOperationException>(() => tree.Remove(1));
     }
 
     [Test]
     public void Remove_KeyNotInTree_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering Remove_KeyNotInTree_ThrowsException()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("Remove_KeyNotInTree_ThrowsException(): tree → {Tree}", tree);
         Assert.Throws<KeyNotFoundException>(() => tree.Remove(24));
+		_logger.LogDebug("<<< Exiting Remove_KeyNotInTree_ThrowsException()");
     }
 
     [Test]
     public void Contains_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering Contains_CorrectReturn()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("Contains_CorrectReturn(): tree → {Tree}", tree);
         tree.Contains(3).Should().BeTrue();
         tree.Contains(7).Should().BeTrue();
         tree.Contains(24).Should().BeFalse();
         tree.Contains(-1).Should().BeFalse();
+		_logger.LogDebug("<<< Exiting Contains_CorrectReturn()");
     }
 
     [Test]
     public void Contains_EmptyTree_ReturnsFalse()
     {
+		_logger.LogDebug(">>> Entering Contains_EmptyTree_ReturnsFalse()");
         var tree = new RedBlackTree<int>();
         tree.Contains(5).Should().BeFalse();
+		_logger.LogDebug("Contains_EmptyTree_ReturnsFalse(): tree → {Tree}", tree);
         tree.Contains(-12).Should().BeFalse();
+		_logger.LogDebug("<<< Exiting Contains_EmptyTree_ReturnsFalse()");
     }
 
     [Test]
     public void GetMin_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetMin_CorrectReturn()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("GetMin_CorrectReturn(): tree → {Tree}", tree);
         tree.GetMin().Should().Be(1);
+		_logger.LogDebug("<<< Exiting GetMin_CorrectReturn()");
     }
 
     [Test]
     public void GetMin_EmptyTree_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering GetMin_EmptyTree_ThrowsException()");
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("<<< Exiting GetMin_EmptyTree_ThrowsException()");
+		_logger.LogDebug("GetMin_EmptyTree_ThrowsException(): tree → {Tree}", tree);
         Assert.Throws<InvalidOperationException>(() => tree.GetMin());
     }
 
     [Test]
     public void GetMax_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetMax_CorrectReturn()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("GetMax_CorrectReturn(): tree → {Tree}", tree);
         tree.GetMax().Should().Be(10);
+		_logger.LogDebug("<<< Exiting GetMax_CorrectReturn()");
     }
 
     [Test]
     public void GetMax_EmptyTree_ThrowsException()
     {
+		_logger.LogDebug(">>> Entering GetMax_EmptyTree_ThrowsException()");
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("<<< Exiting GetMax_EmptyTree_ThrowsException()");
+		_logger.LogDebug("GetMax_EmptyTree_ThrowsException(): tree → {Tree}", tree);
         Assert.Throws<InvalidOperationException>(() => tree.GetMax());
     }
 
     [Test]
     public void GetKeysInOrder_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetKeysInOrder_CorrectReturn()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("GetKeysInOrder_CorrectReturn(): tree → {Tree}", tree);
         tree.GetKeysInOrder().SequenceEqual(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting GetKeysInOrder_CorrectReturn()");
     }
 
     [Test]
     public void GetKeysInOrder_EmptyTree_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetKeysInOrder_EmptyTree_CorrectReturn()");
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("<<< Exiting GetKeysInOrder_EmptyTree_CorrectReturn()");
+		_logger.LogDebug("GetKeysInOrder_EmptyTree_CorrectReturn(): tree → {Tree}", tree);
         tree.GetKeysInOrder().SequenceEqual(Array.Empty<int>()).Should().BeTrue();
     }
 
     [Test]
     public void GetKeysPreOrder_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetKeysPreOrder_CorrectReturn()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("GetKeysPreOrder_CorrectReturn(): tree → {Tree}", tree);
         tree.GetKeysPreOrder().SequenceEqual(new[] { 4, 2, 1, 3, 6, 5, 8, 7, 9, 10 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting GetKeysPreOrder_CorrectReturn()");
     }
 
     [Test]
     public void GetKeysPreOrder_EmptyTree_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetKeysPreOrder_EmptyTree_CorrectReturn()");
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("<<< Exiting GetKeysPreOrder_EmptyTree_CorrectReturn()");
+		_logger.LogDebug("GetKeysPreOrder_EmptyTree_CorrectReturn(): tree → {Tree}", tree);
         tree.GetKeysPreOrder().SequenceEqual(Array.Empty<int>()).Should().BeTrue();
     }
 
     [Test]
     public void GetKeysPostOrder_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetKeysPostOrder_CorrectReturn()");
         var tree = new RedBlackTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		_logger.LogDebug("GetKeysPostOrder_CorrectReturn(): tree → {Tree}", tree);
         tree.GetKeysPostOrder().SequenceEqual(new[] { 1, 3, 2, 5, 7, 10, 9, 8, 6, 4 }).Should().BeTrue();
+		_logger.LogDebug("<<< Exiting GetKeysPostOrder_CorrectReturn()");
     }
 
     [Test]
     public void GetKeysPostOrder_EmptyTree_CorrectReturn()
     {
+		_logger.LogDebug(">>> Entering GetKeysPostOrder_EmptyTree_CorrectReturn()");
         var tree = new RedBlackTree<int>();
+		_logger.LogDebug("<<< Exiting GetKeysPostOrder_EmptyTree_CorrectReturn()");
+		_logger.LogDebug("GetKeysPostOrder_EmptyTree_CorrectReturn(): tree → {Tree}", tree);
         tree.GetKeysPostOrder().SequenceEqual(Array.Empty<int>()).Should().BeTrue();
     }
 }

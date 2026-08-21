@@ -1,4 +1,5 @@
 using Algorithms.Sorters.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Sorters.Comparison;
 
@@ -24,6 +25,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class TimSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly int minMerge;
     private readonly int initMinGallop;
 
@@ -52,19 +54,28 @@ public class TimSorter<T> : IComparisonSorter<T>
 
     public TimSorter(TimSorterSettings settings, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering TimSorter(settings={Settings},comparer={Comparer})", settings, comparer);
         initMinGallop = minGallop;
 
+		_logger.LogDebug("TimSorter(settings={Settings},comparer={Comparer}): initMinGallop → {InitMinGallop}", settings, comparer, initMinGallop);
         // Using the worst case stack size from the C implementation.
         // Based on the findings in the original listsort.txt:
         // ... the stack can never grow larger than about log_base_phi(N) entries, where phi = (1 + sqrt(5)) / 2 ~= 1.618.
         // Thus a small # of stack slots suffice for very large arrays ...
         runBase = new int[85];
+		_logger.LogDebug("TimSorter(settings={Settings},comparer={Comparer}): runBase → {RunBase}", settings, comparer, runBase);
         runLengths = new int[85];
+		_logger.LogDebug("TimSorter(settings={Settings},comparer={Comparer}): runLengths → {RunLengths}", settings, comparer, runLengths);
 
         stackSize = 0;
+		_logger.LogDebug("TimSorter(settings={Settings},comparer={Comparer}): stackSize → {StackSize}", settings, comparer, stackSize);
+		_logger.LogDebug("TimSorter(settings={Settings},comparer={Comparer}): comparer → {Comparer1}", settings, comparer, comparer);
 
+		_logger.LogDebug("<<< Exiting TimSorter(settings={Settings},comparer={Comparer})", settings, comparer);
         minGallop = settings.MinGallop;
+		_logger.LogDebug("TimSorter(settings={Settings},comparer={Comparer}): minGallop → {MinGallop}", settings, comparer, minGallop);
         minMerge = settings.MinMerge;
+		_logger.LogDebug("TimSorter(settings={Settings},comparer={Comparer}): minMerge → {MinMerge}", settings, comparer, minMerge);
 
         this.comparer = comparer ?? Comparer<T>.Default;
     }
@@ -79,6 +90,7 @@ public class TimSorter<T> : IComparisonSorter<T>
     /// <param name="comparer">Compares elements.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogDebug(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         ArgumentNullException.ThrowIfNull(array);
 
         var start = 0;
@@ -98,16 +110,19 @@ public class TimSorter<T> : IComparisonSorter<T>
         }
 
         var minRun = MinRunLength(remaining, minMerge);
+		_logger.LogDebug("Sort(array={Array},comparer={Comparer}): minRun → {MinRun}", array, comparer, minRun);
 
         do
         {
             // Identify next run
             var runLen = CountRunAndMakeAscending(array, start);
+			_logger.LogDebug("Sort(array={Array},comparer={Comparer}): runLen → {RunLen}", array, comparer, runLen);
 
             // If the run is too short extend to Min(MIN_RUN, remaining)
             if (runLen < minRun)
             {
                 var force = Math.Min(minRun, remaining);
+				_logger.LogDebug("Sort(array={Array},comparer={Comparer}): force → {Force}", array, comparer, force);
                 BinarySort(array, start, start + force, start + runLen);
                 runLen = force;
             }
@@ -124,6 +139,7 @@ public class TimSorter<T> : IComparisonSorter<T>
         while (remaining != 0);
 
         MergeForceCollapse(array);
+		_logger.LogDebug("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 
     /// <summary>
@@ -140,6 +156,7 @@ public class TimSorter<T> : IComparisonSorter<T>
     /// <returns>Minimum run length to be merged.</returns>
     private static int MinRunLength(int total, int minRun)
     {
+		_logger.LogDebug(">>> Entering MinRunLength(total={Total},minRun={MinRun})", total, minRun);
         var r = 0;
         while (total >= minRun)
         {
@@ -147,6 +164,7 @@ public class TimSorter<T> : IComparisonSorter<T>
             total >>= 1;
         }
 
+		_logger.LogDebug("<<< Exiting MinRunLength(total={Total},minRun={MinRun})", total, minRun);
         return total + r;
     }
 
@@ -158,6 +176,7 @@ public class TimSorter<T> : IComparisonSorter<T>
     /// <param name="end">the index after the last element in the range to be reversed.</param>
     private static void ReverseRange(T[] array, int start, int end)
     {
+		_logger.LogDebug(">>> Entering ReverseRange(array={Array},start={Start},end={End})", array, start, end);
         end--;
         while (start < end)
         {
@@ -165,6 +184,7 @@ public class TimSorter<T> : IComparisonSorter<T>
             array[start++] = array[end];
             array[end--] = t;
         }
+		_logger.LogDebug("<<< Exiting ReverseRange(array={Array},start={Start},end={End})", array, start, end);
     }
 
     /// <summary>
@@ -176,6 +196,7 @@ public class TimSorter<T> : IComparisonSorter<T>
     /// <returns>If a merge is required.</returns>
     private static bool NeedsMerge(TimChunk<T> left, TimChunk<T> right, ref int dest)
     {
+		_logger.LogDebug(">>> Entering NeedsMerge(left={Left},right={Right},dest={Dest})", left, right, dest);
         right.Array[dest++] = right.Array[right.Index++];
         if (--right.Remaining == 0)
         {
@@ -190,6 +211,10 @@ public class TimSorter<T> : IComparisonSorter<T>
             return false;
         }
 
+		_logger.LogDebug(">>> Entering Merge(array={Array},baseA={BaseA},lenA={LenA},baseB={BaseB},lenB={LenB})", array, baseA, lenA, baseB, lenB);
+		_logger.LogDebug("Merge(array={Array},baseA={BaseA},lenA={LenA},baseB={BaseB},lenB={LenB}): Remaining → {Remaining}", array, baseA, lenA, baseB, lenB, Remaining);
+		_logger.LogDebug("<<< Exiting Merge(array={Array},baseA={BaseA},lenA={LenA},baseB={BaseB},lenB={LenB})", array, baseA, lenA, baseB, lenB);
+		_logger.LogDebug("<<< Exiting NeedsMerge(left={Left},right={Right},dest={Dest})", left, right, dest);
         return true;
     }
 
@@ -201,6 +226,7 @@ public class TimSorter<T> : IComparisonSorter<T>
     /// <param name="dest">The current target point for the remaining values.</param>
     private static void FinalizeMerge(TimChunk<T> left, TimChunk<T> right, int dest)
     {
+		_logger.LogDebug(">>> Entering FinalizeMerge(left={Left},right={Right},dest={Dest})", left, right, dest);
         if (left.Remaining == 1)
         {
             Array.Copy(right.Array, right.Index, right.Array, dest, right.Remaining);
@@ -208,12 +234,14 @@ public class TimSorter<T> : IComparisonSorter<T>
         }
         else if (left.Remaining == 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from FinalizeMerge(left={Left},right={Right},dest={Dest})", left, right, dest);
             throw new ArgumentException("Comparison method violates its general contract!");
         }
         else
         {
             Array.Copy(left.Array, left.Index, right.Array, dest, left.Remaining);
         }
+		_logger.LogDebug("<<< Exiting FinalizeMerge(left={Left},right={Right},dest={Dest})", left, right, dest);
     }
 
     /// <summary>
@@ -238,6 +266,7 @@ public class TimSorter<T> : IComparisonSorter<T>
     /// <returns>the length of the run beginning at the specified position in the specified array.</returns>
     private int CountRunAndMakeAscending(T[] array, int start)
     {
+		_logger.LogDebug(">>> Entering CountRunAndMakeAscending(array={Array},start={Start})", array, start);
         var runHi = start + 1;
         if (runHi == array.Length)
         {
@@ -275,6 +304,7 @@ public class TimSorter<T> : IComparisonSorter<T>
     /// <param name="first">The index of the first element in the range that is not already known to be sorted, must be between start and end.</param>
     private void BinarySort(T[] array, int start, int end, int first)
     {
+		_logger.LogDebug(">>> Entering BinarySort(array={Array},start={Start},end={End},first={First})", array, start, end, first);
         if (first >= end || first <= start)
         {
             first = start + 1;
@@ -284,17 +314,21 @@ public class TimSorter<T> : IComparisonSorter<T>
         {
             var target = array[first];
             var targetInsertLocation = BinarySearch(array, start, first - 1, target);
+			_logger.LogDebug("BinarySort(array={Array},start={Start},end={End},first={First}): targetInsertLocation → {TargetInsertLocation}", array, start, end, first, targetInsertLocation);
             Array.Copy(array, targetInsertLocation, array, targetInsertLocation + 1, first - targetInsertLocation);
 
             array[targetInsertLocation] = target;
         }
+		_logger.LogDebug("<<< Exiting BinarySort(array={Array},start={Start},end={End},first={First})", array, start, end, first);
     }
 
     private int BinarySearch(T[] array, int left, int right, T target)
     {
+		_logger.LogDebug(">>> Entering BinarySearch(array={Array},left={Left},right={Right},target={Target})", array, left, right, target);
         while (left < right)
         {
             var mid = (left + right) >> 1;
+			_logger.LogDebug("BinarySearch(array={Array},left={Left},right={Right},target={Target}): mid → {Mid}", array, left, right, target, mid);
             if (comparer.Compare(target, array[mid]) < 0)
             {
                 right = mid;
@@ -305,6 +339,7 @@ public class TimSorter<T> : IComparisonSorter<T>
             }
         }
 
+		_logger.LogDebug("<<< Exiting BinarySearch(array={Array},left={Left},right={Right},target={Target})", array, left, right, target);
         return comparer.Compare(target, array[left]) < 0
             ? left
             : left + 1;
@@ -312,6 +347,7 @@ public class TimSorter<T> : IComparisonSorter<T>
 
     private void MergeCollapse(T[] array)
     {
+		_logger.LogDebug(">>> Entering MergeCollapse(array={Array})", array);
         while (stackSize > 1)
         {
             var n = stackSize - 2;
@@ -333,10 +369,12 @@ public class TimSorter<T> : IComparisonSorter<T>
                 break;
             }
         }
+		_logger.LogDebug("<<< Exiting MergeCollapse(array={Array})", array);
     }
 
     private void MergeForceCollapse(T[] array)
     {
+		_logger.LogDebug(">>> Entering MergeForceCollapse(array={Array})", array);
         while (stackSize > 1)
         {
             var n = stackSize - 2;
@@ -347,14 +385,17 @@ public class TimSorter<T> : IComparisonSorter<T>
 
             MergeAt(array, n);
         }
+		_logger.LogDebug("<<< Exiting MergeForceCollapse(array={Array})", array);
     }
 
     private void MergeAt(T[] array, int index)
     {
+		_logger.LogDebug(">>> Entering MergeAt(array={Array},index={Index})", array, index);
         var baseA = runBase[index];
         var lenA = runLengths[index];
         var baseB = runBase[index + 1];
         var lenB = runLengths[index + 1];
+		_logger.LogDebug("MergeAt(array={Array},index={Index}): lenB → {LenB}", array, index, lenB);
 
         runLengths[index] = lenA + lenB;
 
@@ -384,6 +425,7 @@ public class TimSorter<T> : IComparisonSorter<T>
         }
 
         Merge(array, baseA, lenA, baseB, lenB);
+		_logger.LogDebug("<<< Exiting MergeAt(array={Array},index={Index})", array, index);
     }
 
     private void Merge(T[] array, int baseA, int lenA, int baseB, int lenB)
@@ -430,8 +472,11 @@ public class TimSorter<T> : IComparisonSorter<T>
 
     private bool RunMerge(TimChunk<T> left, TimChunk<T> right, ref int dest, ref int gallop)
     {
+		_logger.LogDebug(">>> Entering RunMerge(left={Left},right={Right},dest={Dest},gallop={Gallop})", left, right, dest, gallop);
         // Reset the number of times in row a run wins.
         left.Wins = 0;
+		_logger.LogDebug("RunMerge(left={Left},right={Right},dest={Dest},gallop={Gallop}): left.Wins → {Arg4}", left, right, dest, gallop, left.Wins);
+		_logger.LogDebug("RunMerge(left={Left},right={Right},dest={Dest},gallop={Gallop}): right.Wins → {Arg4}", left, right, dest, gallop, right.Wins);
         right.Wins = 0;
 
         // Run a stable merge sort until (if ever) one run starts winning consistently.
@@ -456,11 +501,13 @@ public class TimSorter<T> : IComparisonSorter<T>
         }
         while (left.Wins >= initMinGallop || right.Wins >= initMinGallop);
 
+		_logger.LogDebug("<<< Exiting RunMerge(left={Left},right={Right},dest={Dest},gallop={Gallop})", left, right, dest, gallop);
         return true;
     }
 
     private bool StableMerge(TimChunk<T> left, TimChunk<T> right, ref int dest, int gallop)
     {
+		_logger.LogDebug(">>> Entering StableMerge(left={Left},right={Right},dest={Dest},gallop={Gallop})", left, right, dest, gallop);
         do
         {
             if (comparer.Compare(right.Array[right.Index], left.Array[left.Index]) < 0)
@@ -468,6 +515,7 @@ public class TimSorter<T> : IComparisonSorter<T>
                 right.Array[dest++] = right.Array[right.Index++];
                 right.Wins++;
                 left.Wins = 0;
+				_logger.LogDebug("StableMerge(left={Left},right={Right},dest={Dest},gallop={Gallop}): left.Wins → {Arg4}", left, right, dest, gallop, left.Wins);
                 if (--right.Remaining == 0)
                 {
                     return true;
@@ -478,6 +526,7 @@ public class TimSorter<T> : IComparisonSorter<T>
                 right.Array[dest++] = left.Array[left.Index++];
                 left.Wins++;
                 right.Wins = 0;
+				_logger.LogDebug("StableMerge(left={Left},right={Right},dest={Dest},gallop={Gallop}): right.Wins → {Arg4}", left, right, dest, gallop, right.Wins);
                 if (--left.Remaining == 1)
                 {
                     return true;
@@ -486,11 +535,13 @@ public class TimSorter<T> : IComparisonSorter<T>
         }
         while ((left.Wins | right.Wins) < gallop);
 
+		_logger.LogDebug("<<< Exiting StableMerge(left={Left},right={Right},dest={Dest},gallop={Gallop})", left, right, dest, gallop);
         return false;
     }
 
     private bool GallopMerge(TimChunk<T> left, TimChunk<T> right, ref int dest)
     {
+		_logger.LogDebug(">>> Entering GallopMerge(left={Left},right={Right},dest={Dest})", left, right, dest);
         left.Wins = GallopingStrategy<T>.GallopRight(left.Array, right.Array[right.Index], left.Index, left.Remaining, comparer);
         if (left.Wins != 0)
         {
@@ -526,6 +577,7 @@ public class TimSorter<T> : IComparisonSorter<T>
         right.Array[dest++] = left.Array[left.Index++];
         if (--left.Remaining == 1)
         {
+		_logger.LogDebug("<<< Exiting GallopMerge(left={Left},right={Right},dest={Dest})", left, right, dest);
             return true;
         }
 

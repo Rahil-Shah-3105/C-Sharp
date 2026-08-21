@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Encoders;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Encoders;
 /// </summary>
 public class CaesarEncoder : IEncoder<int>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Encodes text using specified key,
     ///     time complexity: O(n),
@@ -29,17 +31,21 @@ public class CaesarEncoder : IEncoder<int>
 
     private static string Cipher(string text, int key)
     {
+		_logger.LogDebug(">>> Entering Cipher(text={Text},key={Key})", text, key);
         var newText = new StringBuilder(text.Length);
         for (var i = 0; i < text.Length; i++)
         {
             if (!char.IsLetter(text[i]))
             {
                 _ = newText.Append(text[i]);
+				_logger.LogDebug("Cipher(text={Text},key={Key}): _ → {_}", text, key, _);
                 continue;
             }
 
             var letterA = char.IsUpper(text[i]) ? 'A' : 'a';
+			_logger.LogDebug("Cipher(text={Text},key={Key}): letterA → {LetterA}", text, key, letterA);
             var letterZ = char.IsUpper(text[i]) ? 'Z' : 'z';
+			_logger.LogDebug("Cipher(text={Text},key={Key}): letterZ → {LetterZ}", text, key, letterZ);
 
             var c = text[i] + key;
             c -= c > letterZ ? 26 * (1 + (c - letterZ - 1) / 26) : 0;
@@ -48,6 +54,7 @@ public class CaesarEncoder : IEncoder<int>
             _ = newText.Append((char)c);
         }
 
+		_logger.LogDebug("<<< Exiting Cipher(text={Text},key={Key})", text, key);
         return newText.ToString();
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.BTree;
 
 /// <summary>
@@ -31,6 +32,7 @@ namespace DataStructures.BTree;
 /// <typeparam name="TKey">Type of key for the tree.</typeparam>
 public class BTree<TKey>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets the number of keys in the tree.
     /// </summary>
@@ -65,13 +67,18 @@ public class BTree<TKey>
     /// </exception>
     public BTree(int minimumDegree = 2)
     {
+		_logger.LogDebug(">>> Entering BTree(minimumDegree={MinimumDegree})", minimumDegree);
         if (minimumDegree < 2)
         {
+			_logger.LogWarning("Throwing ArgumentException from BTree(minimumDegree={MinimumDegree})", minimumDegree);
+		_logger.LogDebug("<<< Exiting BTree(minimumDegree={MinimumDegree})", minimumDegree);
             throw new ArgumentException("Minimum degree must be at least 2.", nameof(minimumDegree));
         }
 
         MinimumDegree = minimumDegree;
+		_logger.LogDebug("BTree(minimumDegree={MinimumDegree}): MinimumDegree → {MinimumDegree1}", minimumDegree, MinimumDegree);
         comparer = Comparer<TKey>.Default;
+		_logger.LogDebug("BTree(minimumDegree={MinimumDegree}): comparer → {Comparer}", minimumDegree, comparer);
     }
 
     /// <summary>
@@ -89,12 +96,17 @@ public class BTree<TKey>
     /// </exception>
     public BTree(int minimumDegree, Comparer<TKey> customComparer)
     {
+		_logger.LogDebug(">>> Entering BTree(minimumDegree={MinimumDegree},customComparer={CustomComparer})", minimumDegree, customComparer);
         if (minimumDegree < 2)
         {
+			_logger.LogWarning("Throwing ArgumentException from BTree(minimumDegree={MinimumDegree},customComparer={CustomComparer})", minimumDegree, customComparer);
+		_logger.LogDebug("<<< Exiting BTree(minimumDegree={MinimumDegree},customComparer={CustomComparer})", minimumDegree, customComparer);
+		_logger.LogDebug("BTree(minimumDegree={MinimumDegree},customComparer={CustomComparer}): comparer → {Comparer}", minimumDegree, customComparer, comparer);
             throw new ArgumentException("Minimum degree must be at least 2.", nameof(minimumDegree));
         }
 
         MinimumDegree = minimumDegree;
+		_logger.LogDebug("BTree(minimumDegree={MinimumDegree},customComparer={CustomComparer}): MinimumDegree → {MinimumDegree1}", minimumDegree, customComparer, MinimumDegree);
         comparer = customComparer;
     }
 
@@ -104,10 +116,12 @@ public class BTree<TKey>
     /// <param name="key">Key value to add.</param>
     public void Add(TKey key)
     {
+		_logger.LogDebug(">>> Entering Add(key={Key})", key);
         if (root is null)
         {
             root = new BTreeNode<TKey>(MinimumDegree, true);
             root.InsertKey(0, key);
+			_logger.LogWarning("Add(key={Key}): root → {Root}", key, root);
             Count++;
             return;
         }
@@ -115,6 +129,7 @@ public class BTree<TKey>
         if (root.IsFull())
         {
             var newRoot = new BTreeNode<TKey>(MinimumDegree, false);
+			_logger.LogDebug("Add(key={Key}): newRoot → {NewRoot}", key, newRoot);
             newRoot.InsertChild(0, root);
             SplitChild(newRoot, 0);
             root = newRoot;
@@ -122,6 +137,7 @@ public class BTree<TKey>
 
         InsertNonFull(root, key);
         Count++;
+		_logger.LogDebug("<<< Exiting Add(key={Key})", key);
     }
 
     /// <summary>
@@ -130,10 +146,12 @@ public class BTree<TKey>
     /// <param name="keys">Key values to add.</param>
     public void AddRange(IEnumerable<TKey> keys)
     {
+		_logger.LogDebug(">>> Entering AddRange(keys={Keys})", keys);
         foreach (var key in keys)
         {
             Add(key);
         }
+		_logger.LogDebug("<<< Exiting AddRange(keys={Keys})", keys);
     }
 
     /// <summary>
@@ -145,8 +163,10 @@ public class BTree<TKey>
     /// </exception>
     public void Remove(TKey key)
     {
+		_logger.LogDebug(">>> Entering Remove(key={Key})", key);
         if (root is null)
         {
+			_logger.LogWarning("Throwing KeyNotFoundException from Remove(key={Key})", key);
             throw new KeyNotFoundException($"""Key "{key}" is not in the B-Tree.""");
         }
 
@@ -155,9 +175,11 @@ public class BTree<TKey>
         if (root.KeyCount == 0)
         {
             root = root.IsLeaf ? null : root.Children[0];
+			_logger.LogWarning("Remove(key={Key}): root → {Root}", key, root);
         }
 
         Count--;
+		_logger.LogDebug("<<< Exiting Remove(key={Key})", key);
     }
 
     /// <summary>
@@ -167,6 +189,7 @@ public class BTree<TKey>
     /// <returns>Whether or not the key is in the tree.</returns>
     public bool Contains(TKey key)
     {
+		_logger.LogDebug(">>> Entering Contains(key={Key})", key);
         return Search(root, key) is not null;
     }
 
@@ -179,11 +202,15 @@ public class BTree<TKey>
     /// </exception>
     public TKey GetMin()
     {
+		_logger.LogDebug(">>> Entering GetMin()");
         if (root is null)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from GetMin()");
+		_logger.LogDebug("<<< Exiting GetMin()");
             throw new InvalidOperationException("B-Tree is empty.");
         }
 
+		_logger.LogDebug("<<< Exiting GetMin(node={Node})", node);
         return GetMin(root);
     }
 
@@ -196,11 +223,15 @@ public class BTree<TKey>
     /// </exception>
     public TKey GetMax()
     {
+		_logger.LogDebug(">>> Entering GetMax()");
         if (root is null)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from GetMax()");
+		_logger.LogDebug("<<< Exiting GetMax()");
             throw new InvalidOperationException("B-Tree is empty.");
         }
 
+		_logger.LogDebug("<<< Exiting GetMax(node={Node})", node);
         return GetMax(root);
     }
 
@@ -211,8 +242,11 @@ public class BTree<TKey>
     /// <returns>Keys in tree in order from smallest to largest.</returns>
     public IEnumerable<TKey> GetKeysInOrder()
     {
+		_logger.LogDebug(">>> Entering GetKeysInOrder()");
         List<TKey> result = [];
         InOrderTraversal(root);
+		_logger.LogDebug("GetKeysInOrder(): result → {Result}", result);
+		_logger.LogDebug("<<< Exiting GetKeysInOrder()");
         return result;
 
         void InOrderTraversal(BTreeNode<TKey>? node)
@@ -245,8 +279,11 @@ public class BTree<TKey>
     /// <returns>Keys in pre-order order.</returns>
     public IEnumerable<TKey> GetKeysPreOrder()
     {
+		_logger.LogDebug(">>> Entering GetKeysPreOrder()");
         var result = new List<TKey>();
         PreOrderTraversal(root);
+		_logger.LogDebug("GetKeysPreOrder(): result → {Result}", result);
+		_logger.LogDebug("<<< Exiting GetKeysPreOrder()");
         return result;
 
         void PreOrderTraversal(BTreeNode<TKey>? node)
@@ -277,8 +314,11 @@ public class BTree<TKey>
     /// <returns>Keys in the post-order order.</returns>
     public IEnumerable<TKey> GetKeysPostOrder()
     {
+		_logger.LogDebug(">>> Entering GetKeysPostOrder()");
         var result = new List<TKey>();
         PostOrderTraversal(root);
+		_logger.LogDebug("GetKeysPostOrder(): result → {Result}", result);
+		_logger.LogDebug("<<< Exiting GetKeysPostOrder()");
         return result;
 
         void PostOrderTraversal(BTreeNode<TKey>? node)
@@ -311,6 +351,7 @@ public class BTree<TKey>
     /// <returns>Node containing the key, or null if not found.</returns>
     private BTreeNode<TKey>? Search(BTreeNode<TKey>? node, TKey key)
     {
+		_logger.LogDebug(">>> Entering Search(node={Node},key={Key})", node, key);
         if (node is null)
         {
             return null;
@@ -329,6 +370,7 @@ public class BTree<TKey>
 
         if (node.IsLeaf)
         {
+		_logger.LogDebug("<<< Exiting Search(node={Node},key={Key})", node, key);
             return null;
         }
 
@@ -345,6 +387,7 @@ public class BTree<TKey>
     /// </exception>
     private void InsertNonFull(BTreeNode<TKey> node, TKey key)
     {
+		_logger.LogDebug(">>> Entering InsertNonFull(node={Node},key={Key})", node, key);
         if (node.IsLeaf)
         {
             InsertIntoLeaf(node, key);
@@ -353,6 +396,7 @@ public class BTree<TKey>
         {
             InsertIntoNonLeaf(node, key);
         }
+		_logger.LogDebug("<<< Exiting InsertNonFull(node={Node},key={Key})", node, key);
     }
 
     /// <summary>
@@ -362,6 +406,7 @@ public class BTree<TKey>
     /// <param name="key">Key to insert.</param>
     private void InsertIntoLeaf(BTreeNode<TKey> node, TKey key)
     {
+		_logger.LogDebug(">>> Entering InsertIntoLeaf(node={Node},key={Key})", node, key);
         var i = node.KeyCount - 1;
 
         while (i >= 0 && comparer.Compare(key, node.Keys[i]) < 0)
@@ -372,11 +417,13 @@ public class BTree<TKey>
 
         if (i >= 0 && comparer.Compare(key, node.Keys[i]) == 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from InsertIntoLeaf(node={Node},key={Key})", node, key);
             throw new ArgumentException($"""Key "{key}" already exists in B-Tree.""");
         }
 
         node.Keys[i + 1] = key;
         node.KeyCount++;
+		_logger.LogDebug("<<< Exiting InsertIntoLeaf(node={Node},key={Key})", node, key);
     }
 
     /// <summary>
@@ -386,6 +433,7 @@ public class BTree<TKey>
     /// <param name="key">Key to insert.</param>
     private void InsertIntoNonLeaf(BTreeNode<TKey> node, TKey key)
     {
+		_logger.LogDebug(">>> Entering InsertIntoNonLeaf(node={Node},key={Key})", node, key);
         var i = FindInsertionIndex(node, key);
 
         if (node.Children[i]!.IsFull())
@@ -399,6 +447,7 @@ public class BTree<TKey>
         }
 
         InsertNonFull(node.Children[i]!, key);
+		_logger.LogDebug("<<< Exiting InsertIntoNonLeaf(node={Node},key={Key})", node, key);
     }
 
     /// <summary>
@@ -409,6 +458,7 @@ public class BTree<TKey>
     /// <returns>Index where the key should be inserted.</returns>
     private int FindInsertionIndex(BTreeNode<TKey> node, TKey key)
     {
+		_logger.LogDebug(">>> Entering FindInsertionIndex(node={Node},key={Key})", node, key);
         var i = node.KeyCount - 1;
 
         while (i >= 0 && comparer.Compare(key, node.Keys[i]) < 0)
@@ -418,6 +468,8 @@ public class BTree<TKey>
 
         if (i >= 0 && comparer.Compare(key, node.Keys[i]) == 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from FindInsertionIndex(node={Node},key={Key})", node, key);
+		_logger.LogDebug("<<< Exiting FindInsertionIndex(node={Node},key={Key})", node, key);
             throw new ArgumentException($"""Key "{key}" already exists in B-Tree.""");
         }
 
@@ -431,8 +483,10 @@ public class BTree<TKey>
     /// <param name="childIndex">Index of the child to split.</param>
     private void SplitChild(BTreeNode<TKey> parent, int childIndex)
     {
+		_logger.LogDebug(">>> Entering SplitChild(parent={Parent},childIndex={ChildIndex})", parent, childIndex);
         var fullChild = parent.Children[childIndex]!;
         var newChild = new BTreeNode<TKey>(MinimumDegree, fullChild.IsLeaf);
+		_logger.LogDebug("SplitChild(parent={Parent},childIndex={ChildIndex}): newChild → {NewChild}", parent, childIndex, newChild);
         var midIndex = MinimumDegree - 1;
 
         for (var j = 0; j < MinimumDegree - 1; j++)
@@ -450,6 +504,7 @@ public class BTree<TKey>
         }
 
         fullChild.KeyCount = MinimumDegree - 1;
+		_logger.LogDebug("SplitChild(parent={Parent},childIndex={ChildIndex}): fullChild.KeyCount → {Arg2}", parent, childIndex, fullChild.KeyCount);
 
         for (var j = parent.KeyCount; j > childIndex; j--)
         {
@@ -465,6 +520,7 @@ public class BTree<TKey>
 
         parent.Keys[childIndex] = fullChild.Keys[midIndex];
         parent.KeyCount++;
+		_logger.LogDebug("<<< Exiting SplitChild(parent={Parent},childIndex={ChildIndex})", parent, childIndex);
     }
 
     /// <summary>
@@ -477,8 +533,10 @@ public class BTree<TKey>
     /// </exception>
     private void Remove(BTreeNode<TKey> node, TKey key)
     {
+		_logger.LogDebug(">>> Entering Remove(node={Node},key={Key})", node, key);
         var idx = FindKey(node, key);
 
+		_logger.LogDebug("Remove(node={Node},key={Key}): idx → {Idx}", node, key, idx);
         if (idx < node.KeyCount && comparer.Compare(node.Keys[idx], key) == 0)
         {
             if (node.IsLeaf)
@@ -494,6 +552,7 @@ public class BTree<TKey>
         {
             if (node.IsLeaf)
             {
+				_logger.LogWarning("Throwing KeyNotFoundException from Remove(node={Node},key={Key})", node, key);
                 throw new KeyNotFoundException($"""Key "{key}" is not in the B-Tree.""");
             }
 
@@ -513,6 +572,7 @@ public class BTree<TKey>
                 Remove(node.Children[idx]!, key);
             }
         }
+		_logger.LogDebug("<<< Exiting Remove(node={Node},key={Key})", node, key);
     }
 
     /// <summary>
@@ -523,12 +583,14 @@ public class BTree<TKey>
     /// <returns>Index of the first key >= key.</returns>
     private int FindKey(BTreeNode<TKey> node, TKey key)
     {
+		_logger.LogDebug(">>> Entering FindKey(node={Node},key={Key})", node, key);
         var idx = 0;
         while (idx < node.KeyCount && comparer.Compare(node.Keys[idx], key) < 0)
         {
             idx++;
         }
 
+		_logger.LogDebug("<<< Exiting FindKey(node={Node},key={Key})", node, key);
         return idx;
     }
 
@@ -539,7 +601,9 @@ public class BTree<TKey>
     /// <param name="idx">Index of the key to remove.</param>
     private void RemoveFromLeaf(BTreeNode<TKey> node, int idx)
     {
+		_logger.LogDebug(">>> Entering RemoveFromLeaf(node={Node},idx={Idx})", node, idx);
         node.RemoveKey(idx);
+		_logger.LogDebug("<<< Exiting RemoveFromLeaf(node={Node},idx={Idx})", node, idx);
     }
 
     /// <summary>
@@ -549,17 +613,21 @@ public class BTree<TKey>
     /// <param name="idx">Index of the key to remove.</param>
     private void RemoveFromNonLeaf(BTreeNode<TKey> node, int idx)
     {
+		_logger.LogDebug(">>> Entering RemoveFromNonLeaf(node={Node},idx={Idx})", node, idx);
         var key = node.Keys[idx];
 
+		_logger.LogWarning("RemoveFromNonLeaf(node={Node},idx={Idx}): key → {Key}", node, idx, key);
         if (node.Children[idx]!.KeyCount >= MinimumDegree)
         {
             var predecessor = GetPredecessor(node, idx);
+			_logger.LogDebug("RemoveFromNonLeaf(node={Node},idx={Idx}): predecessor → {Predecessor}", node, idx, predecessor);
             node.Keys[idx] = predecessor;
             Remove(node.Children[idx]!, predecessor);
         }
         else if (node.Children[idx + 1]!.KeyCount >= MinimumDegree)
         {
             var successor = GetSuccessor(node, idx);
+			_logger.LogDebug("RemoveFromNonLeaf(node={Node},idx={Idx}): successor → {Successor}", node, idx, successor);
             node.Keys[idx] = successor;
             Remove(node.Children[idx + 1]!, successor);
         }
@@ -568,6 +636,7 @@ public class BTree<TKey>
             Merge(node, idx);
             Remove(node.Children[idx]!, key);
         }
+		_logger.LogDebug("<<< Exiting RemoveFromNonLeaf(node={Node},idx={Idx})", node, idx);
     }
 
     /// <summary>
@@ -578,12 +647,14 @@ public class BTree<TKey>
     /// <returns>Predecessor key.</returns>
     private TKey GetPredecessor(BTreeNode<TKey> node, int idx)
     {
+		_logger.LogDebug(">>> Entering GetPredecessor(node={Node},idx={Idx})", node, idx);
         var current = node.Children[idx]!;
         while (!current.IsLeaf)
         {
             current = current.Children[current.KeyCount]!;
         }
 
+		_logger.LogDebug("<<< Exiting GetPredecessor(node={Node},idx={Idx})", node, idx);
         return current.Keys[current.KeyCount - 1];
     }
 
@@ -595,12 +666,14 @@ public class BTree<TKey>
     /// <returns>Successor key.</returns>
     private TKey GetSuccessor(BTreeNode<TKey> node, int idx)
     {
+		_logger.LogDebug(">>> Entering GetSuccessor(node={Node},idx={Idx})", node, idx);
         var current = node.Children[idx + 1]!;
         while (!current.IsLeaf)
         {
             current = current.Children[0]!;
         }
 
+		_logger.LogDebug("<<< Exiting GetSuccessor(node={Node},idx={Idx})", node, idx);
         return current.Keys[0];
     }
 
@@ -611,6 +684,7 @@ public class BTree<TKey>
     /// <param name="idx">Index of the child to fill.</param>
     private void Fill(BTreeNode<TKey> node, int idx)
     {
+		_logger.LogDebug(">>> Entering Fill(node={Node},idx={Idx})", node, idx);
         if (idx != 0 && node.Children[idx - 1]!.KeyCount >= MinimumDegree)
         {
             BorrowFromPrevious(node, idx);
@@ -623,6 +697,7 @@ public class BTree<TKey>
         {
             Merge(node, idx != node.KeyCount ? idx : idx - 1);
         }
+		_logger.LogDebug("<<< Exiting Fill(node={Node},idx={Idx})", node, idx);
     }
 
     /// <summary>
@@ -632,6 +707,7 @@ public class BTree<TKey>
     /// <param name="childIdx">Index of the child that needs a key.</param>
     private void BorrowFromPrevious(BTreeNode<TKey> node, int childIdx)
     {
+		_logger.LogDebug(">>> Entering BorrowFromPrevious(node={Node},childIdx={ChildIdx})", node, childIdx);
         var child = node.Children[childIdx]!;
         var sibling = node.Children[childIdx - 1]!;
 
@@ -659,6 +735,7 @@ public class BTree<TKey>
 
         child.KeyCount++;
         sibling.KeyCount--;
+		_logger.LogDebug("<<< Exiting BorrowFromPrevious(node={Node},childIdx={ChildIdx})", node, childIdx);
     }
 
     /// <summary>
@@ -668,6 +745,7 @@ public class BTree<TKey>
     /// <param name="childIdx">Index of the child that needs a key.</param>
     private void BorrowFromNext(BTreeNode<TKey> node, int childIdx)
     {
+		_logger.LogDebug(">>> Entering BorrowFromNext(node={Node},childIdx={ChildIdx})", node, childIdx);
         var child = node.Children[childIdx]!;
         var sibling = node.Children[childIdx + 1]!;
 
@@ -695,6 +773,7 @@ public class BTree<TKey>
 
         child.KeyCount++;
         sibling.KeyCount--;
+		_logger.LogDebug("<<< Exiting BorrowFromNext(node={Node},childIdx={ChildIdx})", node, childIdx);
     }
 
     /// <summary>
@@ -704,6 +783,7 @@ public class BTree<TKey>
     /// <param name="idx">Index of the child to merge.</param>
     private void Merge(BTreeNode<TKey> node, int idx)
     {
+		_logger.LogDebug(">>> Entering Merge(node={Node},idx={Idx})", node, idx);
         var child = node.Children[idx]!;
         var sibling = node.Children[idx + 1]!;
 
@@ -734,6 +814,7 @@ public class BTree<TKey>
 
         child.KeyCount += sibling.KeyCount + 1;
         node.KeyCount--;
+		_logger.LogDebug("<<< Exiting Merge(node={Node},idx={Idx})", node, idx);
     }
 
     /// <summary>

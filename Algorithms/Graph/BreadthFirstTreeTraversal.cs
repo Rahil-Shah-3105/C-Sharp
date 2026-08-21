@@ -1,4 +1,5 @@
 using DataStructures.BinarySearchTree;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -11,6 +12,7 @@ namespace Algorithms.Graph;
 /// <typeparam name="TKey">Type of key held in binary search tree.</typeparam>
 public static class BreadthFirstTreeTraversal<TKey>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Level Order Traversal returns an array of integers in order
     ///     of each level of a binary tree. It uses a queue to iterate
@@ -20,6 +22,7 @@ public static class BreadthFirstTreeTraversal<TKey>
     /// <returns>Returns level order traversal.</returns>
     public static TKey[] LevelOrderTraversal(BinarySearchTree<TKey> tree)
     {
+		_logger.LogDebug(">>> Entering LevelOrderTraversal(tree={Tree})", tree);
         BinarySearchTreeNode<TKey>? root = tree.Root;
         TKey[] levelOrder = new TKey[tree.Count];
         if (root is null)
@@ -32,6 +35,7 @@ public static class BreadthFirstTreeTraversal<TKey>
         for (int i = 0; i < levelOrder.Length; i++)
         {
             BinarySearchTreeNode<TKey> current = breadthTraversal.Dequeue();
+			_logger.LogDebug("LevelOrderTraversal(tree={Tree}): current → {Current}", tree, current);
             levelOrder[i] = current.Key;
             if (current.Left is not null)
             {
@@ -44,6 +48,7 @@ public static class BreadthFirstTreeTraversal<TKey>
             }
         }
 
+		_logger.LogDebug("<<< Exiting LevelOrderTraversal(tree={Tree})", tree);
         return levelOrder;
     }
 
@@ -57,6 +62,7 @@ public static class BreadthFirstTreeTraversal<TKey>
     /// <returns>Returns the deepest node in the tree.</returns>
     public static TKey? DeepestNode(BinarySearchTree<TKey> tree)
     {
+		_logger.LogDebug(">>> Entering DeepestNode(tree={Tree})", tree);
         BinarySearchTreeNode<TKey>? root = tree.Root;
         if (root is null)
         {
@@ -66,9 +72,11 @@ public static class BreadthFirstTreeTraversal<TKey>
         Queue<BinarySearchTreeNode<TKey>> breadthTraversal = new Queue<BinarySearchTreeNode<TKey>>();
         breadthTraversal.Enqueue(root);
         TKey deepest = root.Key;
+		_logger.LogDebug("DeepestNode(tree={Tree}): deepest → {Deepest}", tree, deepest);
         while (breadthTraversal.Count > 0)
         {
             BinarySearchTreeNode<TKey> current = breadthTraversal.Dequeue();
+			_logger.LogDebug("DeepestNode(tree={Tree}): current → {Current}", tree, current);
             if (current.Left is not null)
             {
                 breadthTraversal.Enqueue(current.Left);
@@ -82,6 +90,7 @@ public static class BreadthFirstTreeTraversal<TKey>
             deepest = current.Key;
         }
 
+		_logger.LogDebug("<<< Exiting DeepestNode(tree={Tree})", tree);
         return deepest;
     }
 }

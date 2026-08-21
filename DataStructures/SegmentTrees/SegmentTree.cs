@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.SegmentTrees;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace DataStructures.SegmentTrees;
 /// </summary>
 public class SegmentTree
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Initializes a new instance of the <see cref="SegmentTree" /> class.
     ///     Runtime complexity: O(n) where n equals the array-length.
@@ -16,9 +18,12 @@ public class SegmentTree
     /// <param name="arr">Array on which the queries should be made.</param>
     public SegmentTree(int[] arr)
     {
+		_logger.LogDebug(">>> Entering SegmentTree(arr={Arr})", arr);
         // Calculates next power of two
         var pow = (int)Math.Pow(2, Math.Ceiling(Math.Log(arr.Length, 2)));
+		_logger.LogDebug("SegmentTree(arr={Arr}): pow → {Pow}", arr, pow);
         Tree = new int[2 * pow];
+		_logger.LogDebug("SegmentTree(arr={Arr}): Tree → {Tree}", arr, Tree);
 
         // Transfers the input array into the last half of the segment tree array
         Array.Copy(arr, 0, Tree, pow, arr.Length);
@@ -28,6 +33,7 @@ public class SegmentTree
         {
             Tree[i] = Tree[Left(i)] + Tree[Right(i)];
         }
+		_logger.LogDebug("<<< Exiting SegmentTree(arr={Arr})", arr);
     }
 
     /// <summary>Gets the segment tree array.</summary>
@@ -44,6 +50,7 @@ public class SegmentTree
     // Node with index 1 includes the whole input subarray.
     public int Query(int l, int r) =>
         Query(++l, ++r, 1, Tree.Length / 2, 1);
+		_logger.LogDebug(">>> Entering Query(l={L},r={R})", l, r);
 
     /// <summary>
     ///     Calculates the right child of a node.
@@ -93,9 +100,11 @@ public class SegmentTree
 
         // Calculates index m of the node that cuts the current subarray in half
         var m = (a + b) / 2;
+		_logger.LogDebug("Query(l={L},r={R},a={A},b={B},i={I}): m → {M}", l, r, a, b, i, m);
 
         // Start query of new two subarrays a:m and m+1:b
         // The right and left child cover this intervals
+		_logger.LogDebug("<<< Exiting Query(l={L},r={R})", l, r);
         return Query(l, r, a, m, Left(i)) + Query(l, r, m + 1, b, Right(i));
     }
 }

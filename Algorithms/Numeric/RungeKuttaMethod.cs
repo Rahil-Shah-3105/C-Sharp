@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace Algorithms.Numeric;
 ///     </summary>
 public static class RungeKuttaMethod
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Loops through all the steps until xEnd is reached, adds a point for each step and then
     ///     returns all the points.
@@ -25,8 +27,10 @@ public static class RungeKuttaMethod
         double yStart,
         Func<double, double, double> function)
     {
+		_logger.LogDebug(">>> Entering ClassicRungeKuttaMethod(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},function={Function})", xStart, xEnd, stepSize, yStart, function);
         if (xStart >= xEnd)
         {
+			_logger.LogWarning("Throwing ArgumentOutOfRangeException from ClassicRungeKuttaMethod(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},function={Function})", xStart, xEnd, stepSize, yStart, function);
             throw new ArgumentOutOfRangeException(
                 nameof(xEnd),
                 $"{nameof(xEnd)} should be greater than {nameof(xStart)}");
@@ -60,6 +64,7 @@ public static class RungeKuttaMethod
             points.Add(newPoint);
         }
 
+		_logger.LogDebug("<<< Exiting ClassicRungeKuttaMethod(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},function={Function})", xStart, xEnd, stepSize, yStart, function);
         return points;
     }
 }

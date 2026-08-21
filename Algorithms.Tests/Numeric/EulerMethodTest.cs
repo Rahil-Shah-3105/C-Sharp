@@ -1,31 +1,38 @@
 using Algorithms.Numeric;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
 public static class EulerMethodTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void TestLinearEquation()
     {
+		_logger.LogDebug(">>> Entering TestLinearEquation()");
         Func<double, double, double> exampleEquation = (x, _) => x;
         List<double[]> points = EulerMethod.EulerFull(0, 4, 0.001, 0, exampleEquation);
         var yEnd = points[^1][1];
         yEnd.Should().BeApproximately(8, 0.01);
+		_logger.LogDebug("<<< Exiting TestLinearEquation()");
     }
 
     [Test]
     public static void TestExampleWikipedia()
     {
+		_logger.LogDebug(">>> Entering TestExampleWikipedia()");
         // example from https://en.wikipedia.org/wiki/Euler_method
         Func<double, double, double> exampleEquation = (_, y) => y;
         List<double[]> points = EulerMethod.EulerFull(0, 4, 0.0125, 1, exampleEquation);
         var yEnd = points[^1][1];
         yEnd.Should().BeApproximately(53.26, 0.01);
+		_logger.LogDebug("<<< Exiting TestExampleWikipedia()");
     }
 
     [Test]
     public static void TestExampleGeeksForGeeks()
     {
+		_logger.LogDebug(">>> Entering TestExampleGeeksForGeeks()");
         // example from https://www.geeksforgeeks.org/euler-method-solving-differential-equation/
         // Euler method: y_n+1 = y_n + stepSize * f(x_n, y_n)
         // differential equation: f(x, y) = x + y + x * y
@@ -39,19 +46,24 @@ public static class EulerMethodTest
         var y2 = points[2][1];
         Assert.That(1.025, Is.EqualTo(y1));
         Assert.That(1.051890625, Is.EqualTo(y2));
+		_logger.LogDebug("<<< Exiting TestExampleGeeksForGeeks()");
     }
 
     [Test]
     public static void StepsizeIsZeroOrNegative_ThrowsArgumentOutOfRangeException()
     {
+		_logger.LogDebug(">>> Entering StepsizeIsZeroOrNegative_ThrowsArgumentOutOfRangeException()");
         Func<double, double, double> exampleEquation = (x, _) => x;
+		_logger.LogDebug("<<< Exiting StepsizeIsZeroOrNegative_ThrowsArgumentOutOfRangeException()");
         Assert.Throws<ArgumentOutOfRangeException>(() => EulerMethod.EulerFull(0, 4, 0, 0, exampleEquation));
     }
 
     [Test]
     public static void StartIsLargerThanEnd_ThrowsArgumentOutOfRangeException()
     {
+		_logger.LogDebug(">>> Entering StartIsLargerThanEnd_ThrowsArgumentOutOfRangeException()");
         Func<double, double, double> exampleEquation = (x, _) => x;
+		_logger.LogDebug("<<< Exiting StartIsLargerThanEnd_ThrowsArgumentOutOfRangeException()");
         Assert.Throws<ArgumentOutOfRangeException>(() => EulerMethod.EulerFull(0, -4, 0.1, 0, exampleEquation));
     }
 }

@@ -1,9 +1,11 @@
 using Algorithms.Strings.PatternMatching;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Strings;
 
 public class ZblockSubstringSearchTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase("abc", "abcdef", 1)]
     [TestCase("xxx", "abxxxcdexxxf", 2)]
     [TestCase("aa", "waapaaxcdaalaabb", 4)]
@@ -15,7 +17,10 @@ public class ZblockSubstringSearchTest
     [TestCase("ground", "Hello, playground!", 1)]
     public void Test(string pattern, string text, int expectedOccurences)
     {
+		_logger.LogDebug(">>> Entering Test(pattern={Pattern},text={Text},expectedOccurences={ExpectedOccurences})", pattern, text, expectedOccurences);
         var occurencesFound = ZblockSubstringSearch.FindSubstring(pattern, text);
+		_logger.LogDebug("<<< Exiting Test(pattern={Pattern},text={Text},expectedOccurences={ExpectedOccurences})", pattern, text, expectedOccurences);
+		_logger.LogDebug("Test(pattern={Pattern},text={Text},expectedOccurences={ExpectedOccurences}): occurencesFound → {OccurencesFound}", pattern, text, expectedOccurences, occurencesFound);
         Assert.That(occurencesFound, Is.EqualTo(expectedOccurences));
     }
 }

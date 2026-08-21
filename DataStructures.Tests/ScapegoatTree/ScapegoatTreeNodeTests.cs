@@ -1,10 +1,12 @@
 using DataStructures.ScapegoatTree;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Tests.ScapegoatTree;
 
 [TestFixture]
 public class ScapegoatTreeNodeTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase(2, 1)]
     [TestCase("B", "A")]
     public void RightSetter_OtherKeyPrecedesRightKey_ThrowsException<TKey>(TKey a, TKey b)
@@ -91,88 +93,134 @@ public class ScapegoatTreeNodeTests
     [Test]
     public void GetSize_NodeHasNoChildren_ReturnsOne()
     {
+		_logger.LogDebug(">>> Entering GetSize_NodeHasNoChildren_ReturnsOne()");
         var node = new Node<int>(1);
 
+		_logger.LogDebug("GetSize_NodeHasNoChildren_ReturnsOne(): node → {Node}", node);
         Assert.That(1, Is.EqualTo(node.GetSize()));
+		_logger.LogDebug("<<< Exiting GetSize_NodeHasNoChildren_ReturnsOne()");
     }
 
     [Test]
     public void GetSize_NodeHasChildren_ReturnsCorrectSize()
     {
+		_logger.LogDebug(">>> Entering GetSize_NodeHasChildren_ReturnsCorrectSize()");
         var node = new Node<int>(1, new Node<int>(2), new Node<int>(0));
 
+		_logger.LogDebug("GetSize_NodeHasChildren_ReturnsCorrectSize(): node → {Node}", node);
         Assert.That(3, Is.EqualTo(node.GetSize()));
+		_logger.LogDebug("<<< Exiting GetSize_NodeHasChildren_ReturnsCorrectSize()");
     }
 
     [Test]
     public void GetSmallestKeyNode_NodeHasNoLeftChildren_ReturnsNode()
     {
+		_logger.LogDebug(">>> Entering GetSmallestKeyNode_NodeHasNoLeftChildren_ReturnsNode()");
         var node = new Node<int>(1);
 
+		_logger.LogDebug("GetSmallestKeyNode_NodeHasNoLeftChildren_ReturnsNode(): node → {Node}", node);
         Assert.That(node, Is.EqualTo(node.GetSmallestKeyNode()));
+		_logger.LogDebug("<<< Exiting GetSmallestKeyNode_NodeHasNoLeftChildren_ReturnsNode()");
     }
 
     [Test]
     public void GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild()
     {
+		_logger.LogDebug(">>> Entering GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild()");
         var node = new Node<int>(1);
         var smaller = new Node<int>(0);
+		_logger.LogDebug("GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild(): smaller → {Smaller}", smaller);
+		_logger.LogDebug("GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild(): node.Left → {Arg0}", node.Left);
+		_logger.LogDebug("GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild(): smaller.Left → {Arg0}", smaller.Left);
         var smallest = new Node<int>(-1);
+		_logger.LogDebug("GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild(): smallest → {Smallest}", smallest);
         node.Left = smaller;
         smaller.Left = smallest;
 
+		_logger.LogDebug("GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild(): node → {Node}", node);
         Assert.That(smallest, Is.EqualTo(node.GetSmallestKeyNode()));
+		_logger.LogDebug("<<< Exiting GetSmallestKeyNode_NodeHasSmallestChild_ReturnsChild()");
     }
 
     [Test]
     public void GetLargestKeyNode_NodeHasNoRightChildren_ReturnsNode()
     {
+		_logger.LogDebug(">>> Entering GetLargestKeyNode_NodeHasNoRightChildren_ReturnsNode()");
         var node = new Node<int>(1);
 
+		_logger.LogDebug("GetLargestKeyNode_NodeHasNoRightChildren_ReturnsNode(): node → {Node}", node);
         Assert.That(node, Is.EqualTo(node.GetLargestKeyNode()));
+		_logger.LogDebug("<<< Exiting GetLargestKeyNode_NodeHasNoRightChildren_ReturnsNode()");
     }
 
     [Test]
     public void GetLargestKeyNode_NodeHasLargestChild_ReturnsChild()
     {
+		_logger.LogDebug(">>> Entering GetLargestKeyNode_NodeHasLargestChild_ReturnsChild()");
         var node = new Node<int>(1);
         var larger = new Node<int>(2);
+		_logger.LogDebug("GetLargestKeyNode_NodeHasLargestChild_ReturnsChild(): larger → {Larger}", larger);
+		_logger.LogDebug("GetLargestKeyNode_NodeHasLargestChild_ReturnsChild(): node.Right → {Arg0}", node.Right);
+		_logger.LogDebug("GetLargestKeyNode_NodeHasLargestChild_ReturnsChild(): larger.Right → {Arg0}", larger.Right);
         var largest = new Node<int>(3);
+		_logger.LogDebug("GetLargestKeyNode_NodeHasLargestChild_ReturnsChild(): largest → {Largest}", largest);
         node.Right = larger;
         larger.Right = largest;
 
+		_logger.LogDebug("GetLargestKeyNode_NodeHasLargestChild_ReturnsChild(): node → {Node}", node);
         Assert.That(largest, Is.EqualTo(node.GetLargestKeyNode()));
+		_logger.LogDebug("<<< Exiting GetLargestKeyNode_NodeHasLargestChild_ReturnsChild()");
     }
 
     [Test]
     public void IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse()
     {
+		_logger.LogDebug(">>> Entering IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse()");
         var root = new Node<int>(0);
         var a = new Node<int>(-1);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): a → {A}", a);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): root.Left → {Arg0}", root.Left);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): a.Left → {Arg0}", a.Left);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): root.Right → {Arg0}", root.Right);
         var b = new Node<int>(-2);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): b → {B}", b);
         var c = new Node<int>(-3);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): c → {C}", c);
         var d = new Node<int>(1);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): d → {D}", d);
+		_logger.LogWarning("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): root → {Root}", root);
 
         root.Left = a;
         a.Left = b;
         b.Left = c;
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse(): b.Left → {Arg0}", b.Left);
         root.Right = d;
 
         Assert.That(root.IsAlphaWeightBalanced(0.5), Is.False);
+		_logger.LogDebug("<<< Exiting IsAlphaWeightBalanced_TreeIsUnbalanced_ReturnsFalse()");
     }
 
     [Test]
     public void IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue()
     {
+		_logger.LogDebug(">>> Entering IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue()");
         var root = new Node<int>(0);
         var a = new Node<int>(-1);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue(): a → {A}", a);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue(): root.Left → {Arg0}", root.Left);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue(): a.Left → {Arg0}", a.Left);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue(): root.Right → {Arg0}", root.Right);
         var b = new Node<int>(-2);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue(): b → {B}", b);
         var d = new Node<int>(1);
+		_logger.LogDebug("IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue(): d → {D}", d);
+		_logger.LogWarning("IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue(): root → {Root}", root);
 
         root.Left = a;
         a.Left = b;
         root.Right = d;
 
         Assert.That(root.IsAlphaWeightBalanced(0.5), Is.True);
+		_logger.LogDebug("<<< Exiting IsAlphaWeightBalanced_TreeIsBalanced_ReturnsTrue()");
     }
 }

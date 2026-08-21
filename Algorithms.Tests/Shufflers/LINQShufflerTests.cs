@@ -1,8 +1,10 @@
 using Algorithms.Shufflers;
 using Algorithms.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Shufflers
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static class LinqShufflerTests
     {
         [Test]
@@ -10,8 +12,10 @@ namespace Algorithms.Tests.Shufflers
             [Random(10, 1000, 100, Distinct = true)]
             int n)
         {
+			_logger.LogDebug(">>> Entering ArrayShuffled_NewArraySameSize(Distinct={Distinct})", Distinct);
             // Arrange
             var shuffler = new LinqShuffler<int>();
+			_logger.LogDebug("ArrayShuffled_NewArraySameSize(Distinct={Distinct}): shuffler → {Shuffler}", Distinct, shuffler);
             var (correctArray, testArray) = RandomHelper.GetArrays(n);
 
             // Act
@@ -19,6 +23,7 @@ namespace Algorithms.Tests.Shufflers
 
             // Assert
             testArray.Length.Should().Be(correctArray.Length);
+			_logger.LogDebug("<<< Exiting ArrayShuffled_NewArraySameSize(Distinct={Distinct})", Distinct);
         }
 
         [Test]
@@ -26,8 +31,10 @@ namespace Algorithms.Tests.Shufflers
             [Random(10, 1000, 100, Distinct = true)]
             int n)
         {
+			_logger.LogDebug(">>> Entering ArrayShuffled_NewArraySameValues(Distinct={Distinct})", Distinct);
             // Arrange
             var shuffler = new LinqShuffler<int>();
+			_logger.LogDebug("ArrayShuffled_NewArraySameValues(Distinct={Distinct}): shuffler → {Shuffler}", Distinct, shuffler);
             var (correctArray, testArray) = RandomHelper.GetArrays(n);
 
             // Act
@@ -35,6 +42,7 @@ namespace Algorithms.Tests.Shufflers
 
             // Assert
             testArray.Should().BeEquivalentTo(correctArray);
+			_logger.LogDebug("<<< Exiting ArrayShuffled_NewArraySameValues(Distinct={Distinct})", Distinct);
         }
 
         [Test]
@@ -42,8 +50,10 @@ namespace Algorithms.Tests.Shufflers
             [Random(0, 1000, 2, Distinct = true)] int n,
             [Random(1000, 10000, 5, Distinct = true)] int seed)
         {
+			_logger.LogDebug(">>> Entering ArrayShuffled_NewArraySameShuffle(Distinct={Distinct},Distinct={Distinct1})", Distinct, Distinct);
             // Arrange
             var shuffle = new LinqShuffler<int>();
+			_logger.LogDebug("ArrayShuffled_NewArraySameShuffle(Distinct={Distinct},Distinct={Distinct1}): shuffle → {Shuffle}", Distinct, Distinct, shuffle);
             var (correctArray, testArray) = RandomHelper.GetArrays(n);
 
             // Act
@@ -52,6 +62,7 @@ namespace Algorithms.Tests.Shufflers
 
             // Assert
             correctArray.Should().BeEquivalentTo(testArray, options => options.WithStrictOrdering());
+			_logger.LogDebug("<<< Exiting ArrayShuffled_NewArraySameShuffle(Distinct={Distinct},Distinct={Distinct1})", Distinct, Distinct);
         }
     }
 }

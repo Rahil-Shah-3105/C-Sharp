@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 ﻿namespace Algorithms.Strings.Similarity;
 
 /// <summary>
@@ -33,6 +34,7 @@
 /// </summary>
 public class JaccardDistance
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly JaccardSimilarity jaccardSimilarity = new();
 
     /// <summary>
@@ -43,6 +45,7 @@ public class JaccardDistance
     /// <returns>The Jaccard distance.</returns>
     public double Calculate(string left, string right)
     {
+		_logger.LogDebug(">>> Entering Calculate(left={Left},right={Right})", left, right);
         return 1.0 - jaccardSimilarity.Calculate(left, right);
     }
 }

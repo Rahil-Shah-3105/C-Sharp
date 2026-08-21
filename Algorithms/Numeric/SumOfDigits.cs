@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Numeric;
 
@@ -7,6 +8,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class SumOfDigits
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates the sum of the digits of a non-negative integer.
     ///     The method iteratively uses the modulus operator (%) to get the last digit
@@ -17,8 +19,10 @@ public static class SumOfDigits
     /// <exception cref="ArgumentException">Thrown if the input number is negative.</exception>
     public static int Calculate(int number)
     {
+		_logger.LogDebug(">>> Entering Calculate(number={Number})", number);
         if (number < 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from Calculate(number={Number})", number);
             throw new ArgumentException("Input must be a non-negative integer.", nameof(number));
         }
 
@@ -43,6 +47,7 @@ public static class SumOfDigits
             currentNumber /= 10;
         }
 
+		_logger.LogDebug("<<< Exiting Calculate(number={Number})", number);
         return sum;
     }
 }

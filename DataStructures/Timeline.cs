@@ -13,6 +13,7 @@
 */
 
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures;
 
@@ -23,6 +24,7 @@ namespace DataStructures;
 /// <typeparam name="TValue">Value associated with a <see cref="DateTime" />.</typeparam>
 public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEquatable<Timeline<TValue>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Inner collection storing the timeline events as key-tuples.
     /// </summary>
@@ -33,6 +35,9 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// </summary>
     public Timeline()
     {
+	_logger.LogDebug(">>> Entering Timeline()");
+	_logger.LogDebug("Timeline(timeline={Timeline}): timeline → {Timeline1}", timeline, timeline);
+	_logger.LogDebug("<<< Exiting Timeline(time={Time},value={Value})", time, value);
     }
 
     /// <summary>
@@ -330,7 +335,9 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <param name="value">The event value.</param>
     public void Add(DateTime time, TValue value)
     {
+		_logger.LogDebug(">>> Entering Add(time={Time},value={Value})", time, value);
         timeline.Add((time, value));
+		_logger.LogDebug("<<< Exiting Add(time={Time},value={Value})", time, value);
     }
 
     /// <summary>
@@ -339,6 +346,8 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     public void Add(params (DateTime, TValue)[] timeline)
     {
         this.timeline.AddRange(timeline);
+		_logger.LogDebug("<<< Exiting Add(timeline={Timeline})", timeline);
+		_logger.LogDebug(">>> Entering Add(timeline={Timeline})", timeline);
     }
 
     /// <summary>
@@ -352,11 +361,13 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// </summary>
     public void AddNow(params TValue[] value)
     {
+		_logger.LogDebug(">>> Entering AddNow(value={Value})", value);
         var now = DateTime.Now;
         foreach (var v in value)
         {
             Add(now, v);
         }
+		_logger.LogDebug("<<< Exiting AddNow(value={Value})", value);
     }
 
     /// <summary>
@@ -375,6 +386,7 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>True if any of the events has occurred in the timeline.</returns>
     public bool Contains(params (DateTime, TValue)[] timeline)
         => timeline.Any(@event => Contains(@event.Item1, @event.Item2));
+		_logger.LogDebug("<<< Exiting Contains(time={Time},value={Value})", time, value);
 
     /// <summary>
     ///     Check if timeline contains any of the event of the provided <paramref name="timeline"/>.
@@ -391,7 +403,10 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>True if any of the times is stored in the timeline.</returns>
     public bool ContainsTime(params DateTime[] times)
     {
+		_logger.LogDebug(">>> Entering ContainsTime(times={Times})", times);
         var storedTimes = GetAllTimes();
+		_logger.LogDebug("ContainsTime(times={Times}): storedTimes → {StoredTimes}", times, storedTimes);
+		_logger.LogDebug("<<< Exiting ContainsTime(times={Times})", times);
         return times.Any(value => storedTimes.Contains(value));
     }
 
@@ -402,7 +417,10 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>True if any of the events has occurred in the timeline.</returns>
     public bool ContainsValue(params TValue[] values)
     {
+		_logger.LogDebug(">>> Entering ContainsValue(values={Values})", values);
         var storedValues = GetAllValues();
+		_logger.LogDebug("ContainsValue(values={Values}): storedValues → {StoredValues}", values, storedValues);
+		_logger.LogDebug("<<< Exiting ContainsValue(values={Values})", values);
         return values.Any(value => storedValues.Contains(value));
     }
 
@@ -445,8 +463,10 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>Returns true if the operation completed successfully.</returns>
     public bool RemoveTimes(params DateTime[] times)
     {
+		_logger.LogDebug(">>> Entering RemoveTimes(times={Times})", times);
         var isTimeContainedInTheTimeline = times.Any(time => GetAllTimes().Contains(time));
 
+		_logger.LogDebug("RemoveTimes(times={Times}): isTimeContainedInTheTimeline → {IsTimeContainedInTheTimeline}", times, isTimeContainedInTheTimeline);
         if (!isTimeContainedInTheTimeline)
         {
             return false;
@@ -461,6 +481,7 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
             timeline.Remove(@event);
         }
 
+		_logger.LogDebug("<<< Exiting RemoveTimes(times={Times})", times);
         return true;
     }
 
@@ -470,8 +491,10 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>Returns true if the operation completed successfully.</returns>
     public bool RemoveValues(params TValue[] values)
     {
+		_logger.LogDebug(">>> Entering RemoveValues(values={Values})", values);
         var isValueContainedInTheTimeline = values.Any(v => GetAllValues().Contains(v));
 
+		_logger.LogDebug("RemoveValues(values={Values}): isValueContainedInTheTimeline → {IsValueContainedInTheTimeline}", values, isValueContainedInTheTimeline);
         if (!isValueContainedInTheTimeline)
         {
             return false;
@@ -486,6 +509,7 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
             timeline.Remove(@event);
         }
 
+		_logger.LogDebug("<<< Exiting RemoveValues(values={Values})", values);
         return true;
     }
 
@@ -524,4 +548,5 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <inheritdoc />
     public override int GetHashCode()
         => timeline.GetHashCode();
+		_logger.LogDebug("<<< Exiting GetHashCode()");
 }

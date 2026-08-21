@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search.AStar;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Search.AStar;
 /// </summary>
 public class Node(VecN position, bool traversable, double traverseMultiplier) : IComparable<Node>, IEquatable<Node>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets the Total cost of the Node.
     ///     The Current Costs + the estimated costs.

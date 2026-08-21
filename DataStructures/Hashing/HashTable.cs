@@ -1,4 +1,5 @@
 using DataStructures.Hashing.NumberTheory;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Hashing;
 
@@ -9,6 +10,7 @@ namespace DataStructures.Hashing;
 /// <typeparam name="TValue">Type of the value.</typeparam>
 public class HashTable<TKey, TValue>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private const int DefaultCapacity = 16;
     private const float DefaultLoadFactor = 0.75f;
     private readonly float loadFactor;
@@ -90,8 +92,10 @@ public class HashTable<TKey, TValue>
     /// <see cref="PrimeNumber.IsPrime(int)"/>
     public HashTable(int capacity = DefaultCapacity, float loadFactor = DefaultLoadFactor)
     {
+		_logger.LogDebug(">>> Entering HashTable(capacity={Capacity},loadFactor={LoadFactor})", capacity, loadFactor);
         if (capacity <= 0)
         {
+			_logger.LogWarning("Throwing ArgumentOutOfRangeException from HashTable(capacity={Capacity},loadFactor={LoadFactor})", capacity, loadFactor);
             throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be greater than 0");
         }
 
@@ -102,12 +106,17 @@ public class HashTable<TKey, TValue>
 
         if (loadFactor > 1)
         {
+		_logger.LogDebug("<<< Exiting HashTable(capacity={Capacity},loadFactor={LoadFactor})", capacity, loadFactor);
+		_logger.LogDebug("HashTable(capacity={Capacity},loadFactor={LoadFactor}): capacity → {Capacity1}", capacity, loadFactor, capacity);
+		_logger.LogDebug("HashTable(capacity={Capacity},loadFactor={LoadFactor}): loadFactor → {LoadFactor1}", capacity, loadFactor, loadFactor);
             throw new ArgumentOutOfRangeException(nameof(loadFactor), "Load factor must be less than or equal to 1");
         }
 
         this.capacity = PrimeNumber.NextPrime(capacity);
         this.loadFactor = loadFactor;
         threshold = (int)(this.capacity * loadFactor);
+		_logger.LogDebug("HashTable(capacity={Capacity},loadFactor={LoadFactor}): threshold → {Threshold}", capacity, loadFactor, threshold);
+		_logger.LogDebug("HashTable(capacity={Capacity},loadFactor={LoadFactor}): this.loadFactor → {Arg2}", capacity, loadFactor, this.loadFactor);
         entries = new Entry<TKey, TValue>[this.capacity];
     }
 
@@ -123,8 +132,10 @@ public class HashTable<TKey, TValue>
     /// </remarks>
     public void Add(TKey? key, TValue? value)
     {
+		_logger.LogDebug(">>> Entering Add(key={Key},value={Value})", key, value);
         if (EqualityComparer<TKey>.Default.Equals(key, default))
         {
+			_logger.LogWarning("Throwing ArgumentNullException from Add(key={Key},value={Value})", key, value);
             throw new ArgumentNullException(nameof(key));
         }
 
@@ -137,6 +148,7 @@ public class HashTable<TKey, TValue>
         if (entries[index] != null &&
             EqualityComparer<TKey>.Default.Equals(entries[index]!.Key!, key))
         {
+			_logger.LogWarning("Throwing ArgumentException from Add(key={Key},value={Value})", key, value);
             throw new ArgumentException("Key already exists");
         }
 
@@ -147,6 +159,7 @@ public class HashTable<TKey, TValue>
 
         entries[index] = new Entry<TKey, TValue>(key!, value!);
         size++;
+		_logger.LogDebug("<<< Exiting Add(key={Key},value={Value})", key, value);
     }
 
     /// <summary>
@@ -160,8 +173,10 @@ public class HashTable<TKey, TValue>
     /// </remarks>
     public bool Remove(TKey? key)
     {
+		_logger.LogDebug(">>> Entering Remove(key={Key})", key);
         if (EqualityComparer<TKey>.Default.Equals(key, default))
         {
+			_logger.LogWarning("Throwing ArgumentNullException from Remove(key={Key})", key);
             throw new ArgumentNullException(nameof(key));
         }
 
@@ -179,6 +194,7 @@ public class HashTable<TKey, TValue>
             Resize();
         }
 
+		_logger.LogDebug("<<< Exiting Remove(key={Key})", key);
         return true;
     }
 
@@ -190,12 +206,15 @@ public class HashTable<TKey, TValue>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="key"/> is null.</exception>
     public int GetIndex(TKey? key)
     {
+		_logger.LogDebug(">>> Entering GetIndex(key={Key})", key);
         if (EqualityComparer<TKey>.Default.Equals(key, default))
         {
+			_logger.LogWarning("Throwing ArgumentNullException from GetIndex(key={Key})", key);
             throw new ArgumentNullException(nameof(key));
         }
 
         var hash = key!.GetHashCode();
+		_logger.LogDebug("GetIndex(key={Key}): hash → {Hash}", key, hash);
         var index = hash % capacity;
 
         if (index < 0)
@@ -203,6 +222,7 @@ public class HashTable<TKey, TValue>
             index += capacity;
         }
 
+		_logger.LogDebug("<<< Exiting GetIndex(key={Key})", key);
         return index;
     }
 
@@ -237,8 +257,11 @@ public class HashTable<TKey, TValue>
     /// </remarks>
     public bool ContainsKey(TKey? key)
     {
+		_logger.LogDebug(">>> Entering ContainsKey(key={Key})", key);
         if (EqualityComparer<TKey>.Default.Equals(key, default))
         {
+			_logger.LogWarning("Throwing ArgumentNullException from ContainsKey(key={Key})", key);
+		_logger.LogDebug("<<< Exiting ContainsKey(key={Key})", key);
             throw new ArgumentNullException(nameof(key));
         }
 
@@ -252,8 +275,11 @@ public class HashTable<TKey, TValue>
     /// <returns>True if the hash table contains the value, false otherwise.</returns>
     public bool ContainsValue(TValue? value)
     {
+		_logger.LogDebug(">>> Entering ContainsValue(value={Value})", value);
         if (EqualityComparer<TValue>.Default.Equals(value, default))
         {
+			_logger.LogWarning("Throwing ArgumentNullException from ContainsValue(value={Value})", value);
+		_logger.LogDebug("<<< Exiting ContainsValue(value={Value})", value);
             throw new ArgumentNullException(nameof(value));
         }
 
@@ -268,6 +294,10 @@ public class HashTable<TKey, TValue>
     /// </remarks>
     public void Clear()
     {
+		_logger.LogDebug(">>> Entering Clear()");
+		_logger.LogDebug("Clear(): threshold → {Threshold}", threshold);
+		_logger.LogInformation("Clear(): threshold → {Threshold}", threshold);
+		_logger.LogDebug("Clear(): entries → {Entries}", entries);
         capacity = DefaultCapacity;
         threshold = (int)(capacity * loadFactor);
         entries = new Entry<TKey, TValue>[capacity];
@@ -282,6 +312,7 @@ public class HashTable<TKey, TValue>
     /// </remarks>
     public void Resize()
     {
+		_logger.LogDebug(">>> Entering Resize()");
         var newCapacity = size <= threshold / 2
             ? Math.Max(capacity / 2, DefaultCapacity)
             : capacity * 2;
@@ -302,6 +333,11 @@ public class HashTable<TKey, TValue>
 
             newEntries[index] = entry;
         }
+		_logger.LogDebug("<<< Exiting Resize()");
+		_logger.LogDebug("Resize(): entries → {Entries}", entries);
+		_logger.LogDebug("Resize(): capacity → {Capacity}", capacity);
+		_logger.LogDebug("Resize(): threshold → {Threshold}", threshold);
+		_logger.LogInformation("Resize(): threshold → {Threshold}", threshold);
 
         capacity = newCapacity;
         threshold = (int)(capacity * loadFactor);

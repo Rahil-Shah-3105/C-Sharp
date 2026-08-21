@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 ﻿namespace Algorithms.Crypto.Paddings;
 
 /// <summary>
@@ -20,12 +21,17 @@
 /// </summary>
 public class Pkcs7Padding : IBlockCipherPadding
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly int blockSize;
 
     public Pkcs7Padding(int blockSize)
     {
+		_logger.LogDebug(">>> Entering Pkcs7Padding(blockSize={BlockSize})", blockSize);
         if (blockSize is < 1 or > 255)
         {
+			_logger.LogWarning("Throwing ArgumentOutOfRangeException from Pkcs7Padding(blockSize={BlockSize})", blockSize);
+		_logger.LogDebug("<<< Exiting Pkcs7Padding(blockSize={BlockSize})", blockSize);
+		_logger.LogDebug("Pkcs7Padding(blockSize={BlockSize}): blockSize → {BlockSize1}", blockSize, blockSize);
             throw new ArgumentOutOfRangeException(nameof(blockSize), $"Invalid block size: {blockSize}");
         }
 
@@ -48,8 +54,10 @@ public class Pkcs7Padding : IBlockCipherPadding
     /// </remarks>
     public int AddPadding(byte[] input, int inputOffset)
     {
+		_logger.LogDebug(">>> Entering AddPadding(input={Input},inputOffset={InputOffset})", input, inputOffset);
         // Calculate how many bytes need to be added to reach the next multiple of block size.
         var code = (byte)((blockSize - (input.Length % blockSize)) % blockSize);
+		_logger.LogDebug("AddPadding(input={Input},inputOffset={InputOffset}): code → {Code}", input, inputOffset, code);
 
         // If no padding is needed, add a full block of padding.
         if (code == 0)
@@ -59,6 +67,7 @@ public class Pkcs7Padding : IBlockCipherPadding
 
         if (inputOffset + code > input.Length)
         {
+			_logger.LogWarning("Throwing ArgumentException from AddPadding(input={Input},inputOffset={InputOffset})", input, inputOffset);
             throw new ArgumentException("Not enough space in input array for padding");
         }
 
@@ -68,6 +77,7 @@ public class Pkcs7Padding : IBlockCipherPadding
             input[inputOffset + i] = code;
         }
 
+		_logger.LogDebug("<<< Exiting AddPadding(input={Input},inputOffset={InputOffset})", input, inputOffset);
         return code;
     }
 
@@ -81,9 +91,11 @@ public class Pkcs7Padding : IBlockCipherPadding
     /// </exception>
     public byte[] RemovePadding(byte[] input)
     {
+		_logger.LogDebug(">>> Entering RemovePadding(input={Input})", input);
         // Check if input length is a multiple of blockSize
         if (input.Length % blockSize != 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from RemovePadding(input={Input})", input);
             throw new ArgumentException("Input length must be a multiple of block size");
         }
 
@@ -111,6 +123,7 @@ public class Pkcs7Padding : IBlockCipherPadding
         // Copy the data without the padding into the output array
         Array.Copy(input, output, output.Length);
 
+		_logger.LogDebug("<<< Exiting RemovePadding(input={Input})", input);
         return output;
     }
 
@@ -127,8 +140,10 @@ public class Pkcs7Padding : IBlockCipherPadding
     /// </remarks>
     public int GetPaddingCount(byte[] input)
     {
+		_logger.LogDebug(">>> Entering GetPaddingCount(input={Input})", input);
         if (input == null)
         {
+			_logger.LogWarning("Throwing ArgumentNullException from GetPaddingCount(input={Input})", input);
             throw new ArgumentNullException(nameof(input), "Input cannot be null");
         }
 
@@ -139,6 +154,7 @@ public class Pkcs7Padding : IBlockCipherPadding
         // Calculate the index where the padding starts
         var paddingStartIndex = input.Length - paddingCount;
         var paddingCheckFailed = 0;
+		_logger.LogDebug("GetPaddingCount(input={Input}): paddingCheckFailed → {PaddingCheckFailed}", input, paddingCheckFailed);
 
         // Check if the padding start index is negative or greater than the input length.
         // This is done by using bitwise operations to avoid branching.
@@ -166,6 +182,8 @@ public class Pkcs7Padding : IBlockCipherPadding
         // Check if the padding check failed.
         if (paddingCheckFailed != 0)
         {
+			_logger.LogWarning("Throwing ArgumentException from GetPaddingCount(input={Input})", input);
+		_logger.LogDebug("<<< Exiting GetPaddingCount(input={Input})", input);
             throw new ArgumentException("Padding block is corrupted");
         }
 

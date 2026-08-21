@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.UnrolledList;
 
 /// <summary>
@@ -12,6 +13,7 @@ namespace DataStructures.UnrolledList;
 /// <param name="chunkSize">The size of signe chunk.</param>
 public class UnrolledLinkedList(int chunkSize)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly int sizeNode = chunkSize + 1;
 
     private UnrolledLinkedListNode start = null!;
@@ -23,12 +25,15 @@ public class UnrolledLinkedList(int chunkSize)
     /// <param name="value">The entered value.</param>
     public void Insert(int value)
     {
+		_logger.LogDebug(">>> Entering Insert(value={Value})", value);
         if (start == null)
         {
             start = new UnrolledLinkedListNode(sizeNode);
+			_logger.LogDebug("Insert(value={Value}): start → {Start}", value, start);
             start.Set(0, value);
 
             end = start;
+			_logger.LogDebug("Insert(value={Value}): end → {End}", value, end);
             return;
         }
 
@@ -39,6 +44,7 @@ public class UnrolledLinkedList(int chunkSize)
         else
         {
             var pointer = new UnrolledLinkedListNode(sizeNode);
+			_logger.LogDebug("Insert(value={Value}): pointer → {Pointer}", value, pointer);
             var j = 0;
             for (var pos = end.Count / 2 + 1; pos < end.Count; pos++)
             {
@@ -47,11 +53,15 @@ public class UnrolledLinkedList(int chunkSize)
 
             pointer.Set(j++, value);
             pointer.Count = j;
+			_logger.LogDebug("Insert(value={Value}): pointer.Count → {Arg1}", value, pointer.Count);
+			_logger.LogDebug("Insert(value={Value}): end.Count → {Arg1}", value, end.Count);
+			_logger.LogDebug("Insert(value={Value}): end.Next → {Arg1}", value, end.Next);
 
             end.Count = end.Count / 2 + 1;
             end.Next = pointer;
             end = pointer;
         }
+		_logger.LogDebug("<<< Exiting Insert(value={Value})", value);
     }
 
     /// <summary>
@@ -60,8 +70,11 @@ public class UnrolledLinkedList(int chunkSize)
     /// <returns>Items from all nodes.</returns>
     public IEnumerable<int> GetRolledItems()
     {
+		_logger.LogDebug(">>> Entering GetRolledItems()");
         UnrolledLinkedListNode pointer = start;
         List<int> result = [];
+		_logger.LogDebug("GetRolledItems(): result → {Result}", result);
+		_logger.LogDebug("GetRolledItems(): pointer → {Pointer}", pointer);
 
         while (pointer != null)
         {
@@ -73,6 +86,7 @@ public class UnrolledLinkedList(int chunkSize)
             pointer = pointer.Next;
         }
 
+		_logger.LogDebug("<<< Exiting GetRolledItems()");
         return result;
     }
 }

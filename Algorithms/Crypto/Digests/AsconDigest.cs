@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Algorithms.Crypto.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Crypto.Digests;
 
@@ -30,6 +31,7 @@ namespace Algorithms.Crypto.Digests;
 /// </remarks>
 public class AsconDigest : IDigest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public enum AsconParameters
     {
         /// <summary>
@@ -114,19 +116,25 @@ public class AsconDigest : IDigest
     /// <exception cref="ArgumentException">Thrown when an invalid parameter setting is provided for Ascon Hash.</exception>
     public AsconDigest(AsconParameters parameters)
     {
+		_logger.LogDebug(">>> Entering AsconDigest(parameters={Parameters})", parameters);
         // Set the Ascon parameter (AsconHash or AsconHashA) for this instance.
         asconParameters = parameters;
+		_logger.LogDebug("AsconDigest(parameters={Parameters}): asconParameters → {AsconParameters}", parameters, asconParameters);
 
         // Determine the number of permutation rounds based on the Ascon variant.
         asconPbRounds = parameters switch
+		_logger.LogDebug("AsconDigest(parameters={Parameters}): asconPbRounds → {AsconPbRounds}", parameters, asconPbRounds);
         {
             AsconParameters.AsconHash => 12,  // 12 rounds for Ascon-Hash variant.
             AsconParameters.AsconHashA => 8,  // 8 rounds for Ascon-HashA variant.
             _ => throw new ArgumentException("Invalid parameter settings for Ascon Hash"), // Throw exception for invalid parameter.
         };
+		_logger.LogDebug("AsconDigest(parameters={Parameters}): AsconParameters.AsconHash → {Arg1}", parameters, AsconParameters.AsconHash);
+		_logger.LogDebug("AsconDigest(parameters={Parameters}): AsconParameters.AsconHashA → {Arg1}", parameters, AsconParameters.AsconHashA);
 
         // Reset the internal state to prepare for new input.
         Reset();
+		_logger.LogDebug("<<< Exiting AsconDigest(parameters={Parameters})", parameters);
     }
 
     /// <summary>
@@ -193,6 +201,7 @@ public class AsconDigest : IDigest
     /// </remarks>
     public void Update(byte input)
     {
+		_logger.LogDebug(">>> Entering Update(input={Input})", input);
         // Add the input byte to the buffer.
         buffer[bufferPosition] = input;
 
@@ -210,6 +219,8 @@ public class AsconDigest : IDigest
 
         // Reset the buffer position for the next block of input.
         bufferPosition = 0;
+		_logger.LogDebug("Update(input={Input}): bufferPosition → {BufferPosition}", input, bufferPosition);
+		_logger.LogDebug("<<< Exiting Update(input={Input})", input);
     }
 
     /// <summary>
@@ -229,11 +240,16 @@ public class AsconDigest : IDigest
     /// </exception>
     public void BlockUpdate(byte[] input, int inOff, int inLen)
     {
+		_logger.LogDebug(">>> Entering BlockUpdate(input={Input},inOff={InOff},inLen={InLen})", input, inOff, inLen);
         // Validate the input data to ensure there is enough data to process from the specified offset and length.
         ValidationUtils.CheckDataLength(input, inOff, inLen, "input buffer too short");
 
         // Convert the input byte array into a ReadOnlySpan<byte> and delegate the processing to the span-based method.
         BlockUpdate(input.AsSpan(inOff, inLen));
+		_logger.LogDebug("<<< Exiting BlockUpdate(input={Input},inOff={InOff},inLen={InLen})", input, inOff, inLen);
+		_logger.LogDebug(">>> Entering BlockUpdate(input={Input})", input);
+		_logger.LogDebug("BlockUpdate(input={Input}): input → {Input1}", input, input);
+		_logger.LogDebug("<<< Exiting BlockUpdate(input={Input})", input);
     }
 
     /// <summary>
@@ -307,7 +323,10 @@ public class AsconDigest : IDigest
     /// <exception cref="ArgumentException">Thrown if the output buffer is too small to hold the resulting hash.</exception>
     public int DoFinal(byte[] output, int outOff)
     {
+		_logger.LogDebug(">>> Entering DoFinal(output={Output},outOff={OutOff})", output, outOff);
         // Call the Span-based DoFinal method with the output byte array and offset.
+		_logger.LogDebug("<<< Exiting DoFinal(output={Output},outOff={OutOff})", output, outOff);
+		_logger.LogDebug("<<< Exiting DoFinal(output={Output})", output);
         return DoFinal(output.AsSpan(outOff));
     }
 
@@ -367,6 +386,8 @@ public class AsconDigest : IDigest
     /// </remarks>
     public string Digest(byte[] input)
     {
+		_logger.LogDebug(">>> Entering Digest(input={Input})", input);
+		_logger.LogDebug("<<< Exiting Digest(input={Input})", input);
         return Digest(input.AsSpan());
     }
 
@@ -387,6 +408,7 @@ public class AsconDigest : IDigest
 
         // Create an array to hold the final hash output (32 bytes).
         var output = new byte[GetDigestSize()];
+		_logger.LogDebug("Digest(input={Input}): output → {Output}", input, output);
 
         // Finalize the hash computation and store the result in the output array.
         DoFinal(output, 0);
@@ -408,11 +430,13 @@ public class AsconDigest : IDigest
     /// </remarks>
     public void Reset()
     {
+		_logger.LogDebug(">>> Entering Reset()");
         // Clear the buffer to remove any leftover data from previous operations.
         Array.Clear(buffer, 0, buffer.Length);
 
         // Reset the buffer position to zero to start processing fresh input.
         bufferPosition = 0;
+		_logger.LogDebug("Reset(): bufferPosition → {BufferPosition}", bufferPosition);
 
         // Initialize the internal state variables (x0, x1, x2, x3, x4) based on the selected Ascon variant.
         switch (asconParameters)
@@ -420,10 +444,15 @@ public class AsconDigest : IDigest
             // If using the AsconHashA variant, set the specific initial state values for x0 through x4.
             case AsconParameters.AsconHashA:
                 x0 = 92044056785660070UL;
+				_logger.LogDebug("Reset(): x0 → {X0}", x0);
                 x1 = 8326807761760157607UL;
+				_logger.LogDebug("Reset(): x1 → {X1}", x1);
                 x2 = 3371194088139667532UL;
+				_logger.LogDebug("Reset(): x2 → {X2}", x2);
                 x3 = 15489749720654559101UL;
+				_logger.LogDebug("Reset(): x3 → {X3}", x3);
                 x4 = 11618234402860862855UL;
+				_logger.LogDebug("Reset(): x4 → {X4}", x4);
                 break;
 
             // If using the AsconHash variant, set the specific initial state values for x0 through x4.
@@ -437,6 +466,8 @@ public class AsconDigest : IDigest
 
             // If an unknown Ascon variant is encountered, throw an exception.
             default:
+				_logger.LogWarning("Throwing InvalidOperationException from Reset()");
+		_logger.LogDebug("<<< Exiting Reset()");
                 throw new InvalidOperationException();
         }
     }
@@ -453,6 +484,7 @@ public class AsconDigest : IDigest
     /// </remarks>
     private void AbsorbAndFinish()
     {
+		_logger.LogDebug(">>> Entering AbsorbAndFinish()");
         // Pad the buffer with 0x80 to indicate the end of the data.
         buffer[bufferPosition] = 0x80;
 
@@ -462,6 +494,7 @@ public class AsconDigest : IDigest
 
         // Apply 12 rounds of the permutation function to fully mix and finalize the internal state.
         P(12);
+		_logger.LogDebug("<<< Exiting AbsorbAndFinish()");
     }
 
     /// <summary>
@@ -480,6 +513,7 @@ public class AsconDigest : IDigest
     /// </remarks>
     private void P(int numberOfRounds)
     {
+		_logger.LogDebug(">>> Entering P(numberOfRounds={NumberOfRounds})", numberOfRounds);
         if (numberOfRounds == 12)
         {
             Round(0xf0UL);
@@ -497,6 +531,7 @@ public class AsconDigest : IDigest
         Round(0x69UL);
         Round(0x5aUL);
         Round(0x4bUL);
+		_logger.LogDebug("<<< Exiting P(numberOfRounds={NumberOfRounds})", numberOfRounds);
     }
 
     /// <summary>
@@ -520,18 +555,30 @@ public class AsconDigest : IDigest
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Round(ulong circles)
     {
+		_logger.LogDebug(">>> Entering Round(circles={Circles})", circles);
         // Step 1: Perform XOR and AND operations to mix inputs and state variables
         var t0 = x0 ^ x1 ^ x2 ^ x3 ^ circles ^ (x1 & (x0 ^ x2 ^ x4 ^ circles));
+		_logger.LogDebug("Round(circles={Circles}): t0 → {T0}", circles, t0);
         var t1 = x0 ^ x2 ^ x3 ^ x4 ^ circles ^ ((x1 ^ x2 ^ circles) & (x1 ^ x3));
+		_logger.LogDebug("Round(circles={Circles}): t1 → {T1}", circles, t1);
         var t2 = x1 ^ x2 ^ x4 ^ circles ^ (x3 & x4);
+		_logger.LogDebug("Round(circles={Circles}): t2 → {T2}", circles, t2);
         var t3 = x0 ^ x1 ^ x2 ^ circles ^ (~x0 & (x3 ^ x4));
+		_logger.LogDebug("Round(circles={Circles}): t3 → {T3}", circles, t3);
         var t4 = x1 ^ x3 ^ x4 ^ ((x0 ^ x4) & x1);
+		_logger.LogDebug("Round(circles={Circles}): t4 → {T4}", circles, t4);
 
         // Step 2: Apply circular right shifts and update the internal state variables
+		_logger.LogDebug("<<< Exiting Round(circles={Circles})", circles);
         x0 = t0 ^ LongUtils.RotateRight(t0, 19) ^ LongUtils.RotateRight(t0, 28);
+		_logger.LogDebug("Round(circles={Circles}): x0 → {X0}", circles, x0);
         x1 = t1 ^ LongUtils.RotateRight(t1, 39) ^ LongUtils.RotateRight(t1, 61);
+		_logger.LogDebug("Round(circles={Circles}): x1 → {X1}", circles, x1);
         x2 = ~(t2 ^ LongUtils.RotateRight(t2, 1) ^ LongUtils.RotateRight(t2, 6));
+		_logger.LogDebug("Round(circles={Circles}): x2 → {X2}", circles, x2);
         x3 = t3 ^ LongUtils.RotateRight(t3, 10) ^ LongUtils.RotateRight(t3, 17);
+		_logger.LogDebug("Round(circles={Circles}): x3 → {X3}", circles, x3);
         x4 = t4 ^ LongUtils.RotateRight(t4, 7) ^ LongUtils.RotateRight(t4, 41);
+		_logger.LogDebug("Round(circles={Circles}): x4 → {X4}", circles, x4);
     }
 }

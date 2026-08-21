@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Heap;
 
 /// <summary>
@@ -15,6 +16,7 @@ namespace DataStructures.Heap;
 /// <typeparam name="T">Type of elements in binary heap.</typeparam>
 public class BinaryHeap<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Comparer to use when comparing elements.
     /// </summary>
@@ -30,8 +32,12 @@ public class BinaryHeap<T>
     /// </summary>
     public BinaryHeap()
     {
+		_logger.LogDebug(">>> Entering BinaryHeap()");
         data = [];
+		_logger.LogDebug("BinaryHeap(): data → {Data}", data);
         comparer = Comparer<T>.Default;
+		_logger.LogDebug("BinaryHeap(): comparer → {Comparer}", comparer);
+		_logger.LogDebug("<<< Exiting BinaryHeap(customComparer={CustomComparer})", customComparer);
     }
 
     /// <summary>
@@ -40,6 +46,8 @@ public class BinaryHeap<T>
     /// <param name="customComparer">The custom comparing function to use to compare elements.</param>
     public BinaryHeap(Comparer<T> customComparer)
     {
+		_logger.LogDebug(">>> Entering BinaryHeap(customComparer={CustomComparer})", customComparer);
+		_logger.LogDebug("BinaryHeap(customComparer={CustomComparer}): comparer → {Comparer}", customComparer, comparer);
         data = [];
         comparer = customComparer;
     }
@@ -60,8 +68,10 @@ public class BinaryHeap<T>
     /// <exception cref="ArgumentException">Thrown if element is already in heap.</exception>
     public void Push(T element)
     {
+		_logger.LogDebug(">>> Entering Push(element={Element})", element);
         data.Add(element);
         HeapifyUp(data.Count - 1);
+		_logger.LogDebug("<<< Exiting Push(element={Element})", element);
     }
 
     /// <summary>
@@ -76,8 +86,10 @@ public class BinaryHeap<T>
     /// <exception cref="InvalidOperationException">Thrown if heap is empty.</exception>
     public T Pop()
     {
+		_logger.LogDebug(">>> Entering Pop()");
         if (Count == 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Pop()");
             throw new InvalidOperationException("Heap is empty!");
         }
 
@@ -86,6 +98,7 @@ public class BinaryHeap<T>
         data.RemoveAt(data.Count - 1);
         HeapifyDown(0);
 
+		_logger.LogDebug("<<< Exiting Pop()");
         return elem;
     }
 
@@ -96,8 +109,11 @@ public class BinaryHeap<T>
     /// <exception cref="InvalidOperationException">Thrown if heap is empty.</exception>
     public T Peek()
     {
+		_logger.LogDebug(">>> Entering Peek()");
         if (Count == 0)
         {
+			_logger.LogWarning("Throwing InvalidOperationException from Peek()");
+		_logger.LogDebug("<<< Exiting Peek()");
             throw new InvalidOperationException("Heap is empty!");
         }
 
@@ -112,6 +128,7 @@ public class BinaryHeap<T>
     /// <returns>element if element compares larger than top/root of heap, top/root of heap otherwise.</returns>
     public T PushPop(T element)
     {
+		_logger.LogDebug(">>> Entering PushPop(element={Element})", element);
         if (Count == 0)
         {
             return element;
@@ -122,6 +139,7 @@ public class BinaryHeap<T>
             var tmp = data[0];
             data[0] = element;
             HeapifyDown(0);
+		_logger.LogDebug("<<< Exiting PushPop(element={Element})", element);
             return tmp;
         }
 
@@ -147,10 +165,13 @@ public class BinaryHeap<T>
     /// <exception cref="ArgumentException">Thrown if element is not in heap.</exception>
     public void Remove(T element)
     {
+		_logger.LogDebug(">>> Entering Remove(element={Element})", element);
         var idx = data.IndexOf(element);
 
+		_logger.LogDebug("Remove(element={Element}): idx → {Idx}", element, idx);
         if (idx == -1)
         {
+			_logger.LogWarning("Throwing ArgumentException from Remove(element={Element})", element);
             throw new ArgumentException($"{element} not in heap!");
         }
 
@@ -169,6 +190,7 @@ public class BinaryHeap<T>
                 HeapifyUp(idx);
             }
         }
+		_logger.LogDebug("<<< Exiting Remove(element={Element})", element);
     }
 
     /// <summary>
@@ -178,9 +200,11 @@ public class BinaryHeap<T>
     /// <param name="idx2">Second index.</param>
     private void Swap(int idx1, int idx2)
     {
+		_logger.LogDebug(">>> Entering Swap(idx1={Idx1},idx2={Idx2})", idx1, idx2);
         var tmp = data[idx1];
         data[idx1] = data[idx2];
         data[idx2] = tmp;
+		_logger.LogDebug("<<< Exiting Swap(idx1={Idx1},idx2={Idx2})", idx1, idx2);
     }
 
     /// <summary>
@@ -193,13 +217,16 @@ public class BinaryHeap<T>
     /// <param name="elemIdx">The element to check with its parent.</param>
     private void HeapifyUp(int elemIdx)
     {
+		_logger.LogDebug(">>> Entering HeapifyUp(elemIdx={ElemIdx})", elemIdx);
         var parent = (elemIdx - 1) / 2;
 
+		_logger.LogDebug("HeapifyUp(elemIdx={ElemIdx}): parent → {Parent}", elemIdx, parent);
         if (parent >= 0 && comparer.Compare(data[elemIdx], data[parent]) > 0)
         {
             Swap(elemIdx, parent);
             HeapifyUp(parent);
         }
+		_logger.LogDebug("<<< Exiting HeapifyUp(elemIdx={ElemIdx})", elemIdx);
     }
 
     /// <summary>
@@ -212,12 +239,16 @@ public class BinaryHeap<T>
     /// <param name="elemIdx">The element to check with its children.</param>
     private void HeapifyDown(int elemIdx)
     {
+		_logger.LogDebug(">>> Entering HeapifyDown(elemIdx={ElemIdx})", elemIdx);
         var left = 2 * elemIdx + 1;
         var right = 2 * elemIdx + 2;
 
         var leftLargerThanElem = left < Count && comparer.Compare(data[elemIdx], data[left]) < 0;
+		_logger.LogDebug("HeapifyDown(elemIdx={ElemIdx}): leftLargerThanElem → {LeftLargerThanElem}", elemIdx, leftLargerThanElem);
         var rightLargerThanElem = right < Count && comparer.Compare(data[elemIdx], data[right]) < 0;
+		_logger.LogDebug("HeapifyDown(elemIdx={ElemIdx}): rightLargerThanElem → {RightLargerThanElem}", elemIdx, rightLargerThanElem);
         var leftLargerThanRight = left < Count && right < Count && comparer.Compare(data[left], data[right]) > 0;
+		_logger.LogDebug("HeapifyDown(elemIdx={ElemIdx}): leftLargerThanRight → {LeftLargerThanRight}", elemIdx, leftLargerThanRight);
 
         if (leftLargerThanElem && leftLargerThanRight)
         {
@@ -229,5 +260,6 @@ public class BinaryHeap<T>
             Swap(elemIdx, right);
             HeapifyDown(right);
         }
+		_logger.LogDebug("<<< Exiting HeapifyDown(elemIdx={ElemIdx})", elemIdx);
     }
 }

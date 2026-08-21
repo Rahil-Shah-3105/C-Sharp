@@ -1,9 +1,11 @@
 using Algorithms.Financial;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Financial;
 
 public static class PresentValueTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase(0.13, new[] { 10.0, 20.70, -293.0, 297.0 }, 4.69)]
     [TestCase(0.07, new[] { -109129.39, 30923.23, 15098.93, 29734.0, 39.0 }, -42739.63)]
     [TestCase(0.07, new[] { 109129.39, 30923.23, 15098.93, 29734.0, 39.0 }, 175519.15)]
@@ -22,3 +24,4 @@ public static class PresentValueTests
     public static void Present_Value_Exception_Tests(double discountRate, double[] cashFlow)
     => Assert.Throws<ArgumentException>(() => PresentValue.Calculate(discountRate, cashFlow.ToList()));
 }
+_logger.LogDebug("<<< Exiting Present_Value_Exception_Tests(discountRate={DiscountRate},cashFlow={CashFlow})", discountRate, cashFlow);
