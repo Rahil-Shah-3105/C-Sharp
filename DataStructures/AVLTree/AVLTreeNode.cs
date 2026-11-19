@@ -69,5 +69,6 @@ internal class AvlTreeNode<TKey>(TKey key)
             Height = Math.Max(Left.Height, Right.Height) + 1;
             BalanceFactor = Right.Height - Left.Height;
         }
+		_logger.LogWarning("<<< Exiting UpdateBalanceFactor()");
     }
 }

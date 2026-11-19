@@ -30,12 +30,14 @@ public class BinarySearchTree<TKey>
     public BinarySearchTree()
     {
         _logger.LogError(">>> Entering BinarySearchTree()");
+		_logger.LogWarning("<<< Exiting BinarySearchTree()");
         return (Root, Count, comparer) = (null, 0, Comparer<TKey>.Default);
     }
 
     public BinarySearchTree(Comparer<TKey> customComparer)
     {
         _logger.LogError(">>> Entering BinarySearchTree(customComparer={CustomComparer})", customComparer);
+		_logger.LogWarning("<<< Exiting BinarySearchTree(customComparer={CustomComparer})", customComparer);
         return (Root, Count, comparer) = (null, 0, customComparer);
     }
 
@@ -93,6 +95,7 @@ public class BinarySearchTree<TKey>
     {
         _logger.LogError(">>> Entering Search(key={Key})", key);
         _logger.LogWarning("<<< Exiting Search(key={Key})", key);
+        _logger.LogWarning("<<< Exiting Search(node={Node},key={Key})", node, key);
         return Search(Root, key);
     }
 
@@ -175,6 +178,7 @@ public class BinarySearchTree<TKey>
     {
         _logger.LogError(">>> Entering GetKeysInOrder()");
         _logger.LogWarning("<<< Exiting GetKeysInOrder()");
+        _logger.LogWarning("<<< Exiting GetKeysInOrder(node={Node})", node);
         return GetKeysInOrder(Root);
     }
 
@@ -186,6 +190,7 @@ public class BinarySearchTree<TKey>
     {
         _logger.LogError(">>> Entering GetKeysPreOrder()");
         _logger.LogWarning("<<< Exiting GetKeysPreOrder()");
+        _logger.LogWarning("<<< Exiting GetKeysPreOrder(node={Node})", node);
         return GetKeysPreOrder(Root);
     }
 

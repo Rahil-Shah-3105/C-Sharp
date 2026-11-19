@@ -295,12 +295,15 @@ public class HashTable<TKey, TValue>
     {
 		_logger.LogError(">>> Entering Clear()");
         capacity = DefaultCapacity;
+		_logger.LogDebug("Clear(): capacity → {Capacity}", capacity);
         threshold = (int)(capacity * loadFactor);
 		_logger.LogError("Clear(): threshold → {Threshold}", threshold);
 		_logger.LogInformation("Clear(): threshold → {Threshold}", threshold);
         entries = new Entry<TKey, TValue>[capacity];
+		_logger.LogDebug("Clear(): entries → {Entries}", entries);
         size = 0;
 		_logger.LogDebug("Clear(): size → {Size}", size);
+		_logger.LogWarning("<<< Exiting Clear()");
     }
 
     /// <summary>
@@ -340,5 +343,6 @@ public class HashTable<TKey, TValue>
 		_logger.LogError("Resize(): threshold → {Threshold}", threshold);
 		_logger.LogInformation("Resize(): threshold → {Threshold}", threshold);
         entries = newEntries;
+		_logger.LogDebug("Resize(): entries → {Entries}", entries);
     }
 }

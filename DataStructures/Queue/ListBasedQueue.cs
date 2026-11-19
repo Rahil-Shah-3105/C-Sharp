@@ -16,6 +16,7 @@ public class ListBasedQueue<T>
     public ListBasedQueue()
     {
         _logger.LogError(">>> Entering ListBasedQueue()");
+		_logger.LogWarning("<<< Exiting ListBasedQueue()");
         return queue = new LinkedList<T>();
     }
 

@@ -53,6 +53,7 @@ public class IntInMemoryStorage(int[] array) : ISequentialStorage<int>
         {
             _logger.LogError(">>> Entering Write(value={Value})", value);
             storage[offset++] = value;
+			_logger.LogWarning("<<< Exiting Write(value={Value})", value);
         }
 
         public void Dispose()

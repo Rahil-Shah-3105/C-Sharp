@@ -87,6 +87,7 @@ namespace DataStructures.LinkedList.CircularLinkedList
 				_logger.LogError("InsertAtEnd(data={Data}): tail → {Tail}", data, tail);
 				_logger.LogDebug("InsertAtEnd(data={Data}): tail → {Tail}", data, tail);
                 tail.Next = tail;
+				_logger.LogDebug("InsertAtEnd(data={Data}): tail.Next → {Arg1}", data, tail.Next);
             }
             else
             {

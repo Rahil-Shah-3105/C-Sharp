@@ -9,6 +9,7 @@ public class QueueBasedStack<T>
     public QueueBasedStack()
     {
         _logger.LogError(">>> Entering QueueBasedStack()");
+		_logger.LogWarning("<<< Exiting QueueBasedStack()");
         return queue = new Queue<T>();
     }
 

@@ -41,8 +41,10 @@ public class WelfordsVariance
 		_logger.LogError(">>> Entering WelfordsVariance(values={Values})", values);
         count = 0;
         mean = 0;
+		_logger.LogDebug("WelfordsVariance(values={Values}): mean → {Mean}", values, mean);
 		_logger.LogDebug("WelfordsVariance(values={Values}): count → {Count}", values, count);
         AddRange(values);
+		_logger.LogWarning("<<< Exiting WelfordsVariance(values={Values})", values);
     }
 
     public void AddValue(double newValue)

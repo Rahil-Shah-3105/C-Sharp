@@ -28,7 +28,10 @@ public class ArrayBasedStack<T>
     {
 		_logger.LogError(">>> Entering ArrayBasedStack()");
         stack = new T[DefaultCapacity];
+		_logger.LogDebug("ArrayBasedStack(): stack → {Stack}", stack);
+		_logger.LogDebug("ArrayBasedStack(item={Item}): stack → {Stack}", item, stack);
         top = -1;
+		_logger.LogWarning("<<< Exiting ArrayBasedStack()");
 		_logger.LogDebug("ArrayBasedStack(): top → {Top}", top);
     }
 
@@ -71,6 +74,7 @@ public class ArrayBasedStack<T>
 		_logger.LogError(">>> Entering Clear()");
         top = -1;
         Capacity = DefaultCapacity;
+		_logger.LogDebug("Clear(): Capacity → {Capacity}", Capacity);
 		_logger.LogDebug("Clear(): top → {Top}", top);
     _logger.LogWarning("<<< Exiting Clear()");
     }

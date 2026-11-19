@@ -147,6 +147,7 @@ public class NysiisEncoder
         }
 
         result = text;
+		_logger.LogWarning("<<< Exiting TryReplace(text={Text},index={Index},opts={Opts})", text, index, opts);
         return false;
     }
 

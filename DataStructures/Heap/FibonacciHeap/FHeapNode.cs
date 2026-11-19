@@ -92,6 +92,7 @@ public class FHeapNode<T> where T : IComparable
         node.Left = this;
 		_logger.LogDebug("AddRight(node={Node}): node.Left → {Arg1}", node, node.Left);
         Right = node;
+		_logger.LogDebug("AddRight(node={Node}): Right → {Right}", node, Right);
     }
 
     /// <summary>

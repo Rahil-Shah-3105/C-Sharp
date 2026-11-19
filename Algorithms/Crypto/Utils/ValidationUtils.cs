@@ -81,6 +81,7 @@ public static class ValidationUtils
         }
 		_logger.LogWarning("<<< Exiting CheckOutputLength(buffer={Buffer},offset={Offset},length={Length},message={Message})", buffer, offset, length, message);
 		_logger.LogError("Throwing OutputLengthException from CheckOutputLength(output={Output},length={Length},message={Message})", output, length, message);
+		_logger.LogError(">>> Entering CheckOutputLength(output={Output},length={Length},message={Message})", output, length, message);
     }
 
     /// <summary>
@@ -100,6 +101,7 @@ public static class ValidationUtils
         if (output.Length > length)
         {
 			_logger.LogError("Throwing OutputLengthException from CheckOutputLength(output={Output},length={Length},message={Message})", output, length, message);
+			_logger.LogWarning("<<< Exiting CheckOutputLength(output={Output},length={Length},message={Message})", output, length, message);
             throw new OutputLengthException(message);
         }
     }

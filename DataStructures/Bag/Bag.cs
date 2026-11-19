@@ -27,8 +27,10 @@ public class Bag<T> : IEnumerable<T> where T : notnull
     {
 		_logger.LogError(">>> Entering Bag()");
         head = null;
+		_logger.LogDebug("Bag(): head → {Head}", head);
         totalCount = 0;
 		_logger.LogDebug("Bag(): totalCount → {TotalCount}", totalCount);
+		_logger.LogWarning("<<< Exiting Bag()");
     }
 
     /// <summary>
@@ -80,6 +82,7 @@ public class Bag<T> : IEnumerable<T> where T : notnull
 		_logger.LogError(">>> Entering Clear()");
         head = null;
         totalCount = 0;
+		_logger.LogDebug("Clear(): totalCount → {TotalCount}", totalCount);
 		_logger.LogDebug("Clear(): head → {Head}", head);
     _logger.LogWarning("<<< Exiting Clear()");
     }
