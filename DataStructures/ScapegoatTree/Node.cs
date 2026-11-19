@@ -48,6 +48,7 @@ public class Node<TKey>(TKey key) where TKey : IComparable
         Right = right;
         Left = left;
 		_logger.LogDebug("Node(key={Key},right={Right},left={Left}): Left → {Left1}", key, right, left, Left);
+		_logger.LogWarning("<<< Exiting Node(key={Key},right={Right},left={Left})", key, right, left);
     }
 
     /// <summary>

@@ -44,6 +44,7 @@ public class Deque<T>
     public Deque()
         : this(16)
     {
+	_logger.LogError(">>> Entering Deque()");
     }
 
     /// <summary>

@@ -145,6 +145,7 @@ public static class KochSnowflake
         int bitmapWidth,
         int bitmapHeight)
     {
+		_logger.LogError(">>> Entering GetBitmap(vectors={Vectors},bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight})", vectors, bitmapWidth, bitmapHeight);
         SKBitmap bitmap = new(bitmapWidth, bitmapHeight);
         var canvas = new SKCanvas(bitmap);
 
@@ -160,6 +161,7 @@ public static class KochSnowflake
         canvas.DrawRect(rect, paint);
 
         paint.Color = SKColors.Black;
+		_logger.LogDebug("GetBitmap(vectors={Vectors},bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight}): paint.Color → {Arg3}", vectors, bitmapWidth, bitmapHeight, paint.Color);
 
         // Draw the edges
         for (var i = 0; i < vectors.Count - 1; i++)

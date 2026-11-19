@@ -266,7 +266,9 @@ public sealed class BitArray : ICloneable, IEnumerator<bool>, IEnumerable<bool>
     public void Reset()
     {
         _logger.LogError(">>> Entering Reset()");
+		_logger.LogWarning("<<< Exiting Reset()");
         position = -1;
+		_logger.LogDebug("Reset(): position → {Position}", position);
     }
 
     /// <summary>

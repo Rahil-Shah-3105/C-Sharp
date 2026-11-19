@@ -291,6 +291,7 @@ public class TimSorter<T> : IComparisonSorter<T>
             }
         }
 
+		_logger.LogWarning("<<< Exiting CountRunAndMakeAscending(array={Array},start={Start})", array, start);
         return runHi - start;
     }
 

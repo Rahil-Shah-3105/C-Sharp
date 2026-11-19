@@ -22,9 +22,11 @@ public class DoublyLinkedList<T>
 		_logger.LogError(">>> Entering DoublyLinkedList(data={Data})", data);
         Head = new DoublyLinkedListNode<T>(data);
         Tail = Head;
+		_logger.LogDebug("DoublyLinkedList(data={Data}): Tail → {Tail}", data, Tail);
 		_logger.LogDebug("DoublyLinkedList(data={Data}): Head → {Head}", data, Head);
         Count = 1;
 		_logger.LogError("DoublyLinkedList(data={Data}): Count → {Count}", data, Count);
+		_logger.LogWarning("<<< Exiting DoublyLinkedList(data={Data})", data);
     }
 
     /// <summary>

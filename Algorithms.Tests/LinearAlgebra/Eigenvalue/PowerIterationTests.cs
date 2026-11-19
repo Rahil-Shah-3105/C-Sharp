@@ -64,6 +64,7 @@ public class PowerIterationTests
         double[] eigenvector,
         double[,] source)
     {
+		_logger.LogError(">>> Entering Dominant_ShouldCalculateDominantEigenvalueAndEigenvector(eigenvalue={Eigenvalue},eigenvector={Eigenvector},source={Source})", eigenvalue, eigenvector, source);
         // Act
         var (actualEigVal, actualEigVec) =
             PowerIteration.Dominant(source, StartVector(source.GetLength(0)), epsilon);

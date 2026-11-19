@@ -14,6 +14,8 @@ internal class TrieNode
     internal TrieNode(char value)
         : this(value, null)
     {
+	_logger.LogError(">>> Entering TrieNode(value={Value})", value);
+    _logger.LogWarning("<<< Exiting TrieNode(value={Value})", value);
     }
 
     /// <summary>
@@ -25,6 +27,7 @@ internal class TrieNode
     {
 		_logger.LogError(">>> Entering TrieNode(value={Value},parent={Parent})", value, parent);
         Children = [];
+		_logger.LogDebug("TrieNode(value={Value},parent={Parent}): Children → {Children}", value, parent, Children);
         Parent = parent;
 		_logger.LogDebug("TrieNode(value={Value},parent={Parent}): Parent → {Parent1}", value, parent, Parent);
         Value = value;

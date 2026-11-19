@@ -21,8 +21,11 @@ public class StackBasedQueue<T>
     {
 		_logger.LogError(">>> Entering StackBasedQueue()");
         input = new Stack<T>();
+		_logger.LogError("StackBasedQueue(): input → {Input}", input);
+		_logger.LogDebug("StackBasedQueue(): input → {Input}", input);
         output = new Stack<T>();
 		_logger.LogError("StackBasedQueue(): output → {Output}", output);
+		_logger.LogWarning("<<< Exiting StackBasedQueue()");
     }
 
     /// <summary>

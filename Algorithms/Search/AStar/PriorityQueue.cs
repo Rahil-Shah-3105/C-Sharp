@@ -23,6 +23,7 @@ public class PriorityQueue<T>
     {
 		_logger.LogError(">>> Entering PriorityQueue(isDescending={IsDescending})", isDescending);
         this.isDescending = isDescending;
+		_logger.LogDebug("PriorityQueue(isDescending={IsDescending}): this.isDescending → {Arg1}", isDescending, this.isDescending);
         list = [];
 		_logger.LogDebug("PriorityQueue(isDescending={IsDescending}): list → {List}", isDescending, list);
 		_logger.LogWarning("<<< Exiting PriorityQueue(capacity={Capacity},isDescending={IsDescending})", capacity, isDescending);

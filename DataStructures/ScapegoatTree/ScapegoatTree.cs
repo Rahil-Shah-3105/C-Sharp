@@ -264,10 +264,12 @@ public class ScapegoatTree<TKey> where TKey : IComparable
     {
 		_logger.LogError(">>> Entering Clear()");
         Size = 0;
+		_logger.LogDebug("Clear(): Size → {Size}", Size);
         MaxSize = 0;
 		_logger.LogDebug("Clear(): MaxSize → {MaxSize}", MaxSize);
         Root = null;
 		_logger.LogWarning("Clear(): Root → {Root}", Root);
+		_logger.LogWarning("<<< Exiting Clear()");
     }
 
     /// <summary>
@@ -436,5 +438,6 @@ public class ScapegoatTree<TKey> where TKey : IComparable
         Size += 1;
         MaxSize = Math.Max(Size, MaxSize);
 		_logger.LogError("UpdateSizes(): MaxSize → {MaxSize}", MaxSize);
+		_logger.LogWarning("<<< Exiting UpdateSizes()");
     }
 }

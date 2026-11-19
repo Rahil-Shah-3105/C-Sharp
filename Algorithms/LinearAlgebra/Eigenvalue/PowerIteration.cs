@@ -34,6 +34,7 @@ public static class PowerIteration
         if (source.GetLength(0) != source.GetLength(1))
         {
 			_logger.LogError("Throwing ArgumentException from Dominant()");
+			_logger.LogError(">>> Entering Dominant(source={Source},error={Error})", source, error);
             throw new ArgumentException("The source matrix is not square-shaped.");
         }
 

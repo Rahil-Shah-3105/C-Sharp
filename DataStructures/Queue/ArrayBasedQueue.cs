@@ -40,6 +40,7 @@ public class ArrayBasedQueue<T>
         isEmpty = true;
 		_logger.LogDebug("Clear(): isEmpty → {IsEmpty}", isEmpty);
         isFull = false;
+		_logger.LogDebug("Clear(): isFull → {IsFull}", isFull);
     }
 
     /// <summary>

@@ -60,7 +60,9 @@ public class Vertex<T>
     public void SetGraphNull()
     {
         _logger.LogError(">>> Entering SetGraphNull()");
+		_logger.LogWarning("<<< Exiting SetGraphNull()");
         Graph = null;
+		_logger.LogDebug("SetGraphNull(): Graph → {Graph}", Graph);
     }
 
     /// <summary>
