@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.Search;
 /// <typeparam name="T">Type of the array element.</typeparam>
 public class JumpSearcher<T> where T : IComparable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Find the index of the item searched for in the array.
     /// </summary>
@@ -17,8 +19,10 @@ public class JumpSearcher<T> where T : IComparable<T>
     /// <returns>If item is found, return index. If array is empty or item not found, return -1.</returns>
     public int FindIndex(T[] sortedArray, T searchItem)
     {
+		_logger.LogError(">>> Entering FindIndex(sortedArray={SortedArray},searchItem={SearchItem})", sortedArray, searchItem);
         if (sortedArray is null)
         {
+			_logger.LogError("Throwing ArgumentNullException from FindIndex(sortedArray={SortedArray},searchItem={SearchItem})", sortedArray, searchItem);
             throw new ArgumentNullException("sortedArray");
         }
 
@@ -28,14 +32,17 @@ public class JumpSearcher<T> where T : IComparable<T>
         }
 
         int jumpStep = (int)Math.Floor(Math.Sqrt(sortedArray.Length));
+		_logger.LogError("FindIndex(sortedArray={SortedArray},searchItem={SearchItem}): jumpStep → {JumpStep}", sortedArray, searchItem, jumpStep);
         int currentIndex = 0;
         int nextIndex = jumpStep;
+		_logger.LogError("FindIndex(sortedArray={SortedArray},searchItem={SearchItem}): nextIndex → {NextIndex}", sortedArray, searchItem, nextIndex);
 
         if (sortedArray.Length != 0)
         {
             while (sortedArray[nextIndex - 1].CompareTo(searchItem) < 0)
             {
                 currentIndex = nextIndex;
+				_logger.LogError("FindIndex(sortedArray={SortedArray},searchItem={SearchItem}): currentIndex → {CurrentIndex}", sortedArray, searchItem, currentIndex);
                 nextIndex += jumpStep;
 
                 if (nextIndex >= sortedArray.Length)
@@ -54,6 +61,7 @@ public class JumpSearcher<T> where T : IComparable<T>
             }
         }
 
+		_logger.LogWarning("<<< Exiting FindIndex(sortedArray={SortedArray},searchItem={SearchItem})", sortedArray, searchItem);
         return -1;
     }
 }

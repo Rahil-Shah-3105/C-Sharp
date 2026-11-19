@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class PerfectNumberChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Checks if a number is a perfect number or not.
     /// </summary>
@@ -15,8 +17,10 @@ public static class PerfectNumberChecker
     /// <exception cref="ArgumentException">Error number is not on interval (0.0; int.MaxValue).</exception>
     public static bool IsPerfectNumber(int number)
     {
+		_logger.LogError(">>> Entering IsPerfectNumber(number={Number})", number);
         if (number < 0)
         {
+			_logger.LogError("Throwing ArgumentException from IsPerfectNumber(number={Number})", number);
             throw new ArgumentException($"{nameof(number)} cannot be negative");
         }
 
@@ -29,6 +33,7 @@ public static class PerfectNumberChecker
             }
         }
 
+		_logger.LogWarning("<<< Exiting IsPerfectNumber(number={Number})", number);
         return sum == number;
     }
 }

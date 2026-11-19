@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.AATree;
 
 /// <summary>
@@ -17,6 +18,7 @@ namespace DataStructures.AATree;
 /// <param name="customComparer">The custom comparer to use to compare keys.</param>
 public class AaTree<TKey>(Comparer<TKey> customComparer)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     The comparer function to use to compare the keys.
     /// </summary>
@@ -28,6 +30,8 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     public AaTree()
         : this(Comparer<TKey>.Default)
     {
+	_logger.LogError(">>> Entering AaTree()");
+    _logger.LogWarning("<<< Exiting AaTree()");
     }
 
     /// <summary>
@@ -46,7 +50,11 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <param name="key">The element to add to the tree.</param>
     public void Add(TKey key)
     {
+		_logger.LogError(">>> Entering Add(key={Key})", key);
         Root = Add(key, Root);
+		_logger.LogError("Add(key={Key}): Root → {Root}", key, Root);
+		_logger.LogWarning("Add(key={Key}): Root → {Root}", key, Root);
+    _logger.LogWarning("<<< Exiting Add(key={Key})", key);
         Count++;
     }
 
@@ -56,11 +64,15 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <param name="keys">The elements to add to the tree.</param>
     public void AddRange(IEnumerable<TKey> keys)
     {
+		_logger.LogError(">>> Entering AddRange(keys={Keys})", keys);
         foreach (var key in keys)
         {
             Root = Add(key, Root);
+			_logger.LogError("AddRange(keys={Keys}): Root → {Root}", keys, Root);
+			_logger.LogWarning("AddRange(keys={Keys}): Root → {Root}", keys, Root);
             Count++;
         }
+		_logger.LogWarning("<<< Exiting AddRange(keys={Keys})", keys);
     }
 
     /// <summary>
@@ -69,12 +81,17 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <param name="key">Element to remove.</param>
     public void Remove(TKey key)
     {
+		_logger.LogError(">>> Entering Remove(key={Key})", key);
         if (!Contains(key, Root))
         {
+			_logger.LogError("Throwing InvalidOperationException from Remove(key={Key})", key);
             throw new InvalidOperationException($"{nameof(key)} is not in the tree");
         }
 
+		_logger.LogWarning("<<< Exiting Remove(key={Key})", key);
         Root = Remove(key, Root);
+		_logger.LogError("Remove(key={Key}): Root → {Root}", key, Root);
+		_logger.LogWarning("Remove(key={Key}): Root → {Root}", key, Root);
         Count--;
     }
 
@@ -83,7 +100,12 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// </summary>
     /// <param name="key">The element to look for.</param>
     /// <returns>true if the element is in the tree, false otherwise.</returns>
-    public bool Contains(TKey key) => Contains(key, Root);
+    public bool Contains(TKey key)
+    {
+        _logger.LogError(">>> Entering Contains(key={Key})", key);
+        _logger.LogWarning("<<< Exiting Contains(key={Key})", key);
+        return Contains(key, Root);
+    }
 
     /// <summary>
     ///     Gets the largest element in the tree. (ie. the element in the right most node).
@@ -92,11 +114,14 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <exception cref="InvalidOperationException">Thrown if the tree is empty.</exception>
     public TKey GetMax()
     {
+		_logger.LogError(">>> Entering GetMax()");
         if (Root is null)
         {
+			_logger.LogError("Throwing InvalidOperationException from GetMax()");
             throw new InvalidOperationException("Tree is empty!");
         }
 
+		_logger.LogWarning("<<< Exiting GetMax(node={Node})", node);
         return GetMax(Root).Key;
     }
 
@@ -107,11 +132,14 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <throws>InvalidOperationException if the tree is empty.</throws>
     public TKey GetMin()
     {
+		_logger.LogError(">>> Entering GetMin()");
         if (Root is null)
         {
+			_logger.LogError("Throwing InvalidOperationException from GetMin()");
             throw new InvalidOperationException("Tree is empty!");
         }
 
+		_logger.LogWarning("<<< Exiting GetMin(node={Node})", node);
         return GetMin(Root).Key;
     }
 
@@ -121,8 +149,11 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <returns>Sequence of elements in in-order order.</returns>
     public IEnumerable<TKey> GetKeysInOrder()
     {
+		_logger.LogError(">>> Entering GetKeysInOrder()");
         var result = new List<TKey>();
         InOrderWalk(Root);
+		_logger.LogError("GetKeysInOrder(): result → {Result}", result);
+		_logger.LogWarning("<<< Exiting GetKeysInOrder()");
         return result;
 
         void InOrderWalk(AaTreeNode<TKey>? node)
@@ -144,8 +175,11 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <returns>Sequence of elements in pre-order order.</returns>
     public IEnumerable<TKey> GetKeysPreOrder()
     {
+		_logger.LogError(">>> Entering GetKeysPreOrder()");
         var result = new List<TKey>();
         PreOrderWalk(Root);
+		_logger.LogError("GetKeysPreOrder(): result → {Result}", result);
+		_logger.LogWarning("<<< Exiting GetKeysPreOrder()");
         return result;
 
         void PreOrderWalk(AaTreeNode<TKey>? node)
@@ -167,8 +201,11 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <returns>Sequence of elements in post-order order.</returns>
     public IEnumerable<TKey> GetKeysPostOrder()
     {
+		_logger.LogError(">>> Entering GetKeysPostOrder()");
         var result = new List<TKey>();
         PostOrderWalk(Root);
+		_logger.LogError("GetKeysPostOrder(): result → {Result}", result);
+		_logger.LogWarning("<<< Exiting GetKeysPostOrder()");
         return result;
 
         void PostOrderWalk(AaTreeNode<TKey>? node)
@@ -193,6 +230,7 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <exception cref="ArgumentException">Thrown if key is already in the tree.</exception>
     private AaTreeNode<TKey> Add(TKey key, AaTreeNode<TKey>? node)
     {
+		_logger.LogError(">>> Entering Add(key={Key},node={Node})", key, node);
         if (node is null)
         {
             return new AaTreeNode<TKey>(key, 1);
@@ -208,6 +246,8 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
         }
         else
         {
+			_logger.LogError("Throwing ArgumentException from Add(key={Key},node={Node})", key, node);
+		_logger.LogWarning("<<< Exiting Add(key={Key},node={Node})", key, node);
             throw new ArgumentException($"""Key "{key}" already in tree!""", nameof(key));
         }
 
@@ -222,6 +262,7 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <returns>The node with the specified element removed.</returns>
     private AaTreeNode<TKey>? Remove(TKey key, AaTreeNode<TKey>? node)
     {
+		_logger.LogError(">>> Entering Remove(key={Key},node={Node})", key, node);
         if (node is null)
         {
             return null;
@@ -245,12 +286,15 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
             if (node.Left is null)
             {
                 var successor = GetMin(node.Right!);
+				_logger.LogError("Remove(key={Key},node={Node}): successor → {Successor}", key, node, successor);
                 node.Right = Remove(successor.Key, node.Right);
                 node.Key = successor.Key;
+				_logger.LogDebug("Remove(key={Key},node={Node}): node.Key → {Arg2}", key, node, node.Key);
             }
             else
             {
                 var predecessor = GetMax(node.Left);
+				_logger.LogError("Remove(key={Key},node={Node}): predecessor → {Predecessor}", key, node, predecessor);
                 node.Left = Remove(predecessor.Key, node.Left);
                 node.Key = predecessor.Key;
             }
@@ -258,6 +302,7 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
 
         node = DecreaseLevel(node);
         node = Skew(node);
+		_logger.LogError("Remove(key={Key},node={Node}): node → {Node1}", key, node, node);
         node!.Right = Skew(node.Right);
 
         if (node.Right is not null)
@@ -267,6 +312,7 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
 
         node = Split(node);
         node!.Right = Split(node.Right);
+		_logger.LogWarning("<<< Exiting Remove(key={Key},node={Node})", key, node);
         return node;
     }
 
@@ -330,6 +376,7 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <returns>The rebalanced node.</returns>
     private AaTreeNode<TKey>? Skew(AaTreeNode<TKey>? node)
     {
+		_logger.LogError(">>> Entering Skew(node={Node})", node);
         if (node?.Left is null || node.Left.Level != node.Level)
         {
             return node;
@@ -337,7 +384,10 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
 
         var left = node.Left;
         node.Left = left.Right;
+		_logger.LogDebug("Skew(node={Node}): node.Left → {Arg1}", node, node.Left);
         left.Right = node;
+		_logger.LogDebug("Skew(node={Node}): left.Right → {Arg1}", node, left.Right);
+		_logger.LogWarning("<<< Exiting Skew(node={Node})", node);
         return left;
     }
 
@@ -349,6 +399,7 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <returns>The rebalanced node.</returns>
     private AaTreeNode<TKey>? Split(AaTreeNode<TKey>? node)
     {
+		_logger.LogError(">>> Entering Split(node={Node})", node);
         if (node?.Right?.Right is null || node.Level != node.Right.Right.Level)
         {
             return node;
@@ -356,8 +407,11 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
 
         var right = node.Right;
         node.Right = right.Left;
+		_logger.LogDebug("Split(node={Node}): node.Right → {Arg1}", node, node.Right);
         right.Left = node;
+		_logger.LogDebug("Split(node={Node}): right.Left → {Arg1}", node, right.Left);
         right.Level++;
+		_logger.LogWarning("<<< Exiting Split(node={Node})", node);
         return right;
     }
 
@@ -368,20 +422,29 @@ public class AaTree<TKey>(Comparer<TKey> customComparer)
     /// <returns>The node with modified level.</returns>
     private AaTreeNode<TKey> DecreaseLevel(AaTreeNode<TKey> node)
     {
+		_logger.LogError(">>> Entering DecreaseLevel(node={Node})", node);
         var newLevel = Math.Min(GetLevel(node.Left), GetLevel(node.Right)) + 1;
+		_logger.LogError("DecreaseLevel(node={Node}): newLevel → {NewLevel}", node, newLevel);
         if (newLevel >= node.Level)
         {
             return node;
         }
 
         node.Level = newLevel;
+		_logger.LogDebug("DecreaseLevel(node={Node}): node.Level → {Arg1}", node, node.Level);
         if (node.Right is { } && newLevel < node.Right.Level)
         {
             node.Right.Level = newLevel;
         }
 
+		_logger.LogWarning("<<< Exiting DecreaseLevel(node={Node})", node);
         return node;
 
-        static int GetLevel(AaTreeNode<TKey>? x) => x?.Level ?? 0;
+        static int GetLevel(AaTreeNode<TKey>? x)
+        {
+            _logger.LogError(">>> Entering GetLevel(x={X})", x);
+            _logger.LogWarning("<<< Exiting GetLevel(x={X})", x);
+            return x?.Level ?? 0;
+        }
     }
 }

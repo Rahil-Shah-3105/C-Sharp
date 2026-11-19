@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class AutomorphicNumber
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Generates a list of automorphic numbers that are between <paramref name="lowerBound"/> and <paramref name="upperBound"/>
     /// inclusive.
@@ -18,8 +20,10 @@ public static class AutomorphicNumber
     /// or <paramref name="upperBound"/>is lower than the <paramref name="lowerBound"/>.</exception>
     public static IEnumerable<int> GetAutomorphicNumbers(int lowerBound, int upperBound)
     {
+		_logger.LogError(">>> Entering GetAutomorphicNumbers(lowerBound={LowerBound},upperBound={UpperBound})", lowerBound, upperBound);
         if (lowerBound < 1)
         {
+			_logger.LogError("Throwing ArgumentException from GetAutomorphicNumbers(lowerBound={LowerBound},upperBound={UpperBound})", lowerBound, upperBound);
             throw new ArgumentException($"Lower bound must be greater than 0.");
         }
 
@@ -33,6 +37,7 @@ public static class AutomorphicNumber
             throw new ArgumentException($"The lower bound must be less than or equal to the upper bound.");
         }
 
+		_logger.LogWarning("<<< Exiting GetAutomorphicNumbers(lowerBound={LowerBound},upperBound={UpperBound})", lowerBound, upperBound);
         return Enumerable.Range(lowerBound, upperBound).Where(IsAutomorphic);
     }
 
@@ -44,12 +49,15 @@ public static class AutomorphicNumber
     /// <exception cref="ArgumentException">If the number is non-positive.</exception>
     public static bool IsAutomorphic(int number)
     {
+		_logger.LogError(">>> Entering IsAutomorphic(number={Number})", number);
         if (number < 1)
         {
+			_logger.LogError("Throwing ArgumentException from IsAutomorphic(number={Number})", number);
             throw new ArgumentException($"An automorphic number must always be positive.");
         }
 
         BigInteger square = BigInteger.Pow(number, 2);
+		_logger.LogError("IsAutomorphic(number={Number}): square → {Square}", number, square);
 
         // Extract the last digits of both numbers
         while (number > 0)
@@ -63,6 +71,7 @@ public static class AutomorphicNumber
             square /= 10;
         }
 
+		_logger.LogWarning("<<< Exiting IsAutomorphic(number={Number})", number);
         return true;
     }
 }

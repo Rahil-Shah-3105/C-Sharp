@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -7,6 +8,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class AmicableNumbersChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Checks if two numbers are amicable or not.
     /// </summary>
@@ -15,11 +17,14 @@ public static class AmicableNumbersChecker
     /// <returns>True if they are amicable numbers. False if not.</returns>
     public static bool AreAmicableNumbers(int x, int y)
     {
+		_logger.LogError(">>> Entering AreAmicableNumbers(x={X},y={Y})", x, y);
+        _logger.LogWarning("<<< Exiting AreAmicableNumbers(x={X},y={Y})", x, y);
         return SumOfDivisors(x) == y && SumOfDivisors(y) == x;
     }
 
     private static int SumOfDivisors(int number)
     {
+		_logger.LogError(">>> Entering SumOfDivisors(number={Number})", number);
         var sum = 0; /* sum of its positive divisors */
         for (var i = 1; i < number; ++i)
         {
@@ -29,6 +34,7 @@ public static class AmicableNumbersChecker
             }
         }
 
+		_logger.LogWarning("<<< Exiting SumOfDivisors(number={Number})", number);
         return sum;
     }
 }

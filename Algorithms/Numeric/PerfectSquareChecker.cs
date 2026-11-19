@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class PerfectSquareChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Checks if a number is a perfect square or not.
     /// </summary>
@@ -12,12 +14,15 @@ public static class PerfectSquareChecker
     /// <returns>True if is a perfect square; False otherwise.</returns>
     public static bool IsPerfectSquare(int number)
     {
+		_logger.LogError(">>> Entering IsPerfectSquare(number={Number})", number);
         if (number < 0)
         {
             return false;
         }
 
         var sqrt = (int)Math.Sqrt(number);
+		_logger.LogError("IsPerfectSquare(number={Number}): sqrt → {Sqrt}", number, sqrt);
+		_logger.LogWarning("<<< Exiting IsPerfectSquare(number={Number})", number);
         return sqrt * sqrt == number;
     }
 }

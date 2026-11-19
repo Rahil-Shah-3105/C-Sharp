@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Fenwick;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace DataStructures.Fenwick;
 /// </summary>
 public class BinaryIndexedTree
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly int[] fenwickTree;
 
     /// <summary>
@@ -17,12 +19,15 @@ public class BinaryIndexedTree
     /// <param name="array">Initial array.</param>
     public BinaryIndexedTree(int[] array)
     {
+		_logger.LogError(">>> Entering BinaryIndexedTree(array={Array})", array);
         fenwickTree = new int[array.Length + 1];
 
+		_logger.LogDebug("BinaryIndexedTree(array={Array}): fenwickTree → {FenwickTree}", array, fenwickTree);
         for (var i = 0; i < array.Length; i++)
         {
             UpdateTree(i, array[i]);
         }
+		_logger.LogWarning("<<< Exiting BinaryIndexedTree(array={Array})", array);
     }
 
     /// <summary>
@@ -33,6 +38,7 @@ public class BinaryIndexedTree
     /// <returns>Returns sum of arr[0..index].</returns>
     public int GetSum(int index)
     {
+		_logger.LogError(">>> Entering GetSum(index={Index})", index);
         var sum = 0;
         var startFrom = index + 1;
 
@@ -42,6 +48,7 @@ public class BinaryIndexedTree
             startFrom -= startFrom & (-startFrom);
         }
 
+		_logger.LogWarning("<<< Exiting GetSum(index={Index})", index);
         return sum;
     }
 
@@ -53,6 +60,7 @@ public class BinaryIndexedTree
     /// <param name="val">Value to be update on.</param>
     public void UpdateTree(int index, int val)
     {
+		_logger.LogError(">>> Entering UpdateTree(index={Index},val={Val})", index, val);
         var startFrom = index + 1;
 
         while (startFrom <= fenwickTree.Length)
@@ -60,5 +68,6 @@ public class BinaryIndexedTree
             fenwickTree[startFrom] += val;
             startFrom += startFrom & (-startFrom);
         }
+		_logger.LogWarning("<<< Exiting UpdateTree(index={Index},val={Val})", index, val);
     }
 }

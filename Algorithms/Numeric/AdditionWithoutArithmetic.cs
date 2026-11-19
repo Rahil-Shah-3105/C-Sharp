@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class AdditionWithoutArithmetic
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///    Returns the sum of two integers.
     /// </summary>
@@ -13,6 +15,7 @@ public static class AdditionWithoutArithmetic
     /// <returns>Sum of the two numbers.</returns>
     public static int CalculateAdditionWithoutArithmetic(int first, int second)
     {
+		_logger.LogError(">>> Entering CalculateAdditionWithoutArithmetic(first={First},second={Second})", first, second);
         while (second != 0)
         {
             int c = first & second;      // Carry
@@ -20,6 +23,7 @@ public static class AdditionWithoutArithmetic
             second = c << 1;            // Carry shifted left
         }
 
+		_logger.LogWarning("<<< Exiting CalculateAdditionWithoutArithmetic(first={First},second={Second})", first, second);
         return first;
     }
 }

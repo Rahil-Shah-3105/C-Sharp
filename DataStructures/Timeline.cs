@@ -13,6 +13,7 @@
 */
 
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures;
 
@@ -23,6 +24,7 @@ namespace DataStructures;
 /// <typeparam name="TValue">Value associated with a <see cref="DateTime" />.</typeparam>
 public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEquatable<Timeline<TValue>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Inner collection storing the timeline events as key-tuples.
     /// </summary>
@@ -33,6 +35,8 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// </summary>
     public Timeline()
     {
+	_logger.LogError(">>> Entering Timeline()");
+    _logger.LogWarning("<<< Exiting Timeline()");
     }
 
     /// <summary>
@@ -331,6 +335,7 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     public void Add(DateTime time, TValue value)
     {
         timeline.Add((time, value));
+		_logger.LogWarning("<<< Exiting Add(time={Time},value={Value})", time, value);
     }
 
     /// <summary>
@@ -353,10 +358,12 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     public void AddNow(params TValue[] value)
     {
         var now = DateTime.Now;
+		_logger.LogError(">>> Entering AddNow(value={Value})", value);
         foreach (var v in value)
         {
             Add(now, v);
         }
+		_logger.LogWarning("<<< Exiting AddNow(value={Value})", value);
     }
 
     /// <summary>
@@ -391,7 +398,9 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>True if any of the times is stored in the timeline.</returns>
     public bool ContainsTime(params DateTime[] times)
     {
+		_logger.LogError(">>> Entering ContainsTime(times={Times})", times);
         var storedTimes = GetAllTimes();
+		_logger.LogWarning("<<< Exiting ContainsTime(times={Times})", times);
         return times.Any(value => storedTimes.Contains(value));
     }
 
@@ -402,7 +411,10 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>True if any of the events has occurred in the timeline.</returns>
     public bool ContainsValue(params TValue[] values)
     {
+		_logger.LogError(">>> Entering ContainsValue(values={Values})", values);
         var storedValues = GetAllValues();
+		_logger.LogError("ContainsValue(values={Values}): storedValues → {StoredValues}", values, storedValues);
+		_logger.LogWarning("<<< Exiting ContainsValue(values={Values})", values);
         return values.Any(value => storedValues.Contains(value));
     }
 
@@ -422,7 +434,9 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>Returns true if the operation completed successfully.</returns>
     public bool Remove(params (DateTime, TValue)[] timeline)
     {
+		_logger.LogError(">>> Entering Remove(time={Time},value={Value})", time, value);
         var result = false;
+		_logger.LogError("Remove(time={Time},value={Value}): result → {Result}", time, value, result);
         foreach (var (time, value) in timeline)
         {
             result |= this.timeline.Remove((time, value));
@@ -447,6 +461,7 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     {
         var isTimeContainedInTheTimeline = times.Any(time => GetAllTimes().Contains(time));
 
+		_logger.LogError(">>> Entering RemoveTimes(times={Times})", times);
         if (!isTimeContainedInTheTimeline)
         {
             return false;
@@ -461,6 +476,7 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
             timeline.Remove(@event);
         }
 
+		_logger.LogWarning("<<< Exiting RemoveTimes(times={Times})", times);
         return true;
     }
 
@@ -470,8 +486,10 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
     /// <returns>Returns true if the operation completed successfully.</returns>
     public bool RemoveValues(params TValue[] values)
     {
+		_logger.LogError(">>> Entering RemoveValues(values={Values})", values);
         var isValueContainedInTheTimeline = values.Any(v => GetAllValues().Contains(v));
 
+		_logger.LogError("RemoveValues(values={Values}): isValueContainedInTheTimeline → {IsValueContainedInTheTimeline}", values, isValueContainedInTheTimeline);
         if (!isValueContainedInTheTimeline)
         {
             return false;
@@ -486,6 +504,7 @@ public class Timeline<TValue> : ICollection<(DateTime Time, TValue Value)>, IEqu
             timeline.Remove(@event);
         }
 
+		_logger.LogWarning("<<< Exiting RemoveValues(values={Values})", values);
         return true;
     }
 

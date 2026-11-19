@@ -1,16 +1,20 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.PatternMatching;
 
 /// <summary>Implementation Z-block substring search.
 /// </summary>
 public static class ZblockSubstringSearch
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     This algorithm finds all occurrences of a pattern in a text in linear time - O(m+n).
     /// </summary>
     public static int FindSubstring(string pattern, string text)
     {
+		_logger.LogError(">>> Entering FindSubstring(pattern={Pattern},text={Text})", pattern, text);
         var concatStr = $"{pattern}${text}";
         var patternLength = pattern.Length;
+		_logger.LogError("FindSubstring(pattern={Pattern},text={Text}): concatStr → {ConcatStr}", pattern, text, concatStr);
         var n = concatStr.Length;
         var zArray = new int[n];
 
@@ -22,7 +26,9 @@ public static class ZblockSubstringSearch
             if(i > right)
             {
                 left = i;
+				_logger.LogError("FindSubstring(pattern={Pattern},text={Text}): left → {Left}", pattern, text, left);
                 right = ComputeNewRightValue(concatStr, n, left, i);
+				_logger.LogError("FindSubstring(pattern={Pattern},text={Text}): right → {Right}", pattern, text, right);
 
                 zArray[i] = right - left;
                 right--;
@@ -53,16 +59,19 @@ public static class ZblockSubstringSearch
             }
         }
 
+		_logger.LogWarning("<<< Exiting FindSubstring(pattern={Pattern},text={Text})", pattern, text);
         return found;
     }
 
     private static int ComputeNewRightValue(string concatStr, int n, int left, int right)
     {
+		_logger.LogError(">>> Entering ComputeNewRightValue(concatStr={ConcatStr},n={N},left={Left},right={Right})", concatStr, n, left, right);
         while (right < n && concatStr[right - left].Equals(concatStr[right]))
         {
             right++;
         }
 
+		_logger.LogWarning("<<< Exiting ComputeNewRightValue(concatStr={ConcatStr},n={N},left={Left},right={Right})", concatStr, n, left, right);
         return right;
     }
 }

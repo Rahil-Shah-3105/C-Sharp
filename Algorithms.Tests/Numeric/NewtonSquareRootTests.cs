@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Tests.Numeric;
 
 public class NewtonSquareRootTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly object[] CalculateSquareRootInput =
     [
         new object[] {BigInteger.One, BigInteger.One},
@@ -18,23 +20,29 @@ public class NewtonSquareRootTests
     [TestCaseSource(nameof(CalculateSquareRootInput))]
     public void CalculateSquareRootTest(BigInteger number, BigInteger result)
     {
+		_logger.LogError(">>> Entering CalculateSquareRootTest(number={Number},result={Result})", number, result);
         Assert.That(NewtonSquareRoot.Calculate(number), Is.EqualTo(result));
+		_logger.LogWarning("<<< Exiting CalculateSquareRootTest(number={Number},result={Result})", number, result);
     }
 
     [Test]
     public void CalculateSquareRootOfZero()
     {
+		_logger.LogError(">>> Entering CalculateSquareRootOfZero()");
         Assert.That(NewtonSquareRoot.Calculate(0), Is.EqualTo(BigInteger.Zero));
+		_logger.LogWarning("<<< Exiting CalculateSquareRootOfZero()");
     }
 
     [Test]
     public void CalculateSquareRootNegativeNumber()
     {
+		_logger.LogError(">>> Entering CalculateSquareRootNegativeNumber()");
         Assert.Throws(Is.TypeOf<ArgumentException>()
             .And.Message.EqualTo("Cannot calculate the square root of a negative number."),
             delegate
             {
                 NewtonSquareRoot.Calculate(BigInteger.MinusOne);
             });
+			_logger.LogWarning("<<< Exiting CalculateSquareRootNegativeNumber()");
     }
 }

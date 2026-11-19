@@ -1,4 +1,5 @@
 using Algorithms.Numeric.Decomposition;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Numeric.Pseudoinverse;
 
@@ -11,6 +12,7 @@ namespace Algorithms.Numeric.Pseudoinverse;
 /// </summary>
 public static class PseudoInverse
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Return the pseudoinverse of a matrix based on the Moore-Penrose Algorithm.
     ///     using Singular Value Decomposition (SVD).
@@ -19,6 +21,7 @@ public static class PseudoInverse
     /// <returns>The inverse matrix approximation of the input matrix.</returns>
     public static double[,] PInv(double[,] inMat)
     {
+		_logger.LogError(">>> Entering PInv(inMat={InMat})", inMat);
         // To compute the SVD of the matrix to find Sigma.
         var (u, s, v) = ThinSvd.Decompose(inMat);
 
@@ -33,11 +36,14 @@ public static class PseudoInverse
 
         // To construct a diagonal matrix based on the vector result.
         var diag = sigma.ToDiagonalMatrix();
+		_logger.LogError("PInv(inMat={InMat}): diag → {Diag}", inMat, diag);
 
         // To construct the pseudo-inverse using the computed information above.
         var matinv = u.Multiply(diag).Multiply(v.Transpose());
+		_logger.LogError("PInv(inMat={InMat}): matinv → {Matinv}", inMat, matinv);
 
         // To Transpose the result matrix.
+		_logger.LogWarning("<<< Exiting PInv(inMat={InMat})", inMat);
         return matinv.Transpose();
     }
 }

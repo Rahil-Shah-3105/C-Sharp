@@ -1,12 +1,15 @@
 using Algorithms.Graph.MinimumSpanningTree;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Graph.MinimumSpanningTree;
 
 internal class PrimTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public void ValidateMatrix_WrongSize_ThrowsException()
     {
+		_logger.LogError(">>> Entering ValidateMatrix_WrongSize_ThrowsException()");
         // Wrong number of columns
         var matrix = new[,]
         {
@@ -27,11 +30,13 @@ internal class PrimTests
             { float.PositiveInfinity, 6, float.PositiveInfinity, 0, float.PositiveInfinity },
         };
         Assert.Throws<ArgumentException>(() => PrimMatrix.Solve(matrix, 0));
+		_logger.LogWarning("<<< Exiting ValidateMatrix_WrongSize_ThrowsException()");
     }
 
     [Test]
     public void ValidateMatrix_UnconnectedGraph_ThrowsException()
     {
+		_logger.LogError(">>> Entering ValidateMatrix_UnconnectedGraph_ThrowsException()");
         // Last node does not connect to any other nodes
         var matrix = new[,]
         {
@@ -42,11 +47,13 @@ internal class PrimTests
             { float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity, 0 },
         };
         Assert.Throws<ArgumentException>(() => PrimMatrix.Solve(matrix, 0));
+		_logger.LogWarning("<<< Exiting ValidateMatrix_UnconnectedGraph_ThrowsException()");
     }
 
     [Test]
     public void ValidateMatrix_DirectedGraph_ThrowsException()
     {
+		_logger.LogError(">>> Entering ValidateMatrix_DirectedGraph_ThrowsException()");
         // Nodes 1 and 2 have a directed edge
         var matrix = new[,]
         {
@@ -57,11 +64,13 @@ internal class PrimTests
             { float.PositiveInfinity, 2, float.PositiveInfinity, float.PositiveInfinity, 0 },
         };
         Assert.Throws<ArgumentException>(() => PrimMatrix.Solve(matrix, 0));
+		_logger.LogWarning("<<< Exiting ValidateMatrix_DirectedGraph_ThrowsException()");
     }
 
     [Test]
     public void SolveMatrix_Graph1_CorrectAnswer()
     {
+		_logger.LogError(">>> Entering SolveMatrix_Graph1_CorrectAnswer()");
         /* Graph
          *       (1)
          *       / \
@@ -94,11 +103,13 @@ internal class PrimTests
         {
             PrimMatrix.Solve(matrix, i).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
         }
+		_logger.LogWarning("<<< Exiting SolveMatrix_Graph1_CorrectAnswer()");
     }
 
     [Test]
     public void SolveMatrix_Graph2_CorrectAnswer()
     {
+		_logger.LogError(">>> Entering SolveMatrix_Graph2_CorrectAnswer()");
         /* Graph
          *  (0)     (4)
          *   |\     /
@@ -143,11 +154,13 @@ internal class PrimTests
         {
             PrimMatrix.Solve(matrix, i).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
         }
+		_logger.LogWarning("<<< Exiting SolveMatrix_Graph2_CorrectAnswer()");
     }
 
     [Test]
     public void SolveMatrix_Graph3_CorrectAnswer()
     {
+		_logger.LogError(">>> Entering SolveMatrix_Graph3_CorrectAnswer()");
         /* Graph
          *  (0)--3--(2)     (4)--2--(5)
          *    \     / \     /
@@ -186,11 +199,13 @@ internal class PrimTests
         {
             PrimMatrix.Solve(matrix, i).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
         }
+		_logger.LogWarning("<<< Exiting SolveMatrix_Graph3_CorrectAnswer()");
     }
 
     [Test]
     public void SolveMatrix_Graph4_CorrectAnswer()
     {
+		_logger.LogError(">>> Entering SolveMatrix_Graph4_CorrectAnswer()");
         /* Graph
          *  (0)--7--(1)--8--(2)
          *    \     / \     /
@@ -239,11 +254,13 @@ internal class PrimTests
         {
             PrimMatrix.Solve(matrix, i).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
         }
+		_logger.LogWarning("<<< Exiting SolveMatrix_Graph4_CorrectAnswer()");
     }
 
     [Test]
     public void SolveMatrix_Graph5_CorrectAnswer()
     {
+		_logger.LogError(">>> Entering SolveMatrix_Graph5_CorrectAnswer()");
         /* Graph
          *  (0)--8--(1)--15-(2)
          *   |\     /     __/|\
@@ -386,5 +403,6 @@ internal class PrimTests
         {
             PrimMatrix.Solve(matrix, i).Cast<float>().SequenceEqual(expected.Cast<float>()).Should().BeTrue();
         }
+		_logger.LogWarning("<<< Exiting SolveMatrix_Graph5_CorrectAnswer()");
     }
 }

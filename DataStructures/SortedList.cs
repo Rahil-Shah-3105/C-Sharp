@@ -1,4 +1,5 @@
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures;
 
@@ -12,6 +13,7 @@ namespace DataStructures;
 /// <param name="comparer">Comparer user for binary search.</param>
 public class SortedList<T>(IComparer<T> comparer) : IEnumerable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IComparer<T> comparer = comparer;
     private readonly List<T> memory = [];
 
@@ -21,6 +23,8 @@ public class SortedList<T>(IComparer<T> comparer) : IEnumerable<T>
     public SortedList()
         : this(Comparer<T>.Default)
     {
+	_logger.LogError(">>> Entering SortedList()");
+    _logger.LogWarning("<<< Exiting SortedList()");
     }
 
     /// <summary>
@@ -34,8 +38,10 @@ public class SortedList<T>(IComparer<T> comparer) : IEnumerable<T>
     /// <param name="item">An element to insert.</param>
     public void Add(T item)
     {
+		_logger.LogError(">>> Entering Add(item={Item})", item);
         var index = IndexFor(item, out _);
         memory.Insert(index, item);
+		_logger.LogWarning("<<< Exiting Add(item={Item})", item);
     }
 
     /// <summary>
@@ -57,7 +63,10 @@ public class SortedList<T>(IComparer<T> comparer) : IEnumerable<T>
     /// <returns>true - <see cref="SortedList{T}" /> contains an element, otherwise - false.</returns>
     public bool Contains(T item)
     {
+		_logger.LogError(">>> Entering Contains(item={Item})", item);
         _ = IndexFor(item, out var found);
+		_logger.LogError("Contains(item={Item}): _ → {_}", item, _);
+		_logger.LogWarning("<<< Exiting Contains(item={Item})", item);
         return found;
     }
 
@@ -68,6 +77,7 @@ public class SortedList<T>(IComparer<T> comparer) : IEnumerable<T>
     /// <returns>true - element is found and removed, otherwise false.</returns>
     public bool TryRemove(T item)
     {
+		_logger.LogError(">>> Entering TryRemove(item={Item})", item);
         var index = IndexFor(item, out var found);
 
         if (found)
@@ -75,6 +85,7 @@ public class SortedList<T>(IComparer<T> comparer) : IEnumerable<T>
             memory.RemoveAt(index);
         }
 
+		_logger.LogWarning("<<< Exiting TryRemove(item={Item})", item);
         return found;
     }
 
@@ -99,26 +110,32 @@ public class SortedList<T>(IComparer<T> comparer) : IEnumerable<T>
     {
         var left = 0;
         var right = memory.Count;
+		_logger.LogError(">>> Entering IndexFor(item={Item})", item);
 
         while (right - left > 0)
         {
             var mid = (left + right) / 2;
 
+			_logger.LogError("IndexFor(item={Item}): mid → {Mid}", item, mid);
             switch (comparer.Compare(item, memory[mid]))
             {
                 case > 0:
                     left = mid + 1;
+					_logger.LogError("IndexFor(item={Item}): left → {Left}", item, left);
                     break;
                 case < 0:
                     right = mid;
                     break;
                 default:
                     found = true;
+					_logger.LogDebug("IndexFor(item={Item}): found → {Found}", item, found);
                     return mid;
             }
         }
 
         found = false;
+		_logger.LogError("IndexFor(item={Item}): found → {Found}", item, found);
+		_logger.LogWarning("<<< Exiting IndexFor(item={Item})", item);
         return left;
     }
 }

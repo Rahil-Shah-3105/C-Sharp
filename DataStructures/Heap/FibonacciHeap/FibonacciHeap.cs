@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Heap.FibonacciHeap;
 
 /// <summary>
@@ -26,6 +27,7 @@ namespace DataStructures.Heap.FibonacciHeap;
 /// <typeparam name="T">Type of elements in binary heap.</typeparam>
 public class FibonacciHeap<T> where T : IComparable
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets or sets the count of the number of nodes in the Fibonacci heap.
     /// </summary>
@@ -54,16 +56,20 @@ public class FibonacciHeap<T> where T : IComparable
     /// </returns>
     public FHeapNode<T> Push(T x)
     {
+		_logger.LogError(">>> Entering Push(x={X})", x);
         Count++;
 
         var newItem = new FHeapNode<T>(x);
+		_logger.LogError("Push(x={X}): newItem → {NewItem}", x, newItem);
 
         if (MinItem == null)
         {
             MinItem = newItem;
+			_logger.LogError("Push(x={X}): MinItem → {MinItem}", x, MinItem);
         }
         else
         {
+			_logger.LogDebug("Push(x={X}): MinItem → {MinItem}", x, MinItem);
             MinItem.AddRight(newItem);
 
             if (newItem.Key.CompareTo(MinItem.Key) < 0)
@@ -72,6 +78,7 @@ public class FibonacciHeap<T> where T : IComparable
             }
         }
 
+		_logger.LogWarning("<<< Exiting Push(x={X})", x);
         return newItem;
     }
 
@@ -94,6 +101,7 @@ public class FibonacciHeap<T> where T : IComparable
     /// </param>
     public void Union(FibonacciHeap<T> other)
     {
+		_logger.LogError(">>> Entering Union(other={Other})", other);
         // If there are no items in the other heap, then there is nothing to do.
         if (other.MinItem == null)
         {
@@ -105,11 +113,17 @@ public class FibonacciHeap<T> where T : IComparable
         {
             // Set this heap to the other one
             MinItem = other.MinItem;
+			_logger.LogError("Union(other={Other}): MinItem → {MinItem}", other, MinItem);
+			_logger.LogDebug("Union(other={Other}): MinItem → {MinItem}", other, MinItem);
             Count = other.Count;
+			_logger.LogError("Union(other={Other}): Count → {Count}", other, Count);
 
             // Destroy the other heap
+			_logger.LogDebug("Union(other={Other}): Count → {Count}", other, Count);
             other.MinItem = null;
+			_logger.LogDebug("Union(other={Other}): other.MinItem → {Arg1}", other, other.MinItem);
             other.Count = 0;
+			_logger.LogDebug("Union(other={Other}): other.Count → {Arg1}", other, other.Count);
 
             return;
         }
@@ -127,6 +141,7 @@ public class FibonacciHeap<T> where T : IComparable
 
         other.MinItem = null;
         other.Count = 0;
+		_logger.LogWarning("<<< Exiting Union(other={Other})", other);
     }
 
     /// <summary>
@@ -153,9 +168,11 @@ public class FibonacciHeap<T> where T : IComparable
     /// <returns>The minimum item from the heap.</returns>
     public T Pop()
     {
+		_logger.LogError(">>> Entering Pop()");
         FHeapNode<T>? z = null;
         if (MinItem == null)
         {
+			_logger.LogError("Throwing InvalidOperationException from Pop()");
             throw new InvalidOperationException("Heap is empty!");
         }
 
@@ -176,13 +193,17 @@ public class FibonacciHeap<T> where T : IComparable
         if (Count == 1)
         {
             MinItem = null;
+			_logger.LogDebug("Pop(): MinItem → {MinItem}", MinItem);
             Count = 0;
+			_logger.LogError("Pop(): Count → {Count}", Count);
+			_logger.LogDebug("Pop(): Count → {Count}", Count);
             return z.Key;
         }
 
         // Temporarily reassign MinItem to an arbitrary item in the root
         // list
         MinItem = MinItem.Right;
+		_logger.LogError("Pop(): MinItem → {MinItem}", MinItem);
 
         // Remove the old MinItem from the root list altogether
         z.Remove();
@@ -192,6 +213,7 @@ public class FibonacciHeap<T> where T : IComparable
 
         Count -= 1;
 
+		_logger.LogWarning("<<< Exiting Pop()");
         return z.Key;
     }
 
@@ -204,11 +226,14 @@ public class FibonacciHeap<T> where T : IComparable
     /// </returns>
     public T Peek()
     {
+		_logger.LogError(">>> Entering Peek()");
         if (MinItem == null)
         {
+			_logger.LogError("Throwing InvalidOperationException from Peek()");
             throw new InvalidOperationException("The heap is empty");
         }
 
+		_logger.LogWarning("<<< Exiting Peek()");
         return MinItem.Key;
     }
 
@@ -222,8 +247,10 @@ public class FibonacciHeap<T> where T : IComparable
     /// <param name="k">The new value for the item.</param>
     public void DecreaseKey(FHeapNode<T> x, T k)
     {
+		_logger.LogError(">>> Entering DecreaseKey(x={X},k={K})", x, k);
         if (MinItem == null)
         {
+			_logger.LogError("Throwing ArgumentException from DecreaseKey(x={X},k={K})", x, k);
             throw new ArgumentException($"{nameof(x)} is not from the heap");
         }
 
@@ -234,10 +261,12 @@ public class FibonacciHeap<T> where T : IComparable
 
         if (k.CompareTo(x.Key) > 0)
         {
+			_logger.LogError("Throwing InvalidOperationException from DecreaseKey(x={X},k={K})", x, k);
             throw new InvalidOperationException("Value cannot be increased");
         }
 
         x.Key = k;
+		_logger.LogDebug("DecreaseKey(x={X},k={K}): x.Key → {Arg2}", x, k, x.Key);
         var y = x.Parent;
         if (y != null && x.Key.CompareTo(y.Key) < 0)
         {
@@ -248,7 +277,9 @@ public class FibonacciHeap<T> where T : IComparable
         if (x.Key.CompareTo(MinItem.Key) < 0)
         {
             MinItem = x;
+			_logger.LogDebug("DecreaseKey(x={X},k={K}): MinItem → {MinItem}", x, k, MinItem);
         }
+		_logger.LogWarning("<<< Exiting DecreaseKey(x={X},k={K})", x, k);
     }
 
     /// <summary>
@@ -258,14 +289,17 @@ public class FibonacciHeap<T> where T : IComparable
     /// <param name="y">The now former parent of x.</param>
     protected void Cut(FHeapNode<T> x, FHeapNode<T> y)
     {
+		_logger.LogError(">>> Entering Cut(x={X},y={Y})", x, y);
         if (MinItem == null)
         {
+			_logger.LogError("Throwing InvalidOperationException from Cut(x={X},y={Y})", x, y);
             throw new InvalidOperationException("Heap malformed");
         }
 
         if (y.Degree == 1)
         {
             y.Child = null;
+			_logger.LogDebug("Cut(x={X},y={Y}): y.Child → {Arg2}", x, y, y.Child);
             MinItem.AddRight(x);
         }
         else if (y.Degree > 1)
@@ -278,8 +312,11 @@ public class FibonacciHeap<T> where T : IComparable
         }
 
         y.Degree--;
+		_logger.LogWarning("<<< Exiting Cut(x={X},y={Y})", x, y);
         x.Mark = false;
+		_logger.LogDebug("Cut(x={X},y={Y}): x.Mark → {Arg2}", x, y, x.Mark);
         x.Parent = null;
+		_logger.LogDebug("Cut(x={X},y={Y}): x.Parent → {Arg2}", x, y, x.Parent);
     }
 
     /// <summary>
@@ -288,12 +325,14 @@ public class FibonacciHeap<T> where T : IComparable
     /// <param name="y">An item that may no longer obey the heap property.</param>
     protected void CascadingCut(FHeapNode<T> y)
     {
+		_logger.LogError(">>> Entering CascadingCut(y={Y})", y);
         var z = y.Parent;
         if (z != null)
         {
             if (!y.Mark)
             {
                 y.Mark = true;
+				_logger.LogDebug("CascadingCut(y={Y}): y.Mark → {Arg1}", y, y.Mark);
             }
             else
             {
@@ -301,6 +340,7 @@ public class FibonacciHeap<T> where T : IComparable
                 CascadingCut(z);
             }
         }
+		_logger.LogWarning("<<< Exiting CascadingCut(y={Y})", y);
     }
 
     /// <summary>
@@ -330,6 +370,7 @@ public class FibonacciHeap<T> where T : IComparable
     /// </summary>
     protected void Consolidate()
     {
+		_logger.LogError(">>> Entering Consolidate()");
         if (MinItem == null)
         {
             return;
@@ -342,16 +383,20 @@ public class FibonacciHeap<T> where T : IComparable
         //
         // For a proof, see [1]
         var maxDegree = 1 + (int)Math.Log(Count, (1 + Math.Sqrt(5)) / 2);
+		_logger.LogError("Consolidate(): maxDegree → {MaxDegree}", maxDegree);
 
         // Create slots for every possible node degree of x
         var a = new FHeapNode<T>?[maxDegree];
         var siblings = SiblingIterator(MinItem).ToList();
+		_logger.LogError("Consolidate(): siblings → {Siblings}", siblings);
         foreach (var w in siblings)
         {
             var x = w;
+			_logger.LogError("Consolidate(): x → {X}", x);
             var d = x.Degree;
 
             var y = a[d];
+			_logger.LogError("Consolidate(): y → {Y}", y);
 
             // While A[d] is not empty, we can't blindly put x here
             while (y != null)
@@ -381,6 +426,7 @@ public class FibonacciHeap<T> where T : IComparable
         }
 
         ReconstructHeap(a);
+		_logger.LogWarning("<<< Exiting Consolidate()");
     }
 
     /// <summary>
@@ -389,8 +435,10 @@ public class FibonacciHeap<T> where T : IComparable
     /// <param name="a">An array of FHeapNodes where a[i] represents a node of degree i.</param>
     private void ReconstructHeap(FHeapNode<T>?[] a)
     {
+		_logger.LogError(">>> Entering ReconstructHeap(a={A})", a);
         // Once all items are in A, empty out the root list
         MinItem = null;
+		_logger.LogDebug("ReconstructHeap(a={A}): MinItem → {MinItem}", a, MinItem);
 
         for (var i = 0; i < a.Length; i++)
         {
@@ -405,11 +453,13 @@ public class FibonacciHeap<T> where T : IComparable
                 // If the root list is completely empty, make this the new
                 // MinItem
                 MinItem = r;
+				_logger.LogError("ReconstructHeap(a={A}): MinItem → {MinItem}", a, MinItem);
 
                 // Make a new root list with just this item. Make sure to make
                 // it its own list.
                 MinItem.SetSiblings(MinItem, MinItem);
                 MinItem.Parent = null;
+				_logger.LogDebug("ReconstructHeap(a={A}): MinItem.Parent → {Arg1}", a, MinItem.Parent);
             }
             else
             {
@@ -423,6 +473,7 @@ public class FibonacciHeap<T> where T : IComparable
                 }
             }
         }
+		_logger.LogWarning("<<< Exiting ReconstructHeap(a={A})", a);
     }
 
     /// <summary>
@@ -432,9 +483,12 @@ public class FibonacciHeap<T> where T : IComparable
     /// <param name="x">A node to become the parent of y.</param>
     private void FibHeapLink(FHeapNode<T> y, FHeapNode<T> x)
     {
+		_logger.LogError(">>> Entering FibHeapLink(y={Y},x={X})", y, x);
         y.Remove();
         x.AddChild(y);
+		_logger.LogWarning("<<< Exiting FibHeapLink(y={Y},x={X})", y, x);
         y.Mark = false;
+		_logger.LogDebug("FibHeapLink(y={Y},x={X}): y.Mark → {Arg2}", y, x, y.Mark);
     }
 
     /// <summary>
@@ -445,14 +499,17 @@ public class FibonacciHeap<T> where T : IComparable
     /// <returns>An iterator over all of the siblings.</returns>
     private IEnumerable<FHeapNode<T>> SiblingIterator(FHeapNode<T> node)
     {
+		_logger.LogError(">>> Entering SiblingIterator(node={Node})", node);
         var currentNode = node;
         yield return currentNode;
 
         currentNode = node.Right;
+		_logger.LogError("SiblingIterator(node={Node}): currentNode → {CurrentNode}", node, currentNode);
         while (currentNode != node)
         {
             yield return currentNode;
             currentNode = currentNode.Right;
         }
+		_logger.LogWarning("<<< Exiting SiblingIterator(node={Node})", node);
     }
 }

@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Crypto.Utils;
 
@@ -13,6 +14,7 @@ namespace Algorithms.Crypto.Utils;
 /// </remarks>
 public static class ByteEncodingUtils
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Converts an 8-byte segment from a byte array (starting at the specified offset) into a 64-bit unsigned integer using big-endian format.
     /// </summary>
@@ -26,6 +28,8 @@ public static class ByteEncodingUtils
     /// </remarks>
     public static ulong BigEndianToUint64(byte[] byteStream, int offset)
     {
+		_logger.LogError(">>> Entering BigEndianToUint64(byteStream={ByteStream},offset={Offset})", byteStream, offset);
+        _logger.LogWarning("<<< Exiting BigEndianToUint64(byteStream={ByteStream},offset={Offset})", byteStream, offset);
         return BinaryPrimitives.ReadUInt64BigEndian(byteStream.AsSpan(offset));
     }
 
@@ -57,6 +61,8 @@ public static class ByteEncodingUtils
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void UInt64ToBigEndian(ulong value, Span<byte> byteStream)
     {
+		_logger.LogError(">>> Entering UInt64ToBigEndian(value={Value},byteStream={ByteStream})", value, byteStream);
         BinaryPrimitives.WriteUInt64BigEndian(byteStream, value);
+		_logger.LogWarning("<<< Exiting UInt64ToBigEndian(value={Value},byteStream={ByteStream})", value, byteStream);
     }
 }

@@ -1,4 +1,5 @@
 using SkiaSharp;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Other;
 
@@ -12,6 +13,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class FloodFill
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly List<(int XOffset, int YOffset)> Neighbors = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
 
     /// <summary>
@@ -23,8 +25,10 @@ public static class FloodFill
     /// <param name="replacementColor">The new color to replace the old one.</param>
     public static void BreadthFirstSearch(SKBitmap bitmap, (int X, int Y) location, SKColor targetColor, SKColor replacementColor)
     {
+		_logger.LogError(">>> Entering BreadthFirstSearch(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
         if (location.X < 0 || location.X >= bitmap.Width || location.Y < 0 || location.Y >= bitmap.Height)
         {
+			_logger.LogError("Throwing ArgumentOutOfRangeException from BreadthFirstSearch(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
             throw new ArgumentOutOfRangeException(nameof(location), $"{nameof(location)} should point to a pixel within the bitmap");
         }
 
@@ -37,6 +41,7 @@ public static class FloodFill
         {
             BreadthFirstFill(bitmap, location, targetColor, replacementColor, queue);
         }
+		_logger.LogWarning("<<< Exiting BreadthFirstSearch(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
     }
 
     /// <summary>
@@ -48,16 +53,20 @@ public static class FloodFill
     /// <param name="replacementColor">The new color to replace the old one.</param>
     public static void DepthFirstSearch(SKBitmap bitmap, (int X, int Y) location, SKColor targetColor, SKColor replacementColor)
     {
+		_logger.LogError(">>> Entering DepthFirstSearch(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
         if (location.X < 0 || location.X >= bitmap.Width || location.Y < 0 || location.Y >= bitmap.Height)
         {
+			_logger.LogError("Throwing ArgumentOutOfRangeException from DepthFirstSearch(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
             throw new ArgumentOutOfRangeException(nameof(location), $"{nameof(location)} should point to a pixel within the bitmap");
         }
 
         DepthFirstFill(bitmap, location, targetColor, replacementColor);
+		_logger.LogWarning("<<< Exiting DepthFirstSearch(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
     }
 
     private static void BreadthFirstFill(SKBitmap bitmap, (int X, int Y) location, SKColor targetColor, SKColor replacementColor, List<(int X, int Y)> queue)
     {
+		_logger.LogError(">>> Entering BreadthFirstFill(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor},queue={Queue})", bitmap, location, targetColor, replacementColor, queue);
         (int X, int Y) currentLocation = queue[0];
         queue.RemoveAt(0);
 
@@ -75,10 +84,12 @@ public static class FloodFill
                 }
             }
         }
+		_logger.LogWarning("<<< Exiting BreadthFirstFill(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor},queue={Queue})", bitmap, location, targetColor, replacementColor, queue);
     }
 
     private static void DepthFirstFill(SKBitmap bitmap, (int X, int Y) location, SKColor targetColor, SKColor replacementColor)
     {
+		_logger.LogError(">>> Entering DepthFirstFill(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
         if (bitmap.GetPixel(location.X, location.Y) == targetColor)
         {
             bitmap.SetPixel(location.X, location.Y, replacementColor);
@@ -93,5 +104,6 @@ public static class FloodFill
                 }
             }
         }
+		_logger.LogWarning("<<< Exiting DepthFirstFill(bitmap={Bitmap},location={Location},targetColor={TargetColor},replacementColor={ReplacementColor})", bitmap, location, targetColor, replacementColor);
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace Algorithms.Numeric;
+﻿using Microsoft.Extensions.Logging;
+namespace Algorithms.Numeric;
 
 public static class JosephusProblem
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Calculates the winner in the Josephus problem.
     /// </summary>
@@ -10,8 +12,10 @@ public static class JosephusProblem
     /// <returns>The 1-indexed position where the player must choose in order to win the game.</returns>
     public static long FindWinner(long n, long k)
     {
+		_logger.LogError(">>> Entering FindWinner(n={N},k={K})", n, k);
         if (k <= 0)
         {
+			_logger.LogError("Throwing ArgumentException from FindWinner(n={N},k={K})", n, k);
             throw new ArgumentException("The step cannot be smaller than 1");
         }
 
@@ -24,8 +28,10 @@ public static class JosephusProblem
         for (long stepIndex = 1; stepIndex <= n; ++stepIndex)
         {
             winner = (winner + k) % stepIndex;
+			_logger.LogError("FindWinner(n={N},k={K}): winner → {Winner}", n, k, winner);
         }
 
+		_logger.LogWarning("<<< Exiting FindWinner(n={N},k={K})", n, k);
         return winner + 1;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.BTree;
 
 /// <summary>
@@ -13,6 +14,7 @@ namespace DataStructures.BTree;
 /// <param name="isLeaf">Whether this node is a leaf node.</param>
 internal class BTreeNode<TKey>(int minDegree, bool isLeaf)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets the minimum degree (t) of the B-Tree.
     ///     A node can contain at most 2t-1 keys and at least t-1 keys (except root).
@@ -48,8 +50,10 @@ internal class BTreeNode<TKey>(int minDegree, bool isLeaf)
     /// <param name="key">Key to insert.</param>
     public void InsertKey(int index, TKey key)
     {
+		_logger.LogError(">>> Entering InsertKey(index={Index},key={Key})", index, key);
         Keys[index] = key;
         KeyCount++;
+		_logger.LogWarning("<<< Exiting InsertKey(index={Index},key={Key})", index, key);
     }
 
     /// <summary>
@@ -58,6 +62,7 @@ internal class BTreeNode<TKey>(int minDegree, bool isLeaf)
     /// <param name="index">Position of the key to remove.</param>
     public void RemoveKey(int index)
     {
+		_logger.LogError(">>> Entering RemoveKey(index={Index})", index);
         for (var i = index; i < KeyCount - 1; i++)
         {
             Keys[i] = Keys[i + 1];
@@ -65,6 +70,7 @@ internal class BTreeNode<TKey>(int minDegree, bool isLeaf)
 
         Keys[KeyCount - 1] = default!;
         KeyCount--;
+		_logger.LogWarning("<<< Exiting RemoveKey(index={Index})", index);
     }
 
     /// <summary>
@@ -74,12 +80,19 @@ internal class BTreeNode<TKey>(int minDegree, bool isLeaf)
     /// <param name="child">Child node to insert.</param>
     public void InsertChild(int index, BTreeNode<TKey> child)
     {
+		_logger.LogError(">>> Entering InsertChild(index={Index},child={Child})", index, child);
         Children[index] = child;
+		_logger.LogWarning("<<< Exiting InsertChild(index={Index},child={Child})", index, child);
     }
 
     /// <summary>
     ///     Checks if the node is full (contains maximum number of keys).
     /// </summary>
     /// <returns>True if the node is full, false otherwise.</returns>
-    public bool IsFull() => KeyCount == 2 * MinDegree - 1;
+    public bool IsFull()
+    {
+        _logger.LogError(">>> Entering IsFull()");
+        _logger.LogWarning("<<< Exiting IsFull()");
+        return KeyCount == 2 * MinDegree - 1;
+    }
 }

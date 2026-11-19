@@ -1,10 +1,12 @@
 using DataStructures.Hashing.NumberTheory;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Tests.Hashing.NumberTheory;
 
 [TestFixture]
 public static class PrimeNumberTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly object[] IsPrimeSource =
     [
         new object[] { 0, false },
@@ -93,14 +95,20 @@ public static class PrimeNumberTests
     [TestCaseSource(nameof(IsPrimeSource))]
     public static void IsPrimeTest(int number, bool expected)
     {
+		_logger.LogError(">>> Entering IsPrimeTest(number={Number},expected={Expected})", number, expected);
         var actual = PrimeNumber.IsPrime(number);
+		_logger.LogWarning("<<< Exiting IsPrimeTest(number={Number},expected={Expected})", number, expected);
+		_logger.LogError("IsPrimeTest(number={Number},expected={Expected}): actual → {Actual}", number, expected, actual);
         Assert.That(expected, Is.EqualTo(actual));
     }
 
     [TestCaseSource(nameof(NextPrimeSource))]
     public static void NextPrimeTest(int number, int factor, bool desc, int expected)
     {
+		_logger.LogError(">>> Entering NextPrimeTest(number={Number},factor={Factor},desc={Desc},expected={Expected})", number, factor, desc, expected);
         var actual = PrimeNumber.NextPrime(number, factor, desc);
+		_logger.LogWarning("<<< Exiting NextPrimeTest(number={Number},factor={Factor},desc={Desc},expected={Expected})", number, factor, desc, expected);
+		_logger.LogError("NextPrimeTest(number={Number},factor={Factor},desc={Desc},expected={Expected}): actual → {Actual}", number, factor, desc, expected, actual);
         Assert.That(expected, Is.EqualTo(actual));
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class Floor
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///    Returns the largest integer less than or equal to the number.
     /// </summary>
@@ -13,8 +15,11 @@ public static class Floor
     /// <returns>Floor value of the number.</returns>
     public static T FloorVal<T>(T inputNum) where T : INumber<T>
     {
+		_logger.LogError(">>> Entering FloorVal(inputNum={InputNum})", inputNum);
         T intPart = T.CreateChecked(Convert.ToInt32(inputNum));
 
+		_logger.LogError("FloorVal(inputNum={InputNum}): intPart → {IntPart}", inputNum, intPart);
+		_logger.LogWarning("<<< Exiting FloorVal(inputNum={InputNum})", inputNum);
         return inputNum < intPart ? intPart - T.One : intPart;
     }
 }

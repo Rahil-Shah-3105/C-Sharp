@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings;
 
 /// <summary>
@@ -21,6 +22,7 @@ namespace Algorithms.Strings;
 /// </summary>
 public static class ManachersAlgorithm
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the longest palindromic substring using Manacher's Algorithm.
     ///
@@ -63,9 +65,11 @@ public static class ManachersAlgorithm
     /// </example>
     public static string FindLongestPalindrome(string input)
     {
+		_logger.LogError(">>> Entering FindLongestPalindrome(input={Input})", input);
         // Validate input
         if (input == null)
         {
+			_logger.LogError("Throwing ArgumentException from FindLongestPalindrome(input={Input})", input);
             throw new ArgumentException("Input string cannot be null.", nameof(input));
         }
 
@@ -169,7 +173,9 @@ public static class ManachersAlgorithm
             if (i + palindromeRadii[i] > rightBoundary)
             {
                 center = i;  // This position is now our reference center.
+				_logger.LogError("FindLongestPalindrome(input={Input}): center → {Center}", input, center);
                 rightBoundary = i + palindromeRadii[i];  // Update the rightmost boundary.
+				_logger.LogError("FindLongestPalindrome(input={Input}): rightBoundary → {RightBoundary}", input, rightBoundary);
             }
 
             // TRACK MAXIMUM: Remember the longest palindrome found so far.
@@ -177,7 +183,9 @@ public static class ManachersAlgorithm
             if (palindromeRadii[i] > maxLength)
             {
                 maxLength = palindromeRadii[i];  // Radius of longest palindrome.
+				_logger.LogError("FindLongestPalindrome(input={Input}): maxLength → {MaxLength}", input, maxLength);
                 maxCenter = i;  // Where it's centered in transformed string.
+				_logger.LogError("FindLongestPalindrome(input={Input}): maxCenter → {MaxCenter}", input, maxCenter);
             }
         }
 
@@ -195,6 +203,7 @@ public static class ManachersAlgorithm
         // - Length = maxLength = 3.
         // - Result: input.Substring(0, 3) = "aba".
         int start = (maxCenter - maxLength) / 2;
+		_logger.LogWarning("<<< Exiting FindLongestPalindrome(input={Input})", input);
         return input.Substring(start, maxLength);
     }
 
@@ -221,9 +230,11 @@ public static class ManachersAlgorithm
     /// </example>
     public static (string Palindrome, int StartIndex, int Length) FindLongestPalindromeWithDetails(string input)
     {
+		_logger.LogError(">>> Entering FindLongestPalindromeWithDetails(input={Input})", input);
         // Validate input
         if (input == null)
         {
+			_logger.LogError("Throwing ArgumentException from FindLongestPalindromeWithDetails(input={Input})", input);
             throw new ArgumentException("Input string cannot be null.", nameof(input));
         }
 
@@ -270,23 +281,29 @@ public static class ManachersAlgorithm
             if (i + palindromeRadii[i] > rightBoundary)
             {
                 center = i;
+				_logger.LogError("FindLongestPalindromeWithDetails(input={Input}): center → {Center}", input, center);
                 rightBoundary = i + palindromeRadii[i];
+				_logger.LogError("FindLongestPalindromeWithDetails(input={Input}): rightBoundary → {RightBoundary}", input, rightBoundary);
             }
 
             // Track maximum.
             if (palindromeRadii[i] > maxLength)
             {
                 maxLength = palindromeRadii[i];
+				_logger.LogError("FindLongestPalindromeWithDetails(input={Input}): maxLength → {MaxLength}", input, maxLength);
                 maxCenter = i;
+				_logger.LogError("FindLongestPalindromeWithDetails(input={Input}): maxCenter → {MaxCenter}", input, maxCenter);
             }
         }
 
         // Calculate the start index and extract the palindrome.
         // Map from transformed coordinates to original string coordinates.
         int startIndex = (maxCenter - maxLength) / 2;
+		_logger.LogError("FindLongestPalindromeWithDetails(input={Input}): startIndex → {StartIndex}", input, startIndex);
         string palindrome = input.Substring(startIndex, maxLength);
 
         // Return all three pieces of information.
+		_logger.LogWarning("<<< Exiting FindLongestPalindromeWithDetails(input={Input})", input);
         return (palindrome, startIndex, maxLength);
     }
 
@@ -311,8 +328,10 @@ public static class ManachersAlgorithm
     /// </example>
     public static bool IsPalindrome(string input)
     {
+		_logger.LogError(">>> Entering IsPalindrome(input={Input})", input);
         if (input == null)
         {
+			_logger.LogError("Throwing ArgumentException from IsPalindrome(input={Input})", input);
             throw new ArgumentException("Input string cannot be null.", nameof(input));
         }
 
@@ -325,6 +344,7 @@ public static class ManachersAlgorithm
         // Find the longest palindrome in the string.
         // If it spans the entire string, then the string is a palindrome.
         var (_, _, length) = FindLongestPalindromeWithDetails(input);
+		_logger.LogWarning("<<< Exiting IsPalindrome(input={Input})", input);
         return length == input.Length;
     }
 
@@ -358,6 +378,7 @@ public static class ManachersAlgorithm
     /// <returns>The transformed string with inserted special characters.</returns>
     private static string PreprocessString(string input)
     {
+		_logger.LogError(">>> Entering PreprocessString(input={Input})", input);
         // Calculate the size of transformed string.
         // Original: n characters.
         // Transformed: ^ + # + (n chars with # between each) + # + $.
@@ -388,6 +409,7 @@ public static class ManachersAlgorithm
 
         transformed[n * 2 + 1] = '#';  // Final separator.
 
+		_logger.LogWarning("<<< Exiting PreprocessString(input={Input})", input);
         return new string(transformed);
     }
 }

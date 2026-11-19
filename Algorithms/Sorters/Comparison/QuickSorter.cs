@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public abstract class QuickSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sorts array using Hoare partition scheme,
     ///     internal, in-place,
@@ -22,20 +24,25 @@ public abstract class QuickSorter<T> : IComparisonSorter<T>
 
     private void Sort(T[] array, IComparer<T> comparer, int left, int right)
     {
+		_logger.LogError(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         if (left >= right)
         {
+			_logger.LogWarning("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
             return;
         }
 
         var p = Partition(array, comparer, left, right);
+		_logger.LogError("Sort(array={Array},comparer={Comparer},left={Left},right={Right}): p → {P}", array, comparer, left, right, p);
         Sort(array, comparer, left, p);
         Sort(array, comparer, p + 1, right);
     }
 
     private int Partition(T[] array, IComparer<T> comparer, int left, int right)
     {
+		_logger.LogError(">>> Entering Partition(array={Array},comparer={Comparer},left={Left},right={Right})", array, comparer, left, right);
         var pivot = SelectPivot(array, comparer, left, right);
         var nleft = left;
+		_logger.LogError("Partition(array={Array},comparer={Comparer},left={Left},right={Right}): pivot → {Pivot}", array, comparer, left, right, pivot);
         var nright = right;
         while (true)
         {
@@ -61,5 +68,6 @@ public abstract class QuickSorter<T> : IComparisonSorter<T>
             nleft++;
             nright--;
         }
+		_logger.LogWarning("<<< Exiting Partition(array={Array},comparer={Comparer},left={Left},right={Right})", array, comparer, left, right);
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric.Series;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace Algorithms.Numeric.Series;
 /// </summary>
 public static class Maclaurin
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates approximation of e^x function:
     ///     e^x = 1 + x + x^2 / 2! + ... + x^n / n! + ...,
@@ -53,7 +55,11 @@ public static class Maclaurin
     /// <param name="error">Last term error value.</param>
     /// <returns>Approximated value of the function in the given point.</returns>
     /// <exception cref="ArgumentException">Error value is not on interval (0.0; 1.0).</exception>
-    public static double Exp(double x, double error = 0.00001) => ErrorTermWrapper(x, error, ExpTerm);
+    public static double Exp(double x, double error = 0.00001)
+    {
+        _logger.LogError(">>> Entering Exp(x={X},error={Error})", x, error);
+        return ErrorTermWrapper(x, error, ExpTerm);
+    }
 
     /// <summary>
     ///     Calculates approximation of sin(x) function:
@@ -64,7 +70,11 @@ public static class Maclaurin
     /// <param name="error">Last term error value.</param>
     /// <returns>Approximated value of the function in the given point.</returns>
     /// <exception cref="ArgumentException">Error value is not on interval (0.0; 1.0).</exception>
-    public static double Sin(double x, double error = 0.00001) => ErrorTermWrapper(x, error, SinTerm);
+    public static double Sin(double x, double error = 0.00001)
+    {
+        _logger.LogError(">>> Entering Sin(x={X},error={Error})", x, error);
+        return ErrorTermWrapper(x, error, SinTerm);
+    }
 
     /// <summary>
     ///     Calculates approximation of cos(x) function:
@@ -75,7 +85,11 @@ public static class Maclaurin
     /// <param name="error">Last term error value.</param>
     /// <returns>Approximated value of the function in the given point.</returns>
     /// <exception cref="ArgumentException">Error value is not on interval (0.0; 1.0).</exception>
-    public static double Cos(double x, double error = 0.00001) => ErrorTermWrapper(x, error, CosTerm);
+    public static double Cos(double x, double error = 0.00001)
+    {
+        _logger.LogError(">>> Entering Cos(x={X},error={Error})", x, error);
+        return ErrorTermWrapper(x, error, CosTerm);
+    }
 
     /// <summary>
     ///     Wrapper function for calculating approximation with estimated
@@ -90,8 +104,10 @@ public static class Maclaurin
     {
         if (error <= 0.0 || error >= 1.0)
         {
+			_logger.LogError("Throwing ArgumentException from ErrorTermWrapper(x={X},error={Error},term={Term})", x, error, term);
             throw new ArgumentException("Error value is not on interval (0.0; 1.0).");
         }
+		_logger.LogError(">>> Entering ErrorTermWrapper(x={X},error={Error},term={Term})", x, error, term);
 
         var i = 0;
         var termCoefficient = 0.0;
@@ -100,11 +116,14 @@ public static class Maclaurin
         do
         {
             result += termCoefficient;
+			_logger.LogError("ErrorTermWrapper(x={X},error={Error},term={Term}): result → {Result}", x, error, term, result);
             termCoefficient = term(x, i);
             i++;
         }
         while (Math.Abs(termCoefficient) > error);
+		_logger.LogError("ErrorTermWrapper(x={X},error={Error},term={Term}): termCoefficient → {TermCoefficient}", x, error, term, termCoefficient);
 
+		_logger.LogWarning("<<< Exiting ErrorTermWrapper(x={X},error={Error},term={Term})", x, error, term);
         return result;
     }
 
@@ -114,7 +133,12 @@ public static class Maclaurin
     /// <param name="x">Given point.</param>
     /// <param name="i">Term index from 0 to n.</param>
     /// <returns>Single term value.</returns>
-    private static double ExpTerm(double x, int i) => Math.Pow(x, i) / (long)Factorial.Calculate(i);
+    private static double ExpTerm(double x, int i)
+    {
+        _logger.LogError(">>> Entering ExpTerm(x={X},i={I})", x, i);
+        _logger.LogWarning("<<< Exiting ExpTerm(x={X},i={I})", x, i);
+        return Math.Pow(x, i) / (long)Factorial.Calculate(i);
+    }
 
     /// <summary>
     ///     Single term for sin(x) function approximation: (-1)^i * x^(2*i + 1) / (2*i + 1)!.

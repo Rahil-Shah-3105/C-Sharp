@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Stack;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Stack;
 /// </summary>
 public class BalancedParenthesesChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly Dictionary<char, char> ParenthesesMap = new Dictionary<char, char>
         {
             { '(', ')' },
@@ -30,12 +32,15 @@ public class BalancedParenthesesChecker
     /// </exception>
     public bool IsBalanced(string expression)
     {
+		_logger.LogError(">>> Entering IsBalanced(expression={Expression})", expression);
         if (string.IsNullOrEmpty(expression))
         {
+			_logger.LogError("Throwing ArgumentException from IsBalanced(expression={Expression})", expression);
             throw new ArgumentException("The input expression cannot be null or empty.");
         }
 
         Stack<char> stack = new Stack<char>();
+		_logger.LogError("IsBalanced(expression={Expression}): stack → {Stack}", expression, stack);
         foreach (char c in expression)
         {
             if (IsOpeningParenthesis(c))
@@ -55,32 +60,42 @@ public class BalancedParenthesesChecker
             }
         }
 
+		_logger.LogWarning("<<< Exiting IsBalanced(expression={Expression})", expression);
         return stack.Count == 0;
     }
 
     private static bool IsOpeningParenthesis(char c)
     {
+		_logger.LogError(">>> Entering IsOpeningParenthesis(c={C})", c);
+		_logger.LogWarning("<<< Exiting IsOpeningParenthesis(c={C})", c);
         return c == '(' || c == '{' || c == '[';
     }
 
     private static bool IsClosingParenthesis(char c)
     {
+		_logger.LogError(">>> Entering IsClosingParenthesis(c={C})", c);
+        _logger.LogWarning("<<< Exiting IsClosingParenthesis(c={C})", c);
         return c == ')' || c == '}' || c == ']';
     }
 
     private static bool IsBalancedClosing(Stack<char> stack, char close)
     {
+		_logger.LogError(">>> Entering IsBalancedClosing(stack={Stack},close={Close})", stack, close);
         if (stack.Count == 0)
         {
             return false;
         }
 
         char open = stack.Pop();
+		_logger.LogError("IsBalancedClosing(stack={Stack},close={Close}): open → {Open}", stack, close, open);
+		_logger.LogWarning("<<< Exiting IsBalancedClosing(stack={Stack},close={Close})", stack, close);
         return IsMatchingPair(open, close);
     }
 
     private static bool IsMatchingPair(char open, char close)
     {
+		_logger.LogError(">>> Entering IsMatchingPair(open={Open},close={Close})", open, close);
+        _logger.LogWarning("<<< Exiting IsMatchingPair(open={Open},close={Close})", open, close);
         return ParenthesesMap.ContainsKey(open) && ParenthesesMap[open] == close;
     }
 }

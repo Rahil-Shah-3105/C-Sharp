@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Problems.TravelingSalesman;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Problems.TravelingSalesman;
 /// </summary>
 public static class TravelingSalesmanSolver
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Solves the TSP using brute-force search. This method checks all possible permutations of cities to find the shortest possible route.
     /// WARNING: This approach is only feasible for small numbers of cities due to factorial time complexity.
@@ -14,9 +16,12 @@ public static class TravelingSalesmanSolver
     /// <returns>A tuple containing the minimal route (as an array of city indices) and the minimal total distance.</returns>
     public static (int[] Route, double Distance) SolveBruteForce(double[,] distanceMatrix)
     {
+		_logger.LogError(">>> Entering SolveBruteForce(distanceMatrix={DistanceMatrix})", distanceMatrix);
         int n = distanceMatrix.GetLength(0);
+		_logger.LogError("SolveBruteForce(distanceMatrix={DistanceMatrix}): n → {N}", distanceMatrix, n);
         if (n != distanceMatrix.GetLength(1))
         {
+			_logger.LogError("Throwing ArgumentException from SolveBruteForce(distanceMatrix={DistanceMatrix})", distanceMatrix);
             throw new ArgumentException("Distance matrix must be square.");
         }
 
@@ -26,7 +31,9 @@ public static class TravelingSalesmanSolver
         }
 
         var cities = Enumerable.Range(0, n).ToArray();
+		_logger.LogError("SolveBruteForce(distanceMatrix={DistanceMatrix}): cities → {Cities}", distanceMatrix, cities);
         double minDistance = double.MaxValue;
+		_logger.LogError("SolveBruteForce(distanceMatrix={DistanceMatrix}): minDistance → {MinDistance}", distanceMatrix, minDistance);
         int[]? bestRoute = null;
 
         foreach (var perm in Permute(cities.Skip(1).ToArray()))
@@ -51,9 +58,12 @@ public static class TravelingSalesmanSolver
             {
                 minDistance = dist;
                 bestRoute = (int[])route.Clone();
+				_logger.LogError("SolveBruteForce(distanceMatrix={DistanceMatrix}): bestRoute → {BestRoute}", distanceMatrix, bestRoute);
+				_logger.LogDebug("SolveBruteForce(distanceMatrix={DistanceMatrix}): bestRoute → {BestRoute}", distanceMatrix, bestRoute);
             }
         }
 
+		_logger.LogWarning("<<< Exiting SolveBruteForce(distanceMatrix={DistanceMatrix})", distanceMatrix);
         return (bestRoute ?? Array.Empty<int>(), minDistance);
     }
 
@@ -66,14 +76,19 @@ public static class TravelingSalesmanSolver
     /// <returns>A tuple containing the route (as an array of city indices) and the total distance.</returns>
     public static (int[] Route, double Distance) SolveNearestNeighbor(double[,] distanceMatrix, int start = 0)
     {
+		_logger.LogError(">>> Entering SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start})", distanceMatrix, start);
+        _logger.LogError(">>> Entering SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start})", distanceMatrix, start);
         int n = distanceMatrix.GetLength(0);
+		_logger.LogError("SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start}): n → {N}", distanceMatrix, start, n);
         if (n != distanceMatrix.GetLength(1))
         {
+			_logger.LogError("Throwing ArgumentException from SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start})", distanceMatrix, start);
             throw new ArgumentException("Distance matrix must be square.");
         }
 
         if (start < 0 || start >= n)
         {
+			_logger.LogError("Throwing ArgumentOutOfRangeException from SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start})", distanceMatrix, start);
             throw new ArgumentOutOfRangeException(nameof(start));
         }
 
@@ -82,10 +97,13 @@ public static class TravelingSalesmanSolver
         visited[start] = true;
         double totalDistance = 0;
         int current = start;
+		_logger.LogError("SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start}): current → {Current}", distanceMatrix, start, current);
         for (int step = 1; step < n; step++)
         {
             double minDist = double.MaxValue;
+			_logger.LogError("SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start}): minDist → {MinDist}", distanceMatrix, start, minDist);
             int next = -1;
+			_logger.LogError("SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start}): next → {Next}", distanceMatrix, start, next);
             for (int j = 0; j < n; j++)
             {
                 if (!visited[j] && distanceMatrix[current, j] < minDist)
@@ -97,6 +115,7 @@ public static class TravelingSalesmanSolver
 
             if (next == -1)
             {
+				_logger.LogError("Throwing InvalidOperationException from SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start})", distanceMatrix, start);
                 throw new InvalidOperationException("No unvisited cities remain.");
             }
 
@@ -108,6 +127,7 @@ public static class TravelingSalesmanSolver
 
         totalDistance += distanceMatrix[current, start];
         route.Add(start);
+		_logger.LogWarning("<<< Exiting SolveNearestNeighbor(distanceMatrix={DistanceMatrix},start={Start})", distanceMatrix, start);
         return (route.ToArray(), totalDistance);
     }
 
@@ -117,6 +137,7 @@ public static class TravelingSalesmanSolver
     /// </summary>
     private static IEnumerable<int[]> Permute(int[] arr)
     {
+		_logger.LogError(">>> Entering Permute(arr={Arr})", arr);
         if (arr.Length == 1)
         {
             yield return arr;
@@ -126,10 +147,12 @@ public static class TravelingSalesmanSolver
         for (int i = 0; i < arr.Length; i++)
         {
             var rest = arr.Where((_, idx) => idx != i).ToArray();
+			_logger.LogError("Permute(arr={Arr}): rest → {Rest}", arr, rest);
             foreach (var perm in Permute(rest))
             {
                 yield return [arr[i], ..perm];
             }
         }
+		_logger.LogWarning("<<< Exiting Permute(arr={Arr})", arr);
     }
 }

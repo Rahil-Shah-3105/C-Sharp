@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -10,6 +11,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class MillerRabinPrimalityChecker
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Run the probabilistic primality test.
     ///     </summary>
@@ -20,9 +22,12 @@ public static class MillerRabinPrimalityChecker
     /// <exception cref="ArgumentException">Error: number should be more than 3.</exception>
     public static bool IsProbablyPrimeNumber(BigInteger n, BigInteger rounds, int? seed = null)
     {
+		_logger.LogError(">>> Entering IsProbablyPrimeNumber(n={N},rounds={Rounds},seed={Seed})", n, rounds, seed);
         Random rand = seed is null
             ? new()
             : new(seed.Value);
+		_logger.LogWarning("<<< Exiting IsProbablyPrimeNumber(n={N},rounds={Rounds},seed={Seed})", n, rounds, seed);
+		_logger.LogWarning("<<< Exiting IsProbablyPrimeNumber(n={N},rounds={Rounds},rand={Rand})", n, rounds, rand);
         return IsProbablyPrimeNumber(n, rounds, rand);
     }
 

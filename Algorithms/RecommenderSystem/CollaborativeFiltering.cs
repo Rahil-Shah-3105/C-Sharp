@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.RecommenderSystem;
 
 public class CollaborativeFiltering(ISimilarityCalculator similarityCalculator)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ISimilarityCalculator similarityCalculator = similarityCalculator;
 
     /// <summary>
@@ -12,17 +14,23 @@ public class CollaborativeFiltering(ISimilarityCalculator similarityCalculator)
     /// <returns>double value to reflect the index of similarity between two users.</returns>
     public double CalculateSimilarity(Dictionary<string, double> user1Ratings, Dictionary<string, double> user2Ratings)
     {
+		_logger.LogError(">>> Entering CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings})", user1Ratings, user2Ratings);
         var commonItems = user1Ratings.Keys.Intersect(user2Ratings.Keys).ToList();
+		_logger.LogError("CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings}): commonItems → {CommonItems}", user1Ratings, user2Ratings, commonItems);
         if (commonItems.Count == 0)
         {
             return 0;
         }
 
         var user1Scores = commonItems.Select(item => user1Ratings[item]).ToArray();
+		_logger.LogError("CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings}): user1Scores → {User1Scores}", user1Ratings, user2Ratings, user1Scores);
         var user2Scores = commonItems.Select(item => user2Ratings[item]).ToArray();
+		_logger.LogError("CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings}): user2Scores → {User2Scores}", user1Ratings, user2Ratings, user2Scores);
 
         var avgUser1 = user1Scores.Average();
+		_logger.LogError("CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings}): avgUser1 → {AvgUser1}", user1Ratings, user2Ratings, avgUser1);
         var avgUser2 = user2Scores.Average();
+		_logger.LogError("CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings}): avgUser2 → {AvgUser2}", user1Ratings, user2Ratings, avgUser2);
 
         double numerator = 0;
         double sumSquare1 = 0;
@@ -40,6 +48,8 @@ public class CollaborativeFiltering(ISimilarityCalculator similarityCalculator)
         }
 
         var denominator = Math.Sqrt(sumSquare1 * sumSquare2);
+		_logger.LogError("CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings}): denominator → {Denominator}", user1Ratings, user2Ratings, denominator);
+		_logger.LogWarning("<<< Exiting CalculateSimilarity(user1Ratings={User1Ratings},user2Ratings={User2Ratings})", user1Ratings, user2Ratings);
         return Math.Abs(denominator) < epsilon ? 0 : numerator / denominator;
     }
 
@@ -58,6 +68,7 @@ public class CollaborativeFiltering(ISimilarityCalculator similarityCalculator)
     /// </returns>
     public double PredictRating(string targetItem, string targetUser, Dictionary<string, Dictionary<string, double>> ratings)
     {
+		_logger.LogError(">>> Entering PredictRating(targetItem={TargetItem},targetUser={TargetUser},ratings={Ratings})", targetItem, targetUser, ratings);
         var targetUserRatings = ratings[targetUser];
         double totalSimilarity = 0;
         double weightedSum = 0;
@@ -69,11 +80,13 @@ public class CollaborativeFiltering(ISimilarityCalculator similarityCalculator)
             if (otherUserRatings.ContainsKey(targetItem))
             {
                 var similarity = similarityCalculator.CalculateSimilarity(targetUserRatings, otherUserRatings);
+				_logger.LogError("PredictRating(targetItem={TargetItem},targetUser={TargetUser},ratings={Ratings}): similarity → {Similarity}", targetItem, targetUser, ratings, similarity);
                 totalSimilarity += Math.Abs(similarity);
                 weightedSum += similarity * otherUserRatings[targetItem];
             }
         }
 
+		_logger.LogWarning("<<< Exiting PredictRating(targetItem={TargetItem},targetUser={TargetUser},ratings={Ratings})", targetItem, targetUser, ratings);
         return Math.Abs(totalSimilarity) < epsilon ? 0 : weightedSum / totalSimilarity;
     }
 }

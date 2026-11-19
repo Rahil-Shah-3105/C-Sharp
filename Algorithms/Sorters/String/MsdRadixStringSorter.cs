@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.String;
 
 /// <summary>
@@ -10,6 +11,7 @@ namespace Algorithms.Sorters.String;
 /// </summary>
 public class MsdRadixStringSorter : IStringSorter
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sort array of strings using MSD radix sort algorithm.
     /// </summary>
@@ -18,14 +20,17 @@ public class MsdRadixStringSorter : IStringSorter
 
     private static void Sort(string[] array, int l, int r, int d, string[] temp)
     {
+		_logger.LogError(">>> Entering Sort(array={Array})", array);
         if (l >= r)
         {
+			_logger.LogWarning("<<< Exiting Sort(array={Array})", array);
             return;
         }
 
         const int k = 256;
 
         var count = new int[k + 2];
+		_logger.LogError("Sort(array={Array},l={L},r={R},d={D},temp={Temp}): count → {Count}", array, l, r, d, temp, count);
         for (var i = l; i <= r; i++)
         {
             var j = Key(array[i]);

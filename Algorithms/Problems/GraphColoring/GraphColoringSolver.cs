@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Problems.GraphColoring;
 
 /// <summary>
@@ -33,6 +34,7 @@ namespace Algorithms.Problems.GraphColoring;
 /// </remarks>
 public sealed class GraphColoringSolver
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Attempts to color a graph with the specified number of colors.
     /// </summary>
@@ -66,15 +68,19 @@ public sealed class GraphColoringSolver
     /// </remarks>
     public int[] ColorGraph(bool[,] adjacencyMatrix, int numColors)
     {
+		_logger.LogError(">>> Entering ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
         if (adjacencyMatrix is null)
         {
+			_logger.LogError("Throwing ArgumentNullException from ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
             throw new ArgumentNullException(nameof(adjacencyMatrix));
         }
 
         var numVertices = adjacencyMatrix.GetLength(0);
+		_logger.LogError("ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors}): numVertices → {NumVertices}", adjacencyMatrix, numColors, numVertices);
 
         if (numVertices != adjacencyMatrix.GetLength(1))
         {
+			_logger.LogError("Throwing ArgumentException from ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
             throw new ArgumentException("Adjacency matrix must be square.", nameof(adjacencyMatrix));
         }
 
@@ -101,6 +107,7 @@ public sealed class GraphColoringSolver
                 $"A larger number of colors may be required.");
         }
 
+		_logger.LogWarning("<<< Exiting ColorGraph(adjacencyMatrix={AdjacencyMatrix},numColors={NumColors})", adjacencyMatrix, numColors);
         return colors;
     }
 
@@ -119,8 +126,10 @@ public sealed class GraphColoringSolver
     /// </remarks>
     private bool ColorVertex(bool[,] adjacencyMatrix, int[] colors, int vertex, int numColors)
     {
+		_logger.LogError(">>> Entering ColorVertex(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},numColors={NumColors})", adjacencyMatrix, colors, vertex, numColors);
         var numVertices = adjacencyMatrix.GetLength(0);
 
+		_logger.LogError("ColorVertex(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},numColors={NumColors}): numVertices → {NumVertices}", adjacencyMatrix, colors, vertex, numColors, numVertices);
         // Base case: all vertices are colored
         if (vertex == numVertices)
         {
@@ -145,6 +154,7 @@ public sealed class GraphColoringSolver
             }
         }
 
+		_logger.LogWarning("<<< Exiting ColorVertex(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},numColors={NumColors})", adjacencyMatrix, colors, vertex, numColors);
         return false;
     }
 
@@ -165,8 +175,10 @@ public sealed class GraphColoringSolver
     /// </remarks>
     private bool IsSafeToColor(bool[,] adjacencyMatrix, int[] colors, int vertex, int color)
     {
+		_logger.LogError(">>> Entering IsSafeToColor(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},color={Color})", adjacencyMatrix, colors, vertex, color);
         var numVertices = adjacencyMatrix.GetLength(0);
 
+		_logger.LogError("IsSafeToColor(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},color={Color}): numVertices → {NumVertices}", adjacencyMatrix, colors, vertex, color, numVertices);
         for (var i = 0; i < numVertices; i++)
         {
             // Check if vertex i is adjacent to the current vertex and has the same color
@@ -176,6 +188,7 @@ public sealed class GraphColoringSolver
             }
         }
 
+		_logger.LogWarning("<<< Exiting IsSafeToColor(adjacencyMatrix={AdjacencyMatrix},colors={Colors},vertex={Vertex},color={Color})", adjacencyMatrix, colors, vertex, color);
         return true;
     }
 }

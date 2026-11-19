@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.PatternMatching;
 
 /// <summary>
@@ -11,12 +12,14 @@ namespace Algorithms.Strings.PatternMatching;
 /// </summary>
 public static class RabinKarp
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the index of all occurrences of the pattern <c>p</c> int <c>t</c>.
     /// </summary>
     /// <returns>List of starting indices of the pattern in the text.</returns>
     public static List<int> FindAllOccurrences(string text, string pattern)
     {
+		_logger.LogError(">>> Entering FindAllOccurrences(text={Text},pattern={Pattern})", text, pattern);
         // Prime number
         const ulong p = 65537;
 
@@ -73,6 +76,7 @@ public static class RabinKarp
             }
         }
 
+		_logger.LogWarning("<<< Exiting FindAllOccurrences(text={Text},pattern={Pattern})", text, pattern);
         return occurrences;
     }
 }

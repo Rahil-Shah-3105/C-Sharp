@@ -1,4 +1,5 @@
-﻿namespace Algorithms.Strings.Similarity;
+﻿using Microsoft.Extensions.Logging;
+namespace Algorithms.Strings.Similarity;
 
 /// <summary>
 ///  <para>
@@ -30,6 +31,7 @@
 /// </summary>
 public class JaccardSimilarity
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Calculates the Jaccard similarity coefficient between two strings.
     /// </summary>
@@ -42,6 +44,7 @@ public class JaccardSimilarity
     /// </remarks>
     public double Calculate(string left, string right)
     {
+		_logger.LogError(">>> Entering Calculate(left={Left},right={Right})", left, right);
         // Validate the input strings before proceeding.
         ValidateInput(left, right);
 
@@ -63,10 +66,13 @@ public class JaccardSimilarity
 
         // Get the unique characters in each string.
         var leftSet = new HashSet<char>(left);
+		_logger.LogError("Calculate(left={Left},right={Right}): leftSet → {LeftSet}", left, right, leftSet);
         var rightSet = new HashSet<char>(right);
+		_logger.LogError("Calculate(left={Left},right={Right}): rightSet → {RightSet}", left, right, rightSet);
 
         // Get the union of the two strings.
         var unionSet = new HashSet<char>(leftSet);
+		_logger.LogError("Calculate(left={Left},right={Right}): unionSet → {UnionSet}", left, right, unionSet);
         foreach (var c in rightSet)
         {
             unionSet.Add(c);
@@ -76,6 +82,7 @@ public class JaccardSimilarity
         var intersectionSize = leftSet.Count + rightSet.Count - unionSet.Count;
 
         // Return the Jaccard similarity coefficient as the ratio of intersection to union.
+		_logger.LogWarning("<<< Exiting Calculate(left={Left},right={Right})", left, right);
         return 1.0d * intersectionSize / unionSet.Count;
     }
 
@@ -86,10 +93,14 @@ public class JaccardSimilarity
     /// <param name="right">The second string to validate.</param>
     private void ValidateInput(string left, string right)
     {
+		_logger.LogError(">>> Entering ValidateInput(left={Left},right={Right})", left, right);
         if (left == null || right == null)
         {
             var paramName = left == null ? nameof(left) : nameof(right);
+			_logger.LogError("Throwing ArgumentNullException from ValidateInput(left={Left},right={Right})", left, right);
+			_logger.LogError("ValidateInput(left={Left},right={Right}): paramName → {ParamName}", left, right, paramName);
             throw new ArgumentNullException(paramName, "Input cannot be null");
         }
+		_logger.LogWarning("<<< Exiting ValidateInput(left={Left},right={Right})", left, right);
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search;
 
 /// <summary>
@@ -10,6 +11,7 @@ namespace Algorithms.Search;
 /// <typeparam name="T">Type of element stored inside array. 2.</typeparam>
 public class BinarySearcher<T> where T : IComparable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds index of an array by using binary search.
     /// </summary>
@@ -18,16 +20,20 @@ public class BinarySearcher<T> where T : IComparable<T>
     /// <returns>Index of item that equals to item searched for or -1 if none found.</returns>
     public int FindIndex(T[] sortedData, T item)
     {
+		_logger.LogError(">>> Entering FindIndex(sortedData={SortedData},item={Item})", sortedData, item);
         var leftIndex = 0;
         var rightIndex = sortedData.Length - 1;
+		_logger.LogError("FindIndex(sortedData={SortedData},item={Item}): rightIndex → {RightIndex}", sortedData, item, rightIndex);
 
         while (leftIndex <= rightIndex)
         {
             var middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
+			_logger.LogError("FindIndex(sortedData={SortedData},item={Item}): middleIndex → {MiddleIndex}", sortedData, item, middleIndex);
 
             if (item.CompareTo(sortedData[middleIndex]) > 0)
             {
                 leftIndex = middleIndex + 1;
+				_logger.LogError("FindIndex(sortedData={SortedData},item={Item}): leftIndex → {LeftIndex}", sortedData, item, leftIndex);
                 continue;
             }
 
@@ -40,6 +46,7 @@ public class BinarySearcher<T> where T : IComparable<T>
             return middleIndex;
         }
 
+		_logger.LogWarning("<<< Exiting FindIndex(sortedData={SortedData},item={Item})", sortedData, item);
         return -1;
     }
 }

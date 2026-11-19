@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Graph;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace DataStructures.Graph;
 /// <typeparam name="T">Generic Type.</typeparam>
 public class Vertex<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets vertex data.
     /// </summary>
@@ -29,9 +31,16 @@ public class Vertex<T>
     /// <param name="graph">Graph this vertex belongs to.</param>
     public Vertex(T data, int index, DirectedWeightedGraph<T>? graph)
     {
+		_logger.LogError(">>> Entering Vertex(data={Data},index={Index},graph={Graph})", data, index, graph);
         Data = data;
+		_logger.LogWarning("<<< Exiting Vertex(data={Data},index={Index},graph={Graph})", data, index, graph);
         Index = index;
+		_logger.LogDebug("Vertex(data={Data},index={Index},graph={Graph}): Index → {Index1}", data, index, graph, Index);
         Graph = graph;
+		_logger.LogDebug("Vertex(data={Data},index={Index},graph={Graph}): Graph → {Graph1}", data, index, graph, Graph);
+		_logger.LogError(">>> Entering Vertex(data={Data},index={Index})", data, index);
+		_logger.LogWarning("<<< Exiting Vertex(data={Data},index={Index})", data, index);
+		_logger.LogDebug("Vertex(data={Data},index={Index}): Index → {Index1}", data, index, Index);
     }
 
     /// <summary>
@@ -48,7 +57,11 @@ public class Vertex<T>
     /// <summary>
     ///     Sets graph reference to the null. This method called when vertex removed from the graph.
     /// </summary>
-    public void SetGraphNull() => Graph = null;
+    public void SetGraphNull()
+    {
+        _logger.LogError(">>> Entering SetGraphNull()");
+        Graph = null;
+    }
 
     /// <summary>
     ///     Override of base ToString method. Prints vertex data and index in graph adjacency matrix.

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class KadanesAlgorithm
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the maximum sum of a contiguous subarray using Kadane's Algorithm.
     ///     The algorithm works by maintaining two variables:
@@ -24,18 +26,22 @@ public static class KadanesAlgorithm
     /// </example>
     public static int FindMaximumSubarraySum(int[] array)
     {
+		_logger.LogError(">>> Entering FindMaximumSubarraySum(array={Array})", array);
         // Validate input to ensure array is not null or empty
         if (array == null || array.Length == 0)
         {
+			_logger.LogError("Throwing ArgumentException from FindMaximumSubarraySum(array={Array})", array);
             throw new ArgumentException("Array cannot be null or empty.", nameof(array));
         }
 
         // Initialize both variables with the first element
         // maxSoFar tracks the best sum we've seen across all subarrays
         int maxSoFar = array[0];
+		_logger.LogError("FindMaximumSubarraySum(array={Array}): maxSoFar → {MaxSoFar}", array, maxSoFar);
 
         // maxEndingHere tracks the best sum ending at the current position
         int maxEndingHere = array[0];
+		_logger.LogError("FindMaximumSubarraySum(array={Array}): maxEndingHere → {MaxEndingHere}", array, maxEndingHere);
 
         // Iterate through the array starting from the second element
         for (int i = 1; i < array.Length; i++)
@@ -49,6 +55,7 @@ public static class KadanesAlgorithm
             maxSoFar = Math.Max(maxSoFar, maxEndingHere);
         }
 
+		_logger.LogWarning("<<< Exiting FindMaximumSubarraySum(array={Array})", array);
         return maxSoFar;
     }
 
@@ -67,18 +74,24 @@ public static class KadanesAlgorithm
     /// </example>
     public static (int MaxSum, int StartIndex, int EndIndex) FindMaximumSubarrayWithIndices(int[] array)
     {
+		_logger.LogError(">>> Entering FindMaximumSubarrayWithIndices(array={Array})", array);
         // Validate input
         if (array == null || array.Length == 0)
         {
+			_logger.LogError("Throwing ArgumentException from FindMaximumSubarrayWithIndices(array={Array})", array);
             throw new ArgumentException("Array cannot be null or empty.", nameof(array));
         }
 
         // Initialize tracking variables
         int maxSoFar = array[0];        // Global maximum sum
+		_logger.LogError("FindMaximumSubarrayWithIndices(array={Array}): maxSoFar → {MaxSoFar}", array, maxSoFar);
         int maxEndingHere = array[0];   // Local maximum sum ending at current position
+		_logger.LogError("FindMaximumSubarrayWithIndices(array={Array}): maxEndingHere → {MaxEndingHere}", array, maxEndingHere);
         int start = 0;                   // Start index of the maximum subarray
         int end = 0;                     // End index of the maximum subarray
+		_logger.LogError("FindMaximumSubarrayWithIndices(array={Array}): end → {End}", array, end);
         int tempStart = 0;               // Temporary start index for current subarray
+		_logger.LogError("FindMaximumSubarrayWithIndices(array={Array}): tempStart → {TempStart}", array, tempStart);
 
         // Process each element starting from index 1
         for (int i = 1; i < array.Length; i++)
@@ -105,6 +118,7 @@ public static class KadanesAlgorithm
             }
         }
 
+		_logger.LogWarning("<<< Exiting FindMaximumSubarrayWithIndices(array={Array})", array);
         return (maxSoFar, start, end);
     }
 

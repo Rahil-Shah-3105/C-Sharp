@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Strings;
 /// </summary>
 public static class Palindrome
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Function to check if a string is a palindrome.
     /// </summary>
@@ -28,8 +30,10 @@ public static class Palindrome
     /// <returns>Returns s reversed.</returns>
     private static string ReverseString(string s)
     {
+		_logger.LogError(">>> Entering ReverseString(s={S})", s);
         var arr = s.ToCharArray();
         Array.Reverse(arr);
+		_logger.LogWarning("<<< Exiting ReverseString(s={S})", s);
         return new string(arr);
     }
 }

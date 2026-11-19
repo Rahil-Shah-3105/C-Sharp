@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -13,6 +14,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class RgbHsvConversion
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Conversion from the HSV-representation to the RGB-representation.
     /// </summary>
@@ -25,8 +27,10 @@ public static class RgbHsvConversion
         double saturation,
         double value)
     {
+		_logger.LogError(">>> Entering HsvToRgb()");
         if (hue < 0 || hue > 360)
         {
+			_logger.LogError("Throwing ArgumentOutOfRangeException from HsvToRgb()");
             throw new ArgumentOutOfRangeException(nameof(hue), $"{nameof(hue)} should be between 0 and 360");
         }
 
@@ -45,8 +49,10 @@ public static class RgbHsvConversion
         var chroma = value * saturation;
         var hueSection = hue / 60;
         var secondLargestComponent = chroma * (1 - Math.Abs(hueSection % 2 - 1));
+		_logger.LogError("HsvToRgb(): secondLargestComponent → {SecondLargestComponent}", secondLargestComponent);
         var matchValue = value - chroma;
 
+		_logger.LogWarning("<<< Exiting HsvToRgb()");
         return GetRgbBySection(hueSection, chroma, matchValue, secondLargestComponent);
     }
 
@@ -62,21 +68,30 @@ public static class RgbHsvConversion
         byte green,
         byte blue)
     {
+		_logger.LogError(">>> Entering RgbToHsv()");
         var dRed = (double)red / 255;
         var dGreen = (double)green / 255;
+		_logger.LogError("RgbToHsv(): dGreen → {DGreen}", dGreen);
         var dBlue = (double)blue / 255;
+		_logger.LogError("RgbToHsv(): dBlue → {DBlue}", dBlue);
         var value = Math.Max(Math.Max(dRed, dGreen), dBlue);
+		_logger.LogError("RgbToHsv(): value → {Value}", value);
         var chroma = value - Math.Min(Math.Min(dRed, dGreen), dBlue);
+		_logger.LogError("RgbToHsv(): chroma → {Chroma}", chroma);
         var saturation = value.Equals(0) ? 0 : chroma / value;
+		_logger.LogError("RgbToHsv(): saturation → {Saturation}", saturation);
+		_logger.LogError("RgbToHsv(): dRed → {DRed}", dRed);
         double hue;
 
         if (chroma.Equals(0))
         {
             hue = 0;
+			_logger.LogDebug("RgbToHsv(): hue → {Hue}", hue);
         }
         else if (value.Equals(dRed))
         {
             hue = 60 * (0 + (dGreen - dBlue) / chroma);
+			_logger.LogError("RgbToHsv(): hue → {Hue}", hue);
         }
         else if (value.Equals(dGreen))
         {
@@ -89,6 +104,7 @@ public static class RgbHsvConversion
 
         hue = (hue + 360) % 360;
 
+		_logger.LogWarning("<<< Exiting RgbToHsv()");
         return (hue, saturation, value);
     }
 
@@ -98,6 +114,7 @@ public static class RgbHsvConversion
         double matchValue,
         double secondLargestComponent)
     {
+		_logger.LogError(">>> Entering GetRgbBySection()");
         byte red;
         byte green;
         byte blue;
@@ -105,8 +122,11 @@ public static class RgbHsvConversion
         if (hueSection >= 0 && hueSection <= 1)
         {
             red = ConvertToByte(chroma + matchValue);
+			_logger.LogError("GetRgbBySection(): red → {Red}", red);
+			_logger.LogDebug("GetRgbBySection(): red → {Red}", red);
             green = ConvertToByte(secondLargestComponent + matchValue);
             blue = ConvertToByte(matchValue);
+			_logger.LogError("GetRgbBySection(): green → {Green}", green);
         }
         else if (hueSection > 1 && hueSection <= 2)
         {
@@ -136,11 +156,22 @@ public static class RgbHsvConversion
         {
             red = ConvertToByte(chroma + matchValue);
             green = ConvertToByte(matchValue);
+        _logger.LogDebug("GetRgbBySection(): green → {Green}", green);
             blue = ConvertToByte(secondLargestComponent + matchValue);
+			_logger.LogError("GetRgbBySection(): blue → {Blue}", blue);
+			_logger.LogDebug("GetRgbBySection(): blue → {Blue}", blue);
         }
 
+		_logger.LogError("GetRgbBySection(): green → {Green}", green);
+    _logger.LogDebug("GetRgbBySection(): blue → {Blue}", blue);
+    _logger.LogWarning("<<< Exiting GetRgbBySection()");
         return (red, green, blue);
     }
 
-    private static byte ConvertToByte(double input) => (byte)Math.Round(255 * input);
+    private static byte ConvertToByte(double input)
+    {
+        _logger.LogError(">>> Entering ConvertToByte(input={Input})", input);
+        _logger.LogWarning("<<< Exiting ConvertToByte(input={Input})", input);
+        return (byte)Math.Round(255 * input);
+    }
 }

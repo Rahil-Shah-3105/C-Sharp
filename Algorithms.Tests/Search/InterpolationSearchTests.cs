@@ -1,22 +1,30 @@
 using Algorithms.Search;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Search;
 
 public static class InterpolationSearchTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void FindIndex_ItemPresent_IndexCorrect([Random(1, 1000, 100)] int n)
     {
+		_logger.LogError(">>> Entering FindIndex_ItemPresent_IndexCorrect(n={N})", n);
         // Arrange
         var random = Randomizer.CreateRandomizer();
+		_logger.LogError("FindIndex_ItemPresent_IndexCorrect(n={N}): random → {Random}", n, random);
         var arrayToSearch = Enumerable.Range(0, n).Select(_ => random.Next(0, 1000)).OrderBy(x => x).ToArray();
+		_logger.LogError("FindIndex_ItemPresent_IndexCorrect(n={N}): arrayToSearch → {ArrayToSearch}", n, arrayToSearch);
         var selectedIndex = random.Next(0, n);
+		_logger.LogError("FindIndex_ItemPresent_IndexCorrect(n={N}): selectedIndex → {SelectedIndex}", n, selectedIndex);
 
         // Act
         var actualIndex = InterpolationSearch.FindIndex(arrayToSearch, arrayToSearch[selectedIndex]);
+		_logger.LogError("FindIndex_ItemPresent_IndexCorrect(n={N}): actualIndex → {ActualIndex}", n, actualIndex);
 
         // Assert
         Assert.That(arrayToSearch[actualIndex], Is.EqualTo(arrayToSearch[selectedIndex]));
+		_logger.LogWarning("<<< Exiting FindIndex_ItemPresent_IndexCorrect(n={N})", n);
     }
 
     [Test]
@@ -24,8 +32,10 @@ public static class InterpolationSearchTests
         [Random(0, 1000, 10)] int n,
         [Random(-100, 1100, 10)] int missingItem)
     {
+		_logger.LogError(">>> Entering FindIndex_ItemMissing_MinusOneReturned(n={N},missingItem={MissingItem})", n, missingItem);
         // Arrange
         var random = Randomizer.CreateRandomizer();
+		_logger.LogError("FindIndex_ItemMissing_MinusOneReturned(n={N},missingItem={MissingItem}): random → {Random}", n, missingItem, random);
         var arrayToSearch = Enumerable.Range(0, n)
             .Select(_ => random.Next(0, 1000))
             .Where(x => x != missingItem)
@@ -33,21 +43,26 @@ public static class InterpolationSearchTests
 
         // Act
         var actualIndex = InterpolationSearch.FindIndex(arrayToSearch, missingItem);
+		_logger.LogError("FindIndex_ItemMissing_MinusOneReturned(n={N},missingItem={MissingItem}): actualIndex → {ActualIndex}", n, missingItem, actualIndex);
 
         // Assert
         Assert.That(actualIndex, Is.EqualTo(-1));
+		_logger.LogWarning("<<< Exiting FindIndex_ItemMissing_MinusOneReturned(n={N},missingItem={MissingItem})", n, missingItem);
     }
 
     [Test]
     public static void FindIndex_ArrayEmpty_MinusOneReturned([Random(100)] int itemToSearch)
     {
+		_logger.LogError(">>> Entering FindIndex_ArrayEmpty_MinusOneReturned(itemToSearch={ItemToSearch})", itemToSearch);
         // Arrange
         var arrayToSearch = new int[0];
 
         // Act
         var actualIndex = InterpolationSearch.FindIndex(arrayToSearch, itemToSearch);
+		_logger.LogError("FindIndex_ArrayEmpty_MinusOneReturned(itemToSearch={ItemToSearch}): actualIndex → {ActualIndex}", itemToSearch, actualIndex);
 
         // Assert
         Assert.That(actualIndex, Is.EqualTo(-1));
+		_logger.LogWarning("<<< Exiting FindIndex_ArrayEmpty_MinusOneReturned(itemToSearch={ItemToSearch})", itemToSearch);
     }
 }

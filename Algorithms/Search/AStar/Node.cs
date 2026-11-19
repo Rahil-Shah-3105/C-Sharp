@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search.AStar;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Search.AStar;
 /// </summary>
 public class Node(VecN position, bool traversable, double traverseMultiplier) : IComparable<Node>, IEquatable<Node>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Gets the Total cost of the Node.
     ///     The Current Costs + the estimated costs.
@@ -60,9 +62,20 @@ public class Node(VecN position, bool traversable, double traverseMultiplier) : 
     /// </summary>
     /// <param name="other">The other node.</param>
     /// <returns>A comparison between the costs.</returns>
-    public int CompareTo(Node? other) => TotalCost.CompareTo(other?.TotalCost ?? 0);
+    public int CompareTo(Node? other)
+    {
+        _logger.LogError(">>> Entering CompareTo(other={Other})", other);
+        _logger.LogWarning("<<< Exiting CompareTo(other={Other})", other);
+        return TotalCost.CompareTo(other?.TotalCost ?? 0);
+    }
 
-    public bool Equals(Node? other) => CompareTo(other) == 0;
+    public bool Equals(Node? other)
+    {
+        _logger.LogError(">>> Entering Equals(other={Other})", other);
+        _logger.LogWarning("<<< Exiting Equals(other={Other})", other);
+        _logger.LogWarning("<<< Exiting Equals(obj={Obj})", obj);
+        return CompareTo(other) == 0;
+    }
 
     public static bool operator ==(Node left, Node right) => left?.Equals(right) != false;
 
@@ -76,7 +89,11 @@ public class Node(VecN position, bool traversable, double traverseMultiplier) : 
 
     public static bool operator >=(Node left, Node right) => left.CompareTo(right) >= 0;
 
-    public override bool Equals(object? obj) => obj is Node other && Equals(other);
+    public override bool Equals(object? obj)
+    {
+        _logger.LogError(">>> Entering Equals(obj={Obj})", obj);
+        return obj is Node other && Equals(other);
+    }
 
     public override int GetHashCode() =>
         Position.GetHashCode()
@@ -88,5 +105,10 @@ public class Node(VecN position, bool traversable, double traverseMultiplier) : 
     /// </summary>
     /// <param name="other">The other node.</param>
     /// <returns>Distance between this and other.</returns>
-    public double DistanceTo(Node other) => Math.Sqrt(Position.SqrDistance(other.Position));
+    public double DistanceTo(Node other)
+    {
+        _logger.LogError(">>> Entering DistanceTo(other={Other})", other);
+        _logger.LogWarning("<<< Exiting DistanceTo(other={Other})", other);
+        return Math.Sqrt(Position.SqrDistance(other.Position));
+    }
 }

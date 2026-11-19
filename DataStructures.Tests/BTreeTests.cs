@@ -1,55 +1,70 @@
 using DataStructures.BTree;
 using static FluentAssertions.FluentActions;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Tests;
 
 internal class BTreeTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly int[] Data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
     [Test]
     public void Constructor_DefaultMinimumDegree_CreatesEmptyTree()
     {
+		_logger.LogError(">>> Entering Constructor_DefaultMinimumDegree_CreatesEmptyTree()");
         var tree = new BTree<int>();
 
+		_logger.LogError("Constructor_DefaultMinimumDegree_CreatesEmptyTree(): tree → {Tree}", tree);
         tree.Count.Should().Be(0);
         tree.MinimumDegree.Should().Be(2);
+		_logger.LogWarning("<<< Exiting Constructor_DefaultMinimumDegree_CreatesEmptyTree()");
     }
 
     [Test]
     public void Constructor_CustomMinimumDegree_SetsCorrectDegree()
     {
+		_logger.LogError(">>> Entering Constructor_CustomMinimumDegree_SetsCorrectDegree()");
         var tree = new BTree<int>(3);
 
+		_logger.LogError("Constructor_CustomMinimumDegree_SetsCorrectDegree(): tree → {Tree}", tree);
         tree.MinimumDegree.Should().Be(3);
         tree.Count.Should().Be(0);
+		_logger.LogWarning("<<< Exiting Constructor_CustomMinimumDegree_SetsCorrectDegree()");
     }
 
     [Test]
     public void Constructor_MinimumDegreeLessThan2_ThrowsException()
     {
+		_logger.LogError(">>> Entering Constructor_MinimumDegreeLessThan2_ThrowsException()");
         Invoking(() => new BTree<int>(1))
             .Should()
             .ThrowExactly<ArgumentException>()
             .WithMessage("Minimum degree must be at least 2.*");
+			_logger.LogWarning("<<< Exiting Constructor_MinimumDegreeLessThan2_ThrowsException()");
     }
 
     [Test]
     public void Constructor_CustomComparerMinimumDegreeLessThan2_ThrowsException()
     {
+		_logger.LogError(">>> Entering Constructor_CustomComparerMinimumDegreeLessThan2_ThrowsException()");
         var comparer = Comparer<int>.Create((x, y) => y.CompareTo(x));
 
+		_logger.LogError("Constructor_CustomComparerMinimumDegreeLessThan2_ThrowsException(): comparer → {Comparer}", comparer);
         Invoking(() => new BTree<int>(1, comparer))
             .Should()
             .ThrowExactly<ArgumentException>()
             .WithMessage("Minimum degree must be at least 2.*");
+			_logger.LogWarning("<<< Exiting Constructor_CustomComparerMinimumDegreeLessThan2_ThrowsException()");
     }
 
     [Test]
     public void Constructor_UseCustomComparer_FormsCorrectTree()
     {
+		_logger.LogError(">>> Entering Constructor_UseCustomComparer_FormsCorrectTree()");
         var tree = new BTree<int>(2, Comparer<int>.Create((x, y) => y.CompareTo(x)));
 
+		_logger.LogError("Constructor_UseCustomComparer_FormsCorrectTree(): tree → {Tree}", tree);
         tree.AddRange(new[] { 1, 2, 3, 4, 5 });
 
         tree.GetMin().Should().Be(5);
@@ -60,24 +75,30 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 5, 4, 3, 2, 1 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Constructor_UseCustomComparer_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_SingleKey_IncreasesCount()
     {
+		_logger.LogError(">>> Entering Add_SingleKey_IncreasesCount()");
         var tree = new BTree<int>();
 
+		_logger.LogError("Add_SingleKey_IncreasesCount(): tree → {Tree}", tree);
         tree.Add(5);
 
         tree.Count.Should().Be(1);
         tree.Contains(5).Should().BeTrue();
+		_logger.LogWarning("<<< Exiting Add_SingleKey_IncreasesCount()");
     }
 
     [Test]
     public void Add_MultipleKeys_FormsCorrectTree()
     {
+		_logger.LogError(">>> Entering Add_MultipleKeys_FormsCorrectTree()");
         var tree = new BTree<int>(2);
 
+		_logger.LogError("Add_MultipleKeys_FormsCorrectTree(): tree → {Tree}", tree);
         for (var i = 0; i < Data.Length; i++)
         {
             tree.Add(Data[i]);
@@ -89,37 +110,46 @@ internal class BTreeTests
             .BeEquivalentTo(
                 Data,
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Add_MultipleKeys_FormsCorrectTree()");
     }
 
     [Test]
     public void Add_DuplicateKey_ThrowsException()
     {
+		_logger.LogError(">>> Entering Add_DuplicateKey_ThrowsException()");
         var tree = new BTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5 });
+		_logger.LogError("Add_DuplicateKey_ThrowsException(): tree → {Tree}", tree);
 
         Invoking(() => tree.Add(3))
             .Should()
             .ThrowExactly<ArgumentException>()
             .WithMessage("""Key "3" already exists in B-Tree.""");
+			_logger.LogWarning("<<< Exiting Add_DuplicateKey_ThrowsException()");
     }
 
     [Test]
     public void Add_DuplicateKeyInLeaf_ThrowsException()
     {
+		_logger.LogError(">>> Entering Add_DuplicateKeyInLeaf_ThrowsException()");
         var tree = new BTree<int>(3);
         tree.AddRange(new[] { 10, 20 });
+		_logger.LogError("Add_DuplicateKeyInLeaf_ThrowsException(): tree → {Tree}", tree);
 
         Invoking(() => tree.Add(10))
             .Should()
             .ThrowExactly<ArgumentException>()
             .WithMessage("""Key "10" already exists in B-Tree.""");
+			_logger.LogWarning("<<< Exiting Add_DuplicateKeyInLeaf_ThrowsException()");
     }
 
     [Test]
     public void Add_CausesNodeSplit_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Add_CausesNodeSplit_TreeStillValid()");
         var tree = new BTree<int>(2);
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7 });
+		_logger.LogError("Add_CausesNodeSplit_TreeStillValid(): tree → {Tree}", tree);
 
         tree.Count.Should().Be(7);
         tree.GetKeysInOrder()
@@ -127,13 +157,17 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 4, 5, 6, 7 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Add_CausesNodeSplit_TreeStillValid()");
     }
 
     [Test]
     public void Add_LargeNumberOfKeys_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Add_LargeNumberOfKeys_TreeStillValid()");
         var tree = new BTree<int>(3);
         var keys = Enumerable.Range(1, 100).ToArray();
+		_logger.LogError("Add_LargeNumberOfKeys_TreeStillValid(): keys → {Keys}", keys);
+		_logger.LogError("Add_LargeNumberOfKeys_TreeStillValid(): tree → {Tree}", tree);
 
         tree.AddRange(keys);
 
@@ -143,13 +177,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 keys,
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Add_LargeNumberOfKeys_TreeStillValid()");
     }
 
     [Test]
     public void AddRange_MultipleKeys_FormsCorrectTree()
     {
+		_logger.LogError(">>> Entering AddRange_MultipleKeys_FormsCorrectTree()");
         var tree = new BTree<char>(2);
         tree.AddRange(new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' });
+		_logger.LogError("AddRange_MultipleKeys_FormsCorrectTree(): tree → {Tree}", tree);
 
         tree.Count.Should().Be(7);
 
@@ -158,66 +195,84 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting AddRange_MultipleKeys_FormsCorrectTree()");
     }
 
     [Test]
     public void AddRange_EmptyCollection_TreeRemainsEmpty()
     {
+		_logger.LogError(">>> Entering AddRange_EmptyCollection_TreeRemainsEmpty()");
         var tree = new BTree<int>();
         tree.AddRange(Array.Empty<int>());
+		_logger.LogError("AddRange_EmptyCollection_TreeRemainsEmpty(): tree → {Tree}", tree);
 
         tree.Count.Should().Be(0);
         tree.GetKeysInOrder().Should().BeEmpty();
+		_logger.LogWarning("<<< Exiting AddRange_EmptyCollection_TreeRemainsEmpty()");
     }
 
     [Test]
     public void Contains_KeyExists_ReturnsTrue()
     {
+		_logger.LogError(">>> Entering Contains_KeyExists_ReturnsTrue()");
         var tree = new BTree<int>();
         tree.AddRange(Data);
+		_logger.LogError("Contains_KeyExists_ReturnsTrue(): tree → {Tree}", tree);
 
         tree.Contains(5).Should().BeTrue();
         tree.Contains(1).Should().BeTrue();
         tree.Contains(15).Should().BeTrue();
+		_logger.LogWarning("<<< Exiting Contains_KeyExists_ReturnsTrue()");
     }
 
     [Test]
     public void Contains_KeyDoesNotExist_ReturnsFalse()
     {
+		_logger.LogError(">>> Entering Contains_KeyDoesNotExist_ReturnsFalse()");
         var tree = new BTree<int>();
         tree.AddRange(Data);
+		_logger.LogError("Contains_KeyDoesNotExist_ReturnsFalse(): tree → {Tree}", tree);
 
         tree.Contains(100).Should().BeFalse();
         tree.Contains(-5).Should().BeFalse();
         tree.Contains(0).Should().BeFalse();
+		_logger.LogWarning("<<< Exiting Contains_KeyDoesNotExist_ReturnsFalse()");
     }
 
     [Test]
     public void Contains_EmptyTree_ReturnsFalse()
     {
+		_logger.LogError(">>> Entering Contains_EmptyTree_ReturnsFalse()");
         var tree = new BTree<int>();
 
+		_logger.LogError("Contains_EmptyTree_ReturnsFalse(): tree → {Tree}", tree);
         tree.Contains(5).Should().BeFalse();
         tree.Contains(-12).Should().BeFalse();
+		_logger.LogWarning("<<< Exiting Contains_EmptyTree_ReturnsFalse()");
     }
 
     [Test]
     public void Remove_SingleKey_DecreasesCount()
     {
+		_logger.LogError(">>> Entering Remove_SingleKey_DecreasesCount()");
         var tree = new BTree<int>();
         tree.AddRange(new[] { 1, 2, 3, 4, 5 });
+		_logger.LogError("Remove_SingleKey_DecreasesCount(): tree → {Tree}", tree);
 
         tree.Remove(3);
 
         tree.Count.Should().Be(4);
         tree.Contains(3).Should().BeFalse();
+		_logger.LogWarning("<<< Exiting Remove_SingleKey_DecreasesCount()");
     }
 
     [Test]
     public void Remove_FromLeafNode_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_FromLeafNode_TreeStillValid()");
         var tree = new BTree<int>(2);
         tree.AddRange(Data);
+		_logger.LogError("Remove_FromLeafNode_TreeStillValid(): tree → {Tree}", tree);
 
         tree.Remove(1);
 
@@ -229,13 +284,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_FromLeafNode_TreeStillValid()");
     }
 
     [Test]
     public void Remove_FromNonLeafNode_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_FromNonLeafNode_TreeStillValid()");
         var tree = new BTree<int>(2);
         tree.AddRange(Data);
+		_logger.LogError("Remove_FromNonLeafNode_TreeStillValid(): tree → {Tree}", tree);
 
         tree.Remove(8);
 
@@ -247,13 +305,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_FromNonLeafNode_TreeStillValid()");
     }
 
     [Test]
     public void Remove_CausesMerge_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_CausesMerge_TreeStillValid()");
         var tree = new BTree<int>(2);
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7 });
+		_logger.LogError("Remove_CausesMerge_TreeStillValid(): tree → {Tree}", tree);
 
         tree.Remove(4);
 
@@ -265,13 +326,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 5, 6, 7 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_CausesMerge_TreeStillValid()");
     }
 
     [Test]
     public void Remove_MultipleKeys_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_MultipleKeys_TreeStillValid()");
         var tree = new BTree<int>(2);
         tree.AddRange(Data);
+		_logger.LogError("Remove_MultipleKeys_TreeStillValid(): tree → {Tree}", tree);
 
         tree.Remove(5);
         tree.Remove(10);
@@ -287,13 +351,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_MultipleKeys_TreeStillValid()");
     }
 
     [Test]
     public void Remove_AllKeys_TreeBecomesEmpty()
     {
+		_logger.LogError(">>> Entering Remove_AllKeys_TreeBecomesEmpty()");
         var tree = new BTree<int>(2);
         tree.AddRange(new[] { 1, 2, 3, 4, 5 });
+		_logger.LogError("Remove_AllKeys_TreeBecomesEmpty(): tree → {Tree}", tree);
 
         tree.Remove(1);
         tree.Remove(2);
@@ -303,115 +370,148 @@ internal class BTreeTests
 
         tree.Count.Should().Be(0);
         tree.GetKeysInOrder().Should().BeEmpty();
+		_logger.LogWarning("<<< Exiting Remove_AllKeys_TreeBecomesEmpty()");
     }
 
     [Test]
     public void Remove_EmptyTree_ThrowsException()
     {
+		_logger.LogError(">>> Entering Remove_EmptyTree_ThrowsException()");
         var tree = new BTree<int>();
 
+		_logger.LogError("Remove_EmptyTree_ThrowsException(): tree → {Tree}", tree);
         Invoking(() => tree.Remove(1))
             .Should()
             .ThrowExactly<KeyNotFoundException>()
             .WithMessage("""Key "1" is not in the B-Tree.""");
+			_logger.LogWarning("<<< Exiting Remove_EmptyTree_ThrowsException()");
     }
 
     [Test]
     public void Remove_KeyNotInTree_ThrowsException()
     {
+		_logger.LogError(">>> Entering Remove_KeyNotInTree_ThrowsException()");
         var tree = new BTree<int>();
         tree.AddRange(Data);
+		_logger.LogError("Remove_KeyNotInTree_ThrowsException(): tree → {Tree}", tree);
 
         Invoking(() => tree.Remove(100))
             .Should()
             .ThrowExactly<KeyNotFoundException>()
             .WithMessage("""Key "100" is not in the B-Tree.""");
+			_logger.LogWarning("<<< Exiting Remove_KeyNotInTree_ThrowsException()");
     }
 
     [Test]
     public void GetMin_NonEmptyTree_ReturnsMinimum()
     {
+		_logger.LogError(">>> Entering GetMin_NonEmptyTree_ReturnsMinimum()");
         var tree = new BTree<int>();
         tree.AddRange(new[] { 5, 2, 8, 1, 9, 3 });
+		_logger.LogError("GetMin_NonEmptyTree_ReturnsMinimum(): tree → {Tree}", tree);
 
         tree.GetMin().Should().Be(1);
+		_logger.LogWarning("<<< Exiting GetMin_NonEmptyTree_ReturnsMinimum()");
     }
 
     [Test]
     public void GetMin_SingleElement_ReturnsElement()
     {
+		_logger.LogError(">>> Entering GetMin_SingleElement_ReturnsElement()");
         var tree = new BTree<int>();
         tree.Add(42);
+		_logger.LogError("GetMin_SingleElement_ReturnsElement(): tree → {Tree}", tree);
 
         tree.GetMin().Should().Be(42);
+		_logger.LogWarning("<<< Exiting GetMin_SingleElement_ReturnsElement()");
     }
 
     [Test]
     public void GetMin_EmptyTree_ThrowsException()
     {
+		_logger.LogError(">>> Entering GetMin_EmptyTree_ThrowsException()");
         var tree = new BTree<int>();
 
+		_logger.LogError("GetMin_EmptyTree_ThrowsException(): tree → {Tree}", tree);
         Invoking(() => tree.GetMin())
             .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage("B-Tree is empty.");
+			_logger.LogWarning("<<< Exiting GetMin_EmptyTree_ThrowsException()");
     }
 
     [Test]
     public void GetMax_NonEmptyTree_ReturnsMaximum()
     {
+		_logger.LogError(">>> Entering GetMax_NonEmptyTree_ReturnsMaximum()");
         var tree = new BTree<int>();
         tree.AddRange(new[] { 5, 2, 8, 1, 9, 3 });
+		_logger.LogError("GetMax_NonEmptyTree_ReturnsMaximum(): tree → {Tree}", tree);
 
         tree.GetMax().Should().Be(9);
+		_logger.LogWarning("<<< Exiting GetMax_NonEmptyTree_ReturnsMaximum()");
     }
 
     [Test]
     public void GetMax_SingleElement_ReturnsElement()
     {
+		_logger.LogError(">>> Entering GetMax_SingleElement_ReturnsElement()");
         var tree = new BTree<int>();
         tree.Add(42);
+		_logger.LogError("GetMax_SingleElement_ReturnsElement(): tree → {Tree}", tree);
 
         tree.GetMax().Should().Be(42);
+		_logger.LogWarning("<<< Exiting GetMax_SingleElement_ReturnsElement()");
     }
 
     [Test]
     public void GetMax_EmptyTree_ThrowsException()
     {
+		_logger.LogError(">>> Entering GetMax_EmptyTree_ThrowsException()");
         var tree = new BTree<int>();
 
+		_logger.LogError("GetMax_EmptyTree_ThrowsException(): tree → {Tree}", tree);
         Invoking(() => tree.GetMax())
             .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage("B-Tree is empty.");
+			_logger.LogWarning("<<< Exiting GetMax_EmptyTree_ThrowsException()");
     }
 
     [Test]
     public void GetKeysInOrder_NonEmptyTree_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering GetKeysInOrder_NonEmptyTree_ReturnsCorrectOrder()");
         var tree = new BTree<int>(2);
         tree.AddRange(new[] { 5, 2, 8, 1, 9, 3, 7, 4, 6 });
+		_logger.LogError("GetKeysInOrder_NonEmptyTree_ReturnsCorrectOrder(): tree → {Tree}", tree);
 
         tree.GetKeysInOrder()
             .Should()
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting GetKeysInOrder_NonEmptyTree_ReturnsCorrectOrder()");
     }
 
     [Test]
     public void GetKeysInOrder_EmptyTree_ReturnsEmpty()
     {
+		_logger.LogError(">>> Entering GetKeysInOrder_EmptyTree_ReturnsEmpty()");
         var tree = new BTree<int>();
 
+		_logger.LogError("GetKeysInOrder_EmptyTree_ReturnsEmpty(): tree → {Tree}", tree);
         tree.GetKeysInOrder().Should().BeEmpty();
+		_logger.LogWarning("<<< Exiting GetKeysInOrder_EmptyTree_ReturnsEmpty()");
     }
 
     [Test]
     public void GetKeysInOrder_AfterRemoval_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering GetKeysInOrder_AfterRemoval_ReturnsCorrectOrder()");
         var tree = new BTree<int>(2);
         tree.AddRange(Data);
+		_logger.LogError("GetKeysInOrder_AfterRemoval_ReturnsCorrectOrder(): tree → {Tree}", tree);
         tree.Remove(5);
         tree.Remove(10);
 
@@ -420,53 +520,71 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting GetKeysInOrder_AfterRemoval_ReturnsCorrectOrder()");
     }
 
     [Test]
     public void GetKeysPreOrder_NonEmptyTree_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering GetKeysPreOrder_NonEmptyTree_ReturnsCorrectOrder()");
         var tree = new BTree<int>(2);
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7 });
+		_logger.LogError("GetKeysPreOrder_NonEmptyTree_ReturnsCorrectOrder(): tree → {Tree}", tree);
 
         var preOrder = tree.GetKeysPreOrder().ToArray();
+		_logger.LogError("GetKeysPreOrder_NonEmptyTree_ReturnsCorrectOrder(): preOrder → {PreOrder}", preOrder);
 
         preOrder.Should().HaveCount(7);
         preOrder.Should().Contain(new[] { 1, 2, 3, 4, 5, 6, 7 });
+		_logger.LogWarning("<<< Exiting GetKeysPreOrder_NonEmptyTree_ReturnsCorrectOrder()");
     }
 
     [Test]
     public void GetKeysPreOrder_EmptyTree_ReturnsEmpty()
     {
+		_logger.LogError(">>> Entering GetKeysPreOrder_EmptyTree_ReturnsEmpty()");
         var tree = new BTree<int>();
 
+		_logger.LogError("GetKeysPreOrder_EmptyTree_ReturnsEmpty(): tree → {Tree}", tree);
         tree.GetKeysPreOrder().Should().BeEmpty();
+		_logger.LogWarning("<<< Exiting GetKeysPreOrder_EmptyTree_ReturnsEmpty()");
     }
 
     [Test]
     public void GetKeysPostOrder_NonEmptyTree_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering GetKeysPostOrder_NonEmptyTree_ReturnsCorrectOrder()");
         var tree = new BTree<int>(2);
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7 });
+		_logger.LogError("GetKeysPostOrder_NonEmptyTree_ReturnsCorrectOrder(): tree → {Tree}", tree);
 
         var postOrder = tree.GetKeysPostOrder().ToArray();
+		_logger.LogError("GetKeysPostOrder_NonEmptyTree_ReturnsCorrectOrder(): postOrder → {PostOrder}", postOrder);
 
         postOrder.Should().HaveCount(7);
         postOrder.Should().Contain(new[] { 1, 2, 3, 4, 5, 6, 7 });
+		_logger.LogWarning("<<< Exiting GetKeysPostOrder_NonEmptyTree_ReturnsCorrectOrder()");
     }
 
     [Test]
     public void GetKeysPostOrder_EmptyTree_ReturnsEmpty()
     {
+		_logger.LogError(">>> Entering GetKeysPostOrder_EmptyTree_ReturnsEmpty()");
         var tree = new BTree<int>();
 
+		_logger.LogError("GetKeysPostOrder_EmptyTree_ReturnsEmpty(): tree → {Tree}", tree);
         tree.GetKeysPostOrder().Should().BeEmpty();
+		_logger.LogWarning("<<< Exiting GetKeysPostOrder_EmptyTree_ReturnsEmpty()");
     }
 
     [Test]
     public void BTree_LargeDataSet_MaintainsCorrectness()
     {
+		_logger.LogError(">>> Entering BTree_LargeDataSet_MaintainsCorrectness()");
         var tree = new BTree<int>(5);
         var keys = Enumerable.Range(1, 1000).ToArray();
+		_logger.LogError("BTree_LargeDataSet_MaintainsCorrectness(): keys → {Keys}", keys);
+		_logger.LogError("BTree_LargeDataSet_MaintainsCorrectness(): tree → {Tree}", tree);
 
         tree.AddRange(keys);
 
@@ -475,40 +593,50 @@ internal class BTreeTests
         tree.GetMax().Should().Be(1000);
 
         var inOrder = tree.GetKeysInOrder().ToArray();
+		_logger.LogError("BTree_LargeDataSet_MaintainsCorrectness(): inOrder → {InOrder}", inOrder);
         inOrder.Should().BeEquivalentTo(keys, config => config.WithStrictOrdering());
 
         for (var i = 1; i <= 1000; i++)
         {
             tree.Contains(i).Should().BeTrue();
         }
+		_logger.LogWarning("<<< Exiting BTree_LargeDataSet_MaintainsCorrectness()");
     }
 
     [Test]
     public void BTree_RandomInsertion_MaintainsCorrectness()
     {
+		_logger.LogError(">>> Entering BTree_RandomInsertion_MaintainsCorrectness()");
         var tree = new BTree<int>(3);
         var random = new Random(42);
+		_logger.LogError("BTree_RandomInsertion_MaintainsCorrectness(): random → {Random}", random);
         var keys = Enumerable.Range(1, 100)
             .OrderBy(_ => random.Next())
             .ToArray();
+			_logger.LogError("BTree_RandomInsertion_MaintainsCorrectness(): tree → {Tree}", tree);
 
         tree.AddRange(keys);
 
         tree.Count.Should().Be(100);
 
         var inOrder = tree.GetKeysInOrder().ToArray();
+		_logger.LogError("BTree_RandomInsertion_MaintainsCorrectness(): inOrder → {InOrder}", inOrder);
         inOrder.Should().BeEquivalentTo(
             Enumerable.Range(1, 100),
             config => config.WithStrictOrdering());
+			_logger.LogWarning("<<< Exiting BTree_RandomInsertion_MaintainsCorrectness()");
     }
 
     [Test]
     public void BTree_RandomDeletion_MaintainsCorrectness()
     {
+		_logger.LogError(">>> Entering BTree_RandomDeletion_MaintainsCorrectness()");
         var tree = new BTree<int>(3);
         tree.AddRange(Enumerable.Range(1, 50));
+		_logger.LogError("BTree_RandomDeletion_MaintainsCorrectness(): tree → {Tree}", tree);
 
         var random = new Random(42);
+		_logger.LogError("BTree_RandomDeletion_MaintainsCorrectness(): random → {Random}", random);
         var keysToRemove = Enumerable.Range(1, 50)
             .OrderBy(_ => random.Next())
             .Take(25)
@@ -531,13 +659,17 @@ internal class BTreeTests
             .BeEquivalentTo(
                 remainingKeys,
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting BTree_RandomDeletion_MaintainsCorrectness()");
     }
 
     [Test]
     public void BTree_StringKeys_WorksCorrectly()
     {
+		_logger.LogError(">>> Entering BTree_StringKeys_WorksCorrectly()");
         var tree = new BTree<string>(2);
         var keys = new[] { "apple", "banana", "cherry", "date", "elderberry", "fig", "grape" };
+		_logger.LogError("BTree_StringKeys_WorksCorrectly(): keys → {Keys}", keys);
+		_logger.LogError("BTree_StringKeys_WorksCorrectly(): tree → {Tree}", tree);
 
         tree.AddRange(keys);
 
@@ -550,14 +682,17 @@ internal class BTreeTests
             .BeEquivalentTo(
                 keys.OrderBy(x => x),
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting BTree_StringKeys_WorksCorrectly()");
     }
 
     [Test]
     public void BTree_DifferentMinimumDegrees_AllWorkCorrectly()
     {
+		_logger.LogError(">>> Entering BTree_DifferentMinimumDegrees_AllWorkCorrectly()");
         for (var degree = 2; degree <= 10; degree++)
         {
             var tree = new BTree<int>(degree);
+			_logger.LogError("BTree_DifferentMinimumDegrees_AllWorkCorrectly(): tree → {Tree}", tree);
             tree.AddRange(Enumerable.Range(1, 50));
 
             tree.Count.Should().Be(50);
@@ -567,13 +702,16 @@ internal class BTreeTests
                     Enumerable.Range(1, 50),
                     config => config.WithStrictOrdering());
         }
+		_logger.LogWarning("<<< Exiting BTree_DifferentMinimumDegrees_AllWorkCorrectly()");
     }
 
     [Test]
     public void BTree_InsertRemoveInsert_WorksCorrectly()
     {
+		_logger.LogError(">>> Entering BTree_InsertRemoveInsert_WorksCorrectly()");
         var tree = new BTree<int>(2);
 
+		_logger.LogError("BTree_InsertRemoveInsert_WorksCorrectly(): tree → {Tree}", tree);
         tree.AddRange(new[] { 1, 2, 3, 4, 5 });
         tree.Remove(3);
         tree.Add(3);
@@ -586,13 +724,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 4, 5 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting BTree_InsertRemoveInsert_WorksCorrectly()");
     }
 
     [Test]
     public void Remove_BorrowFromPreviousSibling_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_BorrowFromPreviousSibling_TreeStillValid()");
         var tree = new BTree<int>(3);
 
+		_logger.LogError("Remove_BorrowFromPreviousSibling_TreeStillValid(): tree → {Tree}", tree);
         tree.AddRange(new[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 });
 
         tree.Remove(100);
@@ -605,13 +746,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 10, 20, 30, 40, 50, 60, 70, 80, 90 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_BorrowFromPreviousSibling_TreeStillValid()");
     }
 
     [Test]
     public void Remove_BorrowFromNextSibling_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_BorrowFromNextSibling_TreeStillValid()");
         var tree = new BTree<int>(3);
 
+		_logger.LogError("Remove_BorrowFromNextSibling_TreeStillValid(): tree → {Tree}", tree);
         tree.AddRange(new[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 });
 
         tree.Remove(10);
@@ -624,16 +768,20 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 20, 30, 40, 50, 60, 70, 80, 90, 100 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_BorrowFromNextSibling_TreeStillValid()");
     }
 
     [Test]
     public void Remove_UsesPredecessor_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_UsesPredecessor_TreeStillValid()");
         var tree = new BTree<int>(3);
 
+		_logger.LogError("Remove_UsesPredecessor_TreeStillValid(): tree → {Tree}", tree);
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 });
 
         var rootKeys = tree.GetKeysPreOrder().Take(3).ToArray();
+		_logger.LogError("Remove_UsesPredecessor_TreeStillValid(): rootKeys → {RootKeys}", rootKeys);
         var keyToRemove = rootKeys[0];
 
         tree.Remove(keyToRemove);
@@ -642,15 +790,19 @@ internal class BTreeTests
         tree.Count.Should().Be(14);
 
         var inOrder = tree.GetKeysInOrder().ToArray();
+		_logger.LogError("Remove_UsesPredecessor_TreeStillValid(): inOrder → {InOrder}", inOrder);
         inOrder.Should().HaveCount(14);
         inOrder.Should().BeInAscendingOrder();
+		_logger.LogWarning("<<< Exiting Remove_UsesPredecessor_TreeStillValid()");
     }
 
     [Test]
     public void Remove_UsesSuccessor_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_UsesSuccessor_TreeStillValid()");
         var tree = new BTree<int>(2);
 
+		_logger.LogError("Remove_UsesSuccessor_TreeStillValid(): tree → {Tree}", tree);
         tree.AddRange(new[] { 10, 20, 30, 40, 50, 60, 70 });
 
         tree.Remove(40);
@@ -663,13 +815,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 10, 20, 30, 50, 60, 70 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_UsesSuccessor_TreeStillValid()");
     }
 
     [Test]
     public void Remove_MergeWithSibling_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_MergeWithSibling_TreeStillValid()");
         var tree = new BTree<int>(2);
 
+		_logger.LogError("Remove_MergeWithSibling_TreeStillValid(): tree → {Tree}", tree);
         tree.AddRange(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
         tree.Remove(9);
@@ -683,13 +838,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 3, 4, 5, 6 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_MergeWithSibling_TreeStillValid()");
     }
 
     [Test]
     public void Remove_ComplexRebalancing_TreeStillValid()
     {
+		_logger.LogError(">>> Entering Remove_ComplexRebalancing_TreeStillValid()");
         var tree = new BTree<int>(3);
 
+		_logger.LogError("Remove_ComplexRebalancing_TreeStillValid(): tree → {Tree}", tree);
         tree.AddRange(Enumerable.Range(1, 30));
 
         var keysToRemove = new[] { 5, 15, 25, 10, 20, 30, 1, 29 };
@@ -703,18 +861,22 @@ internal class BTreeTests
         tree.Count.Should().Be(22);
 
         var expected = Enumerable.Range(1, 30).Except(keysToRemove).OrderBy(x => x);
+		_logger.LogError("Remove_ComplexRebalancing_TreeStillValid(): expected → {Expected}", expected);
         tree.GetKeysInOrder()
             .Should()
             .BeEquivalentTo(
                 expected,
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_ComplexRebalancing_TreeStillValid()");
     }
 
     [Test]
     public void Remove_FromMinimumDegree3_AllRebalancingPaths()
     {
+		_logger.LogError(">>> Entering Remove_FromMinimumDegree3_AllRebalancingPaths()");
         var tree = new BTree<int>(3);
 
+		_logger.LogError("Remove_FromMinimumDegree3_AllRebalancingPaths(): tree → {Tree}", tree);
         tree.AddRange(Enumerable.Range(1, 50));
         var keysToRemove = new[] { 25, 12, 37, 6, 44, 18, 31, 3, 47, 15 };
 
@@ -727,17 +889,21 @@ internal class BTreeTests
             tree.Contains(key).Should().BeFalse();
 
             var inOrder = tree.GetKeysInOrder().ToArray();
+			_logger.LogError("Remove_FromMinimumDegree3_AllRebalancingPaths(): inOrder → {InOrder}", inOrder);
             inOrder.Should().BeInAscendingOrder();
         }
 
         tree.Count.Should().Be(40);
+		_logger.LogWarning("<<< Exiting Remove_FromMinimumDegree3_AllRebalancingPaths()");
     }
 
     [Test]
     public void Remove_SequentialFromLargeTree_MaintainsStructure()
     {
+		_logger.LogError(">>> Entering Remove_SequentialFromLargeTree_MaintainsStructure()");
         var tree = new BTree<int>(4);
 
+		_logger.LogError("Remove_SequentialFromLargeTree_MaintainsStructure(): tree → {Tree}", tree);
         tree.AddRange(Enumerable.Range(1, 100));
         for (var i = 3; i <= 99; i += 3)
         {
@@ -747,6 +913,7 @@ internal class BTreeTests
         tree.Count.Should().Be(67);
 
         var inOrder = tree.GetKeysInOrder().ToArray();
+		_logger.LogError("Remove_SequentialFromLargeTree_MaintainsStructure(): inOrder → {InOrder}", inOrder);
         inOrder.Should().HaveCount(67);
         inOrder.Should().BeInAscendingOrder();
 
@@ -756,14 +923,18 @@ internal class BTreeTests
         tree.Contains(1).Should().BeTrue();
         tree.Contains(2).Should().BeTrue();
         tree.Contains(100).Should().BeTrue();
+		_logger.LogWarning("<<< Exiting Remove_SequentialFromLargeTree_MaintainsStructure()");
     }
 
     [Test]
     public void BTree_DegreeThree_CompleteInsertDeleteCycle()
     {
+		_logger.LogError(">>> Entering BTree_DegreeThree_CompleteInsertDeleteCycle()");
         var tree = new BTree<int>(3);
 
+		_logger.LogError("BTree_DegreeThree_CompleteInsertDeleteCycle(): tree → {Tree}", tree);
         var keys = Enumerable.Range(1, 40).ToArray();
+		_logger.LogError("BTree_DegreeThree_CompleteInsertDeleteCycle(): keys → {Keys}", keys);
         tree.AddRange(keys);
         tree.Count.Should().Be(40);
 
@@ -775,6 +946,7 @@ internal class BTreeTests
         tree.Count.Should().Be(20);
 
         var remaining = tree.GetKeysInOrder().ToArray();
+		_logger.LogError("BTree_DegreeThree_CompleteInsertDeleteCycle(): remaining → {Remaining}", remaining);
         remaining.Should().BeEquivalentTo(
             Enumerable.Range(1, 40).Where(x => x % 2 != 0),
             config => config.WithStrictOrdering());
@@ -785,13 +957,16 @@ internal class BTreeTests
 
         tree.Contains(2).Should().BeTrue();
         tree.Contains(4).Should().BeTrue();
+		_logger.LogWarning("<<< Exiting BTree_DegreeThree_CompleteInsertDeleteCycle()");
     }
 
     [Test]
     public void Remove_RootWithMultipleChildren_HandledCorrectly()
     {
+		_logger.LogError(">>> Entering Remove_RootWithMultipleChildren_HandledCorrectly()");
         var tree = new BTree<int>(2);
 
+		_logger.LogError("Remove_RootWithMultipleChildren_HandledCorrectly(): tree → {Tree}", tree);
         tree.AddRange(new[] { 1, 2, 3, 4, 5 });
         tree.Remove(3);
         tree.Count.Should().Be(4);
@@ -801,13 +976,16 @@ internal class BTreeTests
             .BeEquivalentTo(
                 new[] { 1, 2, 4, 5 },
                 config => config.WithStrictOrdering());
+				_logger.LogWarning("<<< Exiting Remove_RootWithMultipleChildren_HandledCorrectly()");
     }
 
     [Test]
     public void BTree_HighDegree_StressTest()
     {
+		_logger.LogError(">>> Entering BTree_HighDegree_StressTest()");
         var tree = new BTree<int>(10);
 
+		_logger.LogError("BTree_HighDegree_StressTest(): tree → {Tree}", tree);
         tree.AddRange(Enumerable.Range(1, 200));
         tree.Count.Should().Be(200);
 
@@ -819,11 +997,13 @@ internal class BTreeTests
         tree.Count.Should().Be(180);
 
         var inOrder = tree.GetKeysInOrder().ToArray();
+		_logger.LogError("BTree_HighDegree_StressTest(): inOrder → {InOrder}", inOrder);
         inOrder.Should().HaveCount(180);
         inOrder.Should().BeInAscendingOrder();
 
         tree.Contains(10).Should().BeFalse();
         tree.Contains(100).Should().BeFalse();
         tree.Contains(200).Should().BeFalse();
+		_logger.LogWarning("<<< Exiting BTree_HighDegree_StressTest()");
     }
 }

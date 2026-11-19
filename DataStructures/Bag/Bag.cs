@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Bag;
 
@@ -15,6 +16,7 @@ namespace DataStructures.Bag;
 /// <typeparam name="T">Generic Type.</typeparam>
 public class Bag<T> : IEnumerable<T> where T : notnull
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private BagNode<T>? head;
     private int totalCount;
 
@@ -23,8 +25,10 @@ public class Bag<T> : IEnumerable<T> where T : notnull
     /// </summary>
     public Bag()
     {
+		_logger.LogError(">>> Entering Bag()");
         head = null;
         totalCount = 0;
+		_logger.LogDebug("Bag(): totalCount → {TotalCount}", totalCount);
     }
 
     /// <summary>
@@ -32,16 +36,21 @@ public class Bag<T> : IEnumerable<T> where T : notnull
     /// </summary>
     public void Add(T item)
     {
+		_logger.LogError(">>> Entering Add(item={Item})", item);
         // If the bag is empty, create the first node
         if (head == null)
         {
             head = new BagNode<T>(item);
+			_logger.LogError("Add(item={Item}): head → {Head}", item, head);
+			_logger.LogDebug("Add(item={Item}): head → {Head}", item, head);
             totalCount = 1;
+			_logger.LogDebug("Add(item={Item}): totalCount → {TotalCount}", item, totalCount);
             return;
         }
 
         // Check if item already exists
         var current = head;
+		_logger.LogError("Add(item={Item}): current → {Current}", item, current);
         BagNode<T>? previous = null;
 
         while (current != null)
@@ -54,11 +63,13 @@ public class Bag<T> : IEnumerable<T> where T : notnull
             }
 
             previous = current;
+			_logger.LogDebug("Add(item={Item}): previous → {Previous}", item, previous);
             current = current.Next;
         }
 
         previous!.Next = new BagNode<T>(item);
         totalCount++;
+		_logger.LogWarning("<<< Exiting Add(item={Item})", item);
     }
 
     /// <summary>
@@ -66,8 +77,11 @@ public class Bag<T> : IEnumerable<T> where T : notnull
     /// </summary>
     public void Clear()
     {
+		_logger.LogError(">>> Entering Clear()");
         head = null;
         totalCount = 0;
+		_logger.LogDebug("Clear(): head → {Head}", head);
+    _logger.LogWarning("<<< Exiting Clear()");
     }
 
     /// <summary>
@@ -78,15 +92,22 @@ public class Bag<T> : IEnumerable<T> where T : notnull
     /// <summary>
     /// Returns a boolean indicating whether the bag is empty.
     /// </summary>
-    public bool IsEmpty() => head == null;
+    public bool IsEmpty()
+    {
+        _logger.LogError(">>> Entering IsEmpty()");
+        _logger.LogWarning("<<< Exiting IsEmpty()");
+        return head == null;
+    }
 
     /// <summary>
     /// Returns an enumerator that iterates through the bag.
     /// </summary>
     public IEnumerator<T> GetEnumerator()
     {
+		_logger.LogError(">>> Entering GetEnumerator()");
         var current = head;
 
+		_logger.LogError("GetEnumerator(): current → {Current}", current);
         while (current != null)
         {
             // Yield the item as many times as its multiplicity, pretending they are separate items
@@ -97,6 +118,7 @@ public class Bag<T> : IEnumerable<T> where T : notnull
 
             current = current.Next;
         }
+		_logger.LogWarning("<<< Exiting GetEnumerator()");
     }
 
     /// <summary>

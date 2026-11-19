@@ -1,6 +1,7 @@
 using Algorithms.Numeric;
 using NUnit.Framework;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
@@ -9,6 +10,7 @@ namespace Algorithms.Tests.Numeric;
 /// </summary>
 public static class SigmoidTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // Standard tolerance for floating-point comparisons.
     private const double Tolerance = 1e-15;
 
@@ -19,15 +21,18 @@ public static class SigmoidTests
     [Test]
     public static void GetsCenterValue()
     {
+		_logger.LogError(">>> Entering GetsCenterValue()");
         // Arrange
         double x = 0.0;
         double expected = 0.5;
 
         // Act
         var result = Sigmoid.Calculate(x);
+		_logger.LogError("GetsCenterValue(): result → {Result}", result);
 
         // Assert
         Assert.That(result, Is.EqualTo(expected).Within(Tolerance));
+		_logger.LogWarning("<<< Exiting GetsCenterValue()");
     }
 
     /// <summary>
@@ -36,16 +41,19 @@ public static class SigmoidTests
     [Test]
     public static void GetsAsymptoticValueForLargePositiveX()
     {
+		_logger.LogError(">>> Entering GetsAsymptoticValueForLargePositiveX()");
         // Arrange
         double x = 100.0;
         double expected = 1.0; 
 
         // Act
         var result = Sigmoid.Calculate(x);
+		_logger.LogError("GetsAsymptoticValueForLargePositiveX(): result → {Result}", result);
 
         // Assert
         // The result should be extremely close to 1.0. 
         Assert.That(result, Is.EqualTo(expected).Within(1e-10));
+		_logger.LogWarning("<<< Exiting GetsAsymptoticValueForLargePositiveX()");
     }
     
     /// <summary>
@@ -54,16 +62,19 @@ public static class SigmoidTests
     [Test]
     public static void GetsAsymptoticValueForLargeNegativeX()
     {
+		_logger.LogError(">>> Entering GetsAsymptoticValueForLargeNegativeX()");
         // Arrange
         double x = -100.0;
         double expected = 0.0;
 
         // Act
         var result = Sigmoid.Calculate(x);
+		_logger.LogError("GetsAsymptoticValueForLargeNegativeX(): result → {Result}", result);
 
         // Assert
         // The result should be extremely close to 0.0.
         Assert.That(result, Is.EqualTo(expected).Within(1e-10));
+		_logger.LogWarning("<<< Exiting GetsAsymptoticValueForLargeNegativeX()");
     }
 
     /// <summary>
@@ -80,11 +91,14 @@ public static class SigmoidTests
     [TestCase(-0.5, 0.3775406687981454)]
     public static void GetsStandardSigmoidValues(double input, double expected)
     {
+		_logger.LogError(">>> Entering GetsStandardSigmoidValues(input={Input},expected={Expected})", input, expected);
         // Act
         var result = Sigmoid.Calculate(input);
+		_logger.LogError("GetsStandardSigmoidValues(input={Input},expected={Expected}): result → {Result}", input, expected, result);
 
         // Assert
         Assert.That(result, Is.EqualTo(expected).Within(Tolerance));
+		_logger.LogWarning("<<< Exiting GetsStandardSigmoidValues(input={Input},expected={Expected})", input, expected);
     }
 
     /// <summary>
@@ -93,6 +107,7 @@ public static class SigmoidTests
     [Test]
     public static void HandlesFractionalAndLargeInput()
     {
+		_logger.LogError(">>> Entering HandlesFractionalAndLargeInput()");
         // Arrange
         double x1 = 3.14159; // PI approximation
         // Corrected expected value: 1 / (1 + e^-3.14159)
@@ -104,10 +119,13 @@ public static class SigmoidTests
 
         // Act & Assert 1
         var result1 = Sigmoid.Calculate(x1);
+		_logger.LogError("HandlesFractionalAndLargeInput(): result1 → {Result1}", result1);
         Assert.That(result1, Is.EqualTo(expected1).Within(Tolerance));
         
         // Act & Assert 2
         var result2 = Sigmoid.Calculate(x2);
+		_logger.LogError("HandlesFractionalAndLargeInput(): result2 → {Result2}", result2);
         Assert.That(result2, Is.EqualTo(expected2).Within(Tolerance));
+		_logger.LogWarning("<<< Exiting HandlesFractionalAndLargeInput()");
     }
 }

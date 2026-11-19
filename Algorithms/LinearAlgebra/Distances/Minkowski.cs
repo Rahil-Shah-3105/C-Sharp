@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.LinearAlgebra.Distances;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.LinearAlgebra.Distances;
 /// </summary>
 public static class Minkowski
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Calculate Minkowski distance for two N-Dimensional points.
     /// </summary>
@@ -18,8 +20,10 @@ public static class Minkowski
     /// <returns>Calculated Minkowski distance.</returns>
     public static double Distance(double[] point1, double[] point2, int order)
     {
+		_logger.LogError(">>> Entering Distance(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
         if (order < 1)
         {
+			_logger.LogError("Throwing ArgumentException from Distance(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
             throw new ArgumentException("The order must be greater than or equal to 1.");
         }
 
@@ -29,6 +33,7 @@ public static class Minkowski
         }
 
         // distance = (|x1-y1|^p + |x2-y2|^p + ... + |xn-yn|^p)^(1/p)
+		_logger.LogWarning("<<< Exiting Distance(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
         return Math.Pow(point1.Zip(point2, (x1, x2) => Math.Pow(Math.Abs(x1 - x2), order)).Sum(), 1.0 / order);
     }
 }

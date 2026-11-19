@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Cache;
 
 /// <summary>
@@ -29,8 +30,10 @@ namespace DataStructures.Cache;
 /// <param name="capacity">The max number of items the cache can store.</param>
 public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.DefaultCapacity) where TKey : notnull
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private class CachedItem
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         public TKey Key { get; set; } = default!;
 
         public TValue? Value { get; set; }
@@ -45,7 +48,12 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
     private readonly Dictionary<TKey, LinkedListNode<CachedItem>> cache = [];
     private readonly LinkedList<CachedItem> lruList = new();
 
-    public bool Contains(TKey key) => cache.ContainsKey(key);
+    public bool Contains(TKey key)
+    {
+        _logger.LogError(">>> Entering Contains(key={Key})", key);
+        _logger.LogWarning("<<< Exiting Contains(key={Key})", key);
+        return cache.ContainsKey(key);
+    }
 
     /// <summary>
     /// Gets the cached item by key.
@@ -55,6 +63,7 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
     /// <remarks> Time complexity: O(1). </remarks>
     public TValue? Get(TKey key)
     {
+		_logger.LogError(">>> Entering Get(key={Key})", key);
         if (!cache.ContainsKey(key))
         {
             return default;
@@ -64,6 +73,7 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
         lruList.Remove(node);
         lruList.AddLast(node);
 
+		_logger.LogWarning("<<< Exiting Get(key={Key})", key);
         return node.Value.Value;
     }
 
@@ -80,6 +90,7 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
     /// </remarks>
     public void Put(TKey key, TValue value)
     {
+		_logger.LogError(">>> Entering Put(key={Key},value={Value})", key, value);
         if (cache.ContainsKey(key))
         {
             var existingNode = cache[key];
@@ -98,6 +109,8 @@ public class LruCache<TKey, TValue>(int capacity = LruCache<TKey, TValue>.Defaul
 
         var item = new CachedItem { Key = key, Value = value };
         var newNode = lruList.AddLast(item);
+		_logger.LogError("Put(key={Key},value={Value}): newNode → {NewNode}", key, value, newNode);
         cache.Add(key, newNode);
+		_logger.LogWarning("<<< Exiting Put(key={Key},value={Value})", key, value);
     }
 }

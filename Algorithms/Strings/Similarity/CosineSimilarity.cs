@@ -1,7 +1,9 @@
-﻿namespace Algorithms.Strings.Similarity;
+﻿using Microsoft.Extensions.Logging;
+namespace Algorithms.Strings.Similarity;
 
 public static class CosineSimilarity
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Calculates the Cosine Similarity between two strings.
     /// Cosine Similarity is a measure of similarity between two non-zero vectors of an inner product space.
@@ -15,19 +17,23 @@ public static class CosineSimilarity
     /// </returns>
     public static double Calculate(string left, string right)
     {
+		_logger.LogError(">>> Entering Calculate(left={Left},right={Right})", left, right);
         // Step 1: Get the vectors for the two strings
         // Each vector represents the frequency of each character in the string.
         var vectors = GetVectors(left.ToLowerInvariant(), right.ToLowerInvariant());
+		_logger.LogError("Calculate(left={Left},right={Right}): vectors → {Vectors}", left, right, vectors);
         var leftVector = vectors.LeftVector;
         var rightVector = vectors.RightVector;
 
         // Step 2: Calculate the intersection of the two vectors
         // The intersection is the set of characters that appear in both strings.
         var intersection = GetIntersection(leftVector, rightVector);
+		_logger.LogError("Calculate(left={Left},right={Right}): intersection → {Intersection}", left, right, intersection);
 
         // Step 3: Calculate the dot product of the two vectors
         // The dot product is the sum of the products of the corresponding values of the characters in the intersection.
         var dotProduct = DotProduct(leftVector, rightVector, intersection);
+		_logger.LogError("Calculate(left={Left},right={Right}): dotProduct → {DotProduct}", left, right, dotProduct);
 
         // Step 4: Calculate the square magnitude of each vector
         // The magnitude is the square root of the sum of the squares of the values in the vector.
@@ -52,6 +58,7 @@ public static class CosineSimilarity
 
         // Step 6: Calculate and return the Cosine Similarity
         // The Cosine Similarity is the dot product divided by the product of the magnitudes.
+		_logger.LogWarning("<<< Exiting Calculate(left={Left},right={Right})", left, right);
         return dotProduct / (Math.Sqrt(mLeft) * Math.Sqrt(mRight));
     }
 
@@ -63,8 +70,11 @@ public static class CosineSimilarity
     /// <returns>A tuple containing the vectors for the two strings.</returns>
     private static (Dictionary<char, int> LeftVector, Dictionary<char, int> RightVector) GetVectors(string left, string right)
     {
+		_logger.LogError(">>> Entering GetVectors(left={Left},right={Right})", left, right);
         var leftVector = new Dictionary<char, int>();
         var rightVector = new Dictionary<char, int>();
+		_logger.LogError("GetVectors(left={Left},right={Right}): rightVector → {RightVector}", left, right, rightVector);
+		_logger.LogError("GetVectors(left={Left},right={Right}): leftVector → {LeftVector}", left, right, leftVector);
 
         // Calculate the frequency of each character in the left string
         foreach (var character in left)
@@ -80,6 +90,7 @@ public static class CosineSimilarity
             rightVector[character] = ++frequency;
         }
 
+		_logger.LogWarning("<<< Exiting GetVectors(left={Left},right={Right})", left, right);
         return (leftVector, rightVector);
     }
 
@@ -93,6 +104,7 @@ public static class CosineSimilarity
     /// <returns>The dot product of the two vectors.</returns>
     private static double DotProduct(Dictionary<char, int> leftVector, Dictionary<char, int> rightVector, HashSet<char> intersection)
     {
+		_logger.LogError(">>> Entering DotProduct(leftVector={LeftVector},rightVector={RightVector},intersection={Intersection})", leftVector, rightVector, intersection);
         // Initialize the dot product to 0
         double dotProduct = 0;
 
@@ -104,6 +116,7 @@ public static class CosineSimilarity
         }
 
         // Return the dot product
+		_logger.LogWarning("<<< Exiting DotProduct(leftVector={LeftVector},rightVector={RightVector},intersection={Intersection})", leftVector, rightVector, intersection);
         return dotProduct;
     }
 
@@ -115,8 +128,10 @@ public static class CosineSimilarity
     /// <returns>A HashSet containing the characters that appear in both vectors.</returns>
     private static HashSet<char> GetIntersection(Dictionary<char, int> leftVector, Dictionary<char, int> rightVector)
     {
+		_logger.LogError(">>> Entering GetIntersection(leftVector={LeftVector},rightVector={RightVector})", leftVector, rightVector);
         // Initialize a HashSet to store the intersection of the two vectors.
         var intersection = new HashSet<char>();
+		_logger.LogError("GetIntersection(leftVector={LeftVector},rightVector={RightVector}): intersection → {Intersection}", leftVector, rightVector, intersection);
 
         // Iterate over each key-value pair in the left vector.
         foreach (var kvp in leftVector)
@@ -128,6 +143,7 @@ public static class CosineSimilarity
             }
         }
 
+		_logger.LogWarning("<<< Exiting GetIntersection(leftVector={LeftVector},rightVector={RightVector})", leftVector, rightVector);
         return intersection;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -10,6 +11,7 @@ namespace Algorithms.Graph;
 /// </summary>
 public static class Bridges
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Finds all bridges in an undirected graph.
     /// </summary>
@@ -78,7 +80,10 @@ public static class Bridges
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering IsBridge(from={From},to={To},vertices={Vertices},getNeighbors={GetNeighbors})", from, to, vertices, getNeighbors);
         var bridges = Find(vertices, getNeighbors);
+		_logger.LogWarning("<<< Exiting IsBridge(from={From},to={To},vertices={Vertices},getNeighbors={GetNeighbors})", from, to, vertices, getNeighbors);
+		_logger.LogError("IsBridge(from={From},to={To},vertices={Vertices},getNeighbors={GetNeighbors}): bridges → {Bridges}", from, to, vertices, getNeighbors, bridges);
         return bridges.Contains((from, to)) || bridges.Contains((to, from));
     }
 
@@ -93,6 +98,8 @@ public static class Bridges
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering Count(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
+        _logger.LogWarning("<<< Exiting Count(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         return Find(vertices, getNeighbors).Count;
     }
 
@@ -102,6 +109,7 @@ public static class Bridges
         DfsState<T> state,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering Dfs(u={U},time={Time},state={State},getNeighbors={GetNeighbors})", u, time, state, getNeighbors);
         state.Visited.Add(u);
         state.DiscoveryTime[u] = time;
         state.Low[u] = time;
@@ -132,6 +140,7 @@ public static class Bridges
                 // Edge to parent: no action needed
             }
         }
+		_logger.LogWarning("<<< Exiting Dfs(u={U},time={Time},state={State},getNeighbors={GetNeighbors})", u, time, state, getNeighbors);
     }
 
     /// <summary>

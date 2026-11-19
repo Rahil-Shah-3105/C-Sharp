@@ -1,4 +1,5 @@
-﻿namespace Algorithms.Crypto.Paddings;
+﻿using Microsoft.Extensions.Logging;
+namespace Algorithms.Crypto.Paddings;
 
 /// <summary>
 /// <para>
@@ -18,6 +19,7 @@
 /// </summary>
 public class Iso10126D2Padding : IBlockCipherPadding
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Adds random padding to the input data array to make it a multiple of the block size according to the
     /// ISO10126d2 standard.
@@ -30,11 +32,14 @@ public class Iso10126D2Padding : IBlockCipherPadding
     /// </exception>
     public int AddPadding(byte[] inputData, int inputOffset)
     {
+		_logger.LogError(">>> Entering AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
         // Calculate how many bytes need to be added to reach the next multiple of block size.
         var code = (byte)(inputData.Length - inputOffset);
+		_logger.LogError("AddPadding(inputData={InputData},inputOffset={InputOffset}): code → {Code}", inputData, inputOffset, code);
 
         if (code == 0 || inputOffset + code > inputData.Length)
         {
+			_logger.LogError("Throwing ArgumentException from AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
             throw new ArgumentException("Not enough space in input array for padding");
         }
 
@@ -48,6 +53,7 @@ public class Iso10126D2Padding : IBlockCipherPadding
         // Set the last byte of the array to the size of the padding added.
         inputData[inputOffset] = code;
 
+		_logger.LogWarning("<<< Exiting AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
         return code;
     }
 
@@ -65,12 +71,14 @@ public class Iso10126D2Padding : IBlockCipherPadding
     /// </exception>
     public byte[] RemovePadding(byte[] inputData)
     {
+		_logger.LogError(">>> Entering RemovePadding(inputData={InputData})", inputData);
         // Get the size of the padding from the last byte of the input data.
         var paddingLength = inputData[^1];
 
         // Check if the padding size is valid.
         if (paddingLength < 1 || paddingLength > inputData.Length)
         {
+			_logger.LogError("Throwing ArgumentException from RemovePadding(inputData={InputData})", inputData);
             throw new ArgumentException("Invalid padding length");
         }
 
@@ -80,6 +88,7 @@ public class Iso10126D2Padding : IBlockCipherPadding
         // Copy the original data into the new array.
         Array.Copy(inputData, 0, output, 0, output.Length);
 
+		_logger.LogWarning("<<< Exiting RemovePadding(inputData={InputData})", inputData);
         return output;
     }
 
@@ -92,8 +101,10 @@ public class Iso10126D2Padding : IBlockCipherPadding
     /// <exception cref="ArgumentException">Thrown when the padding block is corrupted.</exception>
     public int GetPaddingCount(byte[] input)
     {
+		_logger.LogError(">>> Entering GetPaddingCount(input={Input})", input);
         if (input == null)
         {
+			_logger.LogError("Throwing ArgumentNullException from GetPaddingCount(input={Input})", input);
             throw new ArgumentNullException(nameof(input), "Input cannot be null");
         }
 
@@ -114,11 +125,14 @@ public class Iso10126D2Padding : IBlockCipherPadding
         // be a positive number. If it's zero or less, it means that either there's no padding, or an invalid negative
         // padding count has shomehow encoded into the last byte of the input array.
         paddingCheckFailed = (paddingStartIndex | (paddingCount - 1)) >> 31;
+		_logger.LogError("GetPaddingCount(input={Input}): paddingCheckFailed → {PaddingCheckFailed}", input, paddingCheckFailed);
         if (paddingCheckFailed != 0)
         {
+			_logger.LogError("Throwing ArgumentException from GetPaddingCount(input={Input})", input);
             throw new ArgumentException("Padding block is corrupted");
         }
 
+		_logger.LogWarning("<<< Exiting GetPaddingCount(input={Input})", input);
         return paddingCount;
     }
 }

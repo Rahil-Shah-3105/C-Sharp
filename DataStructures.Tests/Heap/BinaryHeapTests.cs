@@ -1,25 +1,32 @@
 using DataStructures.Heap;
+using Microsoft.Extensions.Logging;
 
 namespace DataStructures.Tests.Heap;
 
 internal static class BinaryHeapTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static BinaryHeap<int> BuildTestHeap()
     {
+		_logger.LogError(">>> Entering BuildTestHeap()");
         var heap = new BinaryHeap<int>();
         var elems = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+		_logger.LogError("BuildTestHeap(): heap → {Heap}", heap);
         foreach (var i in elems)
         {
             heap.Push(i);
         }
 
+		_logger.LogWarning("<<< Exiting BuildTestHeap()");
         return heap;
     }
 
     [Test]
     public static void Constructor_UseCustomComparer_BuildCorrectHeap()
     {
+		_logger.LogError(">>> Entering Constructor_UseCustomComparer_BuildCorrectHeap()");
         var revHeap = new BinaryHeap<int>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+		_logger.LogError("Constructor_UseCustomComparer_BuildCorrectHeap(): revHeap → {RevHeap}", revHeap);
         foreach (var i in new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
         {
             revHeap.Push(i);
@@ -29,21 +36,27 @@ internal static class BinaryHeapTests
         Assert.That(revHeap.Peek(), Is.EqualTo(1));
         Assert.That(revHeap.Pop(), Is.EqualTo(1));
         Assert.That(revHeap.Peek(), Is.EqualTo(2));
+		_logger.LogWarning("<<< Exiting Constructor_UseCustomComparer_BuildCorrectHeap()");
     }
 
     [Test]
     public static void Push_AddElements_BuildCorrectHeap()
     {
+		_logger.LogError(">>> Entering Push_AddElements_BuildCorrectHeap()");
         var heap = BuildTestHeap();
 
+		_logger.LogError("Push_AddElements_BuildCorrectHeap(): heap → {Heap}", heap);
         Assert.That(heap.Peek(), Is.EqualTo(10));
         Assert.That(heap.Count, Is.EqualTo(10));
+		_logger.LogWarning("<<< Exiting Push_AddElements_BuildCorrectHeap()");
     }
 
     public static void Pop_RemoveElements_HeapStillValid()
     {
+		_logger.LogError(">>> Entering Pop_RemoveElements_HeapStillValid()");
         var heap = BuildTestHeap();
 
+		_logger.LogError("Pop_RemoveElements_HeapStillValid(): heap → {Heap}", heap);
         Assert.That(heap.Peek(), Is.EqualTo(10));
         Assert.That(heap.Count, Is.EqualTo(10));
 
@@ -54,76 +67,100 @@ internal static class BinaryHeapTests
         Assert.That(heap.Pop(), Is.EqualTo(9));
         Assert.That(heap.Count, Is.EqualTo(8));
         Assert.That(heap.Contains(9), Is.False);
+		_logger.LogWarning("<<< Exiting Pop_RemoveElements_HeapStillValid()");
     }
 
     [Test]
     public static void Pop_EmptyHeap_ThrowsCorrectException()
     {
+		_logger.LogError(">>> Entering Pop_EmptyHeap_ThrowsCorrectException()");
         var heap = new BinaryHeap<int>();
 
+		_logger.LogError("Pop_EmptyHeap_ThrowsCorrectException(): heap → {Heap}", heap);
         Assert.Throws<InvalidOperationException>(() => heap.Pop());
+		_logger.LogWarning("<<< Exiting Pop_EmptyHeap_ThrowsCorrectException()");
     }
 
     [Test]
     public static void Peek_NonEmptyHeap_ReturnsCorrectAnswer()
     {
+		_logger.LogError(">>> Entering Peek_NonEmptyHeap_ReturnsCorrectAnswer()");
         var heap = BuildTestHeap();
 
+		_logger.LogError("Peek_NonEmptyHeap_ReturnsCorrectAnswer(): heap → {Heap}", heap);
         Assert.That(heap.Peek(), Is.EqualTo(10));
+		_logger.LogWarning("<<< Exiting Peek_NonEmptyHeap_ReturnsCorrectAnswer()");
     }
 
     [Test]
     public static void Peek_EmptyHeap_ThrowsCorrectException()
     {
+		_logger.LogError(">>> Entering Peek_EmptyHeap_ThrowsCorrectException()");
         var heap = new BinaryHeap<int>();
 
+		_logger.LogError("Peek_EmptyHeap_ThrowsCorrectException(): heap → {Heap}", heap);
         Assert.Throws<InvalidOperationException>(() => heap.Peek());
+		_logger.LogWarning("<<< Exiting Peek_EmptyHeap_ThrowsCorrectException()");
     }
 
     [Test]
     public static void PushPop_EmptyHeap_ReturnsCorrectAnswer()
     {
+		_logger.LogError(">>> Entering PushPop_EmptyHeap_ReturnsCorrectAnswer()");
         var heap = new BinaryHeap<int>();
 
+		_logger.LogError("PushPop_EmptyHeap_ReturnsCorrectAnswer(): heap → {Heap}", heap);
         Assert.That(heap.PushPop(10), Is.EqualTo(10));
+		_logger.LogWarning("<<< Exiting PushPop_EmptyHeap_ReturnsCorrectAnswer()");
     }
 
     [Test]
     public static void PushPop_NonEmptyHeap_ReturnsCorrectAnswer()
     {
+		_logger.LogError(">>> Entering PushPop_NonEmptyHeap_ReturnsCorrectAnswer()");
         var heap = BuildTestHeap();
 
+		_logger.LogError("PushPop_NonEmptyHeap_ReturnsCorrectAnswer(): heap → {Heap}", heap);
         Assert.That(heap.PushPop(20), Is.EqualTo(20));
         Assert.That(heap.PushPop(-10), Is.EqualTo(10));
+		_logger.LogWarning("<<< Exiting PushPop_NonEmptyHeap_ReturnsCorrectAnswer()");
     }
 
     [Test]
     public static void Contains_NonEmptyHeap_ReturnsCorrectAnswer()
     {
+		_logger.LogError(">>> Entering Contains_NonEmptyHeap_ReturnsCorrectAnswer()");
         var heap = BuildTestHeap();
 
+		_logger.LogError("Contains_NonEmptyHeap_ReturnsCorrectAnswer(): heap → {Heap}", heap);
         Assert.That(heap.Contains(1), Is.True);
         Assert.That(heap.Contains(5), Is.True);
         Assert.That(heap.Contains(10), Is.True);
         Assert.That(heap.Contains(11), Is.False);
+		_logger.LogWarning("<<< Exiting Contains_NonEmptyHeap_ReturnsCorrectAnswer()");
     }
 
     [Test]
     public static void Contains_EmptyHeap_ReturnsCorrectAnswer()
     {
+		_logger.LogError(">>> Entering Contains_EmptyHeap_ReturnsCorrectAnswer()");
         var heap = new BinaryHeap<int>();
 
+		_logger.LogError("Contains_EmptyHeap_ReturnsCorrectAnswer(): heap → {Heap}", heap);
         Assert.That(heap.Contains(1), Is.False);
         Assert.That(heap.Contains(5), Is.False);
         Assert.That(heap.Contains(10), Is.False);
         Assert.That(heap.Contains(11), Is.False);
+		_logger.LogWarning("<<< Exiting Contains_EmptyHeap_ReturnsCorrectAnswer()");
     }
 
     [Test]
     public static void Remove_NonEmptyHeap_HeapStillValid()
     {
+		_logger.LogError(">>> Entering Remove_NonEmptyHeap_HeapStillValid()");
         var heap = BuildTestHeap();
 
+		_logger.LogError("Remove_NonEmptyHeap_HeapStillValid(): heap → {Heap}", heap);
         heap.Remove(2);
         Assert.That(heap.Contains(2), Is.False);
         Assert.That(heap.Peek(), Is.EqualTo(10));
@@ -140,13 +177,17 @@ internal static class BinaryHeapTests
         Assert.That(heap.Count, Is.EqualTo(7));
 
         Assert.Throws<ArgumentException>(() => heap.Remove(11));
+		_logger.LogWarning("<<< Exiting Remove_NonEmptyHeap_HeapStillValid()");
     }
 
     [Test]
     public static void Remove_EmptyHeap_ThrowsCorrectException()
     {
+		_logger.LogError(">>> Entering Remove_EmptyHeap_ThrowsCorrectException()");
         var heap = new BinaryHeap<int>();
 
+		_logger.LogError("Remove_EmptyHeap_ThrowsCorrectException(): heap → {Heap}", heap);
         Assert.Throws<ArgumentException>(() => heap.Remove(1));
+		_logger.LogWarning("<<< Exiting Remove_EmptyHeap_ThrowsCorrectException()");
     }
 }

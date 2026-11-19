@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class GnomeSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Moves forward through the array until it founds two elements out of order,
     ///     then swaps them and move back one position,
@@ -17,6 +19,7 @@ public class GnomeSorter<T> : IComparisonSorter<T>
     /// <param name="comparer">Compares elements.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogError(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         int index = 0;
 
         while (index < array.Length)
@@ -31,10 +34,13 @@ public class GnomeSorter<T> : IComparisonSorter<T>
                 index--;
             }
         }
+		_logger.LogWarning("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 
     public void Swap(T[] array, int index1, int index2)
     {
+		_logger.LogError(">>> Entering Swap(array={Array},index1={Index1},index2={Index2})", array, index1, index2);
         (array[index1], array[index2]) = (array[index2], array[index1]);
+		_logger.LogWarning("<<< Exiting Swap(array={Array},index1={Index1},index2={Index2})", array, index1, index2);
     }
 }

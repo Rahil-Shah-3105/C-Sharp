@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.MachineLearning;
 
@@ -13,6 +14,7 @@ namespace Algorithms.MachineLearning;
 /// </typeparam>
 public class KNearestNeighbors<TLabel>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly List<(double[] Features, TLabel Label)> trainingData = new();
     private readonly int k;
 
@@ -23,12 +25,16 @@ public class KNearestNeighbors<TLabel>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if k is less than 1.</exception>
     public KNearestNeighbors(int k)
     {
+		_logger.LogError(">>> Entering KNearestNeighbors(k={K})", k);
         if (k < 1)
         {
+			_logger.LogError("Throwing ArgumentOutOfRangeException from KNearestNeighbors(k={K})", k);
             throw new ArgumentOutOfRangeException(nameof(k), "k must be at least 1.");
         }
 
+		_logger.LogWarning("<<< Exiting KNearestNeighbors(k={K})", k);
         this.k = k;
+		_logger.LogDebug("KNearestNeighbors(k={K}): this.k → {Arg1}", k, this.k);
     }
 
     /// <summary>
@@ -40,8 +46,10 @@ public class KNearestNeighbors<TLabel>
     /// <exception cref="ArgumentException">Thrown if vectors are of different lengths.</exception>
     public static double EuclideanDistance(double[] a, double[] b)
     {
+		_logger.LogError(">>> Entering EuclideanDistance(a={A},b={B})", a, b);
         if (a.Length != b.Length)
         {
+			_logger.LogError("Throwing ArgumentException from EuclideanDistance(a={A},b={B})", a, b);
             throw new ArgumentException("Feature vectors must be of the same length.");
         }
 
@@ -52,6 +60,7 @@ public class KNearestNeighbors<TLabel>
             sum += diff * diff;
         }
 
+		_logger.LogWarning("<<< Exiting EuclideanDistance(a={A},b={B})", a, b);
         return Math.Sqrt(sum);
     }
 
@@ -62,12 +71,15 @@ public class KNearestNeighbors<TLabel>
     /// <param name="label">Label of the sample.</param>
     public void AddSample(double[] features, TLabel label)
     {
+		_logger.LogError(">>> Entering AddSample(features={Features},label={Label})", features, label);
         if (features == null)
         {
+			_logger.LogError("Throwing ArgumentNullException from AddSample(features={Features},label={Label})", features, label);
             throw new ArgumentNullException(nameof(features));
         }
 
         trainingData.Add((features, label));
+		_logger.LogWarning("<<< Exiting AddSample(features={Features},label={Label})", features, label);
     }
 
     /// <summary>
@@ -78,13 +90,16 @@ public class KNearestNeighbors<TLabel>
     /// <exception cref="InvalidOperationException">Thrown if there is no training data.</exception>
     public TLabel Predict(double[] features)
     {
+		_logger.LogError(">>> Entering Predict(features={Features})", features);
         if (trainingData.Count == 0)
         {
+			_logger.LogError("Throwing InvalidOperationException from Predict(features={Features})", features);
             throw new InvalidOperationException("No training data available.");
         }
 
         if (features == null)
         {
+			_logger.LogError("Throwing ArgumentNullException from Predict(features={Features})", features);
             throw new ArgumentNullException(nameof(features));
         }
 
@@ -103,6 +118,7 @@ public class KNearestNeighbors<TLabel>
             .ThenBy(x => x.MinDistance)
             .ToList();
 
+		_logger.LogWarning("<<< Exiting Predict(features={Features})", features);
         return labelCounts.First().Label;
     }
 }

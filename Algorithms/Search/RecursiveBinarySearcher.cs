@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Search;
 /// <typeparam name="T">Type of searcher target.</typeparam>
 public class RecursiveBinarySearcher<T> where T : IComparable<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds index of item in collection that equals to item searched for,
     ///     time complexity: O(log(n)),
@@ -18,14 +20,18 @@ public class RecursiveBinarySearcher<T> where T : IComparable<T>
     /// <returns>Index of item that equals to item searched for or -1 if none found.</returns>
     public int FindIndex(IList<T>? collection, T item)
     {
+		_logger.LogError(">>> Entering FindIndex(collection={Collection},item={Item})", collection, item);
         if (collection is null)
         {
+			_logger.LogError("Throwing ArgumentNullException from FindIndex(collection={Collection},item={Item})", collection, item);
             throw new ArgumentNullException(nameof(collection));
         }
 
         var leftIndex = 0;
         var rightIndex = collection.Count - 1;
 
+		_logger.LogWarning("<<< Exiting FindIndex(collection={Collection},item={Item})", collection, item);
+		_logger.LogWarning("<<< Exiting FindIndex(collection={Collection},item={Item},leftIndex={LeftIndex},rightIndex={RightIndex})", collection, item, leftIndex, rightIndex);
         return FindIndex(collection, item, leftIndex, rightIndex);
     }
 

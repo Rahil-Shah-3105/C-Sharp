@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Crypto.Utils;
 
 /// <summary>
@@ -11,6 +12,7 @@ namespace Algorithms.Crypto.Utils;
 /// </remarks>
 public static class LongUtils
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Rotates the bits of a 64-bit signed integer to the left by a specified number of bits.
     /// </summary>
@@ -24,6 +26,8 @@ public static class LongUtils
     /// </remarks>
     public static long RotateLeft(long i, int distance)
     {
+		_logger.LogError(">>> Entering RotateLeft(i={I},distance={Distance})", i, distance);
+        _logger.LogWarning("<<< Exiting RotateLeft(i={I},distance={Distance})", i, distance);
         return (long)BitOperations.RotateLeft((ulong)i, distance);
     }
 
@@ -56,6 +60,8 @@ public static class LongUtils
     /// </remarks>
     public static long RotateRight(long i, int distance)
     {
+		_logger.LogError(">>> Entering RotateRight(i={I},distance={Distance})", i, distance);
+        _logger.LogWarning("<<< Exiting RotateRight(i={I},distance={Distance})", i, distance);
         return (long)BitOperations.RotateRight((ulong)i, distance);
     }
 

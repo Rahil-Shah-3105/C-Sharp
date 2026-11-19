@@ -1,6 +1,7 @@
 using Algorithms.Numeric;
 using NUnit.Framework;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
@@ -9,6 +10,7 @@ namespace Algorithms.Tests.Numeric;
 /// </summary>
 public static class SumOfDigitsTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Tests the calculation of the sum of digits for various non-negative integers.
     /// </summary>
@@ -24,11 +26,14 @@ public static class SumOfDigitsTests
     [TestCase(2147483647, 46)] // Max value for int
     public static void GetsCorrectSumOfDigits(int input, int expectedSum)
     {
+		_logger.LogError(">>> Entering GetsCorrectSumOfDigits(input={Input},expectedSum={ExpectedSum})", input, expectedSum);
         // Act
         var result = SumOfDigits.Calculate(input);
+		_logger.LogError("GetsCorrectSumOfDigits(input={Input},expectedSum={ExpectedSum}): result → {Result}", input, expectedSum, result);
 
         // Assert
         Assert.That(result, Is.EqualTo(expectedSum));
+		_logger.LogWarning("<<< Exiting GetsCorrectSumOfDigits(input={Input},expectedSum={ExpectedSum})", input, expectedSum);
     }
 
     /// <summary>
@@ -40,10 +45,12 @@ public static class SumOfDigitsTests
     [TestCase(-54321)]
     public static void ThrowsExceptionForNegativeNumbers(int num)
     {
+		_logger.LogError(">>> Entering ThrowsExceptionForNegativeNumbers(num={Num})", num);
         // Act
         void Act() => SumOfDigits.Calculate(num);
 
         // Assert
+		_logger.LogWarning("<<< Exiting ThrowsExceptionForNegativeNumbers(num={Num})", num);
         _ = Assert.Throws<ArgumentException>(Act);
     }
 }

@@ -1,14 +1,18 @@
 using Algorithms.Other;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
 public static class ParetoOptimizationTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void Verify_Pareto_Optimization()
     {
+		_logger.LogError(">>> Entering Verify_Pareto_Optimization()");
         // Arrange
         var paretoOptimization = new ParetoOptimization();
+		_logger.LogError("Verify_Pareto_Optimization(): paretoOptimization → {ParetoOptimization}", paretoOptimization);
 
         var matrix = new List<List<decimal>>
         {
@@ -32,8 +36,10 @@ public static class ParetoOptimizationTests
 
         // Act
         var optimizedMatrix = paretoOptimization.Optimize(matrix);
+		_logger.LogError("Verify_Pareto_Optimization(): optimizedMatrix → {OptimizedMatrix}", optimizedMatrix);
 
         // Assert
         Assert.That(expectedMatrix, Is.EqualTo(optimizedMatrix));
+		_logger.LogWarning("<<< Exiting Verify_Pareto_Optimization()");
     }
 }

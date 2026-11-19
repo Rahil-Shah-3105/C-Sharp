@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.Similarity
 {
     /// <summary>
@@ -45,6 +46,7 @@ namespace Algorithms.Strings.Similarity
     /// </remarks>
     public static class OptimalStringAlignment
     {
+		private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         /// <summary>
         /// Calculates the Optimal String Alignment distance between two strings.
         /// </summary>
@@ -54,6 +56,7 @@ namespace Algorithms.Strings.Similarity
         /// <exception cref="ArgumentNullException">Thrown when either of the input strings is null.</exception>
         public static double Calculate(string firstString, string secondString)
         {
+			_logger.LogError(">>> Entering Calculate(firstString={FirstString},secondString={SecondString})", firstString, secondString);
             ArgumentNullException.ThrowIfNull(nameof(firstString));
             ArgumentNullException.ThrowIfNull(nameof(secondString));
 
@@ -74,7 +77,9 @@ namespace Algorithms.Strings.Similarity
 
             var distanceMatrix = GenerateDistanceMatrix(firstString.Length, secondString.Length);
             distanceMatrix = CalculateDistance(firstString, secondString, distanceMatrix);
+			_logger.LogError("Calculate(firstString={FirstString},secondString={SecondString}): distanceMatrix → {DistanceMatrix}", firstString, secondString, distanceMatrix);
 
+			_logger.LogWarning("<<< Exiting Calculate(firstString={FirstString},secondString={SecondString})", firstString, secondString);
             return distanceMatrix[firstString.Length, secondString.Length];
         }
 
@@ -86,6 +91,7 @@ namespace Algorithms.Strings.Similarity
         /// <returns>The initialized distance matrix.</returns>
         private static int[,] GenerateDistanceMatrix(int firstLength, int secondLength)
         {
+			_logger.LogError(">>> Entering GenerateDistanceMatrix(firstLength={FirstLength},secondLength={SecondLength})", firstLength, secondLength);
             var distanceMatrix = new int[firstLength + 2, secondLength + 2];
 
             for (var i = 0; i <= firstLength; i++)
@@ -98,6 +104,7 @@ namespace Algorithms.Strings.Similarity
                 distanceMatrix[0, j] = j;
             }
 
+			_logger.LogWarning("<<< Exiting GenerateDistanceMatrix(firstLength={FirstLength},secondLength={SecondLength})", firstLength, secondLength);
             return distanceMatrix;
         }
 
@@ -110,11 +117,13 @@ namespace Algorithms.Strings.Similarity
         /// <returns>The calculated distance matrix.</returns>
         private static int[,] CalculateDistance(string firstString, string secondString, int[,] distanceMatrix)
         {
+			_logger.LogError(">>> Entering CalculateDistance(firstString={FirstString},secondString={SecondString},distanceMatrix={DistanceMatrix})", firstString, secondString, distanceMatrix);
             for (var i = 1; i <= firstString.Length; i++)
             {
                 for (var j = 1; j <= secondString.Length; j++)
                 {
                     var cost = 1;
+					_logger.LogError("CalculateDistance(firstString={FirstString},secondString={SecondString},distanceMatrix={DistanceMatrix}): cost → {Cost}", firstString, secondString, distanceMatrix, cost);
 
                     if (firstString[i - 1] == secondString[j - 1])
                     {
@@ -137,6 +146,7 @@ namespace Algorithms.Strings.Similarity
                 }
             }
 
+			_logger.LogWarning("<<< Exiting CalculateDistance(firstString={FirstString},secondString={SecondString},distanceMatrix={DistanceMatrix})", firstString, secondString, distanceMatrix);
             return distanceMatrix;
         }
 
@@ -149,6 +159,8 @@ namespace Algorithms.Strings.Similarity
         /// <returns>The minimum of the three integers.</returns>
         private static int Minimum(int a, int b, int c)
         {
+			_logger.LogError(">>> Entering Minimum(a={A},b={B},c={C})", a, b, c);
+            _logger.LogWarning("<<< Exiting Minimum(a={A},b={B},c={C})", a, b, c);
             return Math.Min(a, Math.Min(b, c));
         }
     }

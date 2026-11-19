@@ -1,4 +1,5 @@
 using SkiaSharp;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Other;
 
@@ -21,6 +22,7 @@ namespace Algorithms.Other;
 /// </summary>
 public static class Mandelbrot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private const byte Alpha = 255;
 
     /// <summary>
@@ -49,8 +51,10 @@ public static class Mandelbrot
         int maxStep = 50,
         bool useDistanceColorCoding = true)
     {
+		_logger.LogError(">>> Entering GetBitmap(bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight},figureCenterX={FigureCenterX},figureCenterY={FigureCenterY},figureWidth={FigureWidth},maxStep={MaxStep},useDistanceColorCoding={UseDistanceColorCoding})", bitmapWidth, bitmapHeight, figureCenterX, figureCenterY, figureWidth, maxStep, useDistanceColorCoding);
         if (bitmapWidth <= 0)
         {
+			_logger.LogError("Throwing ArgumentOutOfRangeException from GetBitmap(bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight},figureCenterX={FigureCenterX},figureCenterY={FigureCenterY},figureWidth={FigureWidth},maxStep={MaxStep},useDistanceColorCoding={UseDistanceColorCoding})", bitmapWidth, bitmapHeight, figureCenterX, figureCenterY, figureWidth, maxStep, useDistanceColorCoding);
             throw new ArgumentOutOfRangeException(
                 nameof(bitmapWidth),
                 $"{nameof(bitmapWidth)} should be greater than zero");
@@ -71,6 +75,7 @@ public static class Mandelbrot
         }
 
         var bitmap = new SKBitmap(bitmapWidth, bitmapHeight);
+		_logger.LogError("GetBitmap(bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight},figureCenterX={FigureCenterX},figureCenterY={FigureCenterY},figureWidth={FigureWidth},maxStep={MaxStep},useDistanceColorCoding={UseDistanceColorCoding}): bitmap → {Bitmap}", bitmapWidth, bitmapHeight, figureCenterX, figureCenterY, figureWidth, maxStep, useDistanceColorCoding, bitmap);
         var figureHeight = figureWidth / bitmapWidth * bitmapHeight;
 
         // loop through the bitmap-coordinates
@@ -80,9 +85,12 @@ public static class Mandelbrot
             {
                 // determine the figure-coordinates based on the bitmap-coordinates
                 var figureX = figureCenterX + ((double)bitmapX / bitmapWidth - 0.5) * figureWidth;
+				_logger.LogError("GetBitmap(bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight},figureCenterX={FigureCenterX},figureCenterY={FigureCenterY},figureWidth={FigureWidth},maxStep={MaxStep},useDistanceColorCoding={UseDistanceColorCoding}): figureX → {FigureX}", bitmapWidth, bitmapHeight, figureCenterX, figureCenterY, figureWidth, maxStep, useDistanceColorCoding, figureX);
                 var figureY = figureCenterY + ((double)bitmapY / bitmapHeight - 0.5) * figureHeight;
+				_logger.LogError("GetBitmap(bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight},figureCenterX={FigureCenterX},figureCenterY={FigureCenterY},figureWidth={FigureWidth},maxStep={MaxStep},useDistanceColorCoding={UseDistanceColorCoding}): figureY → {FigureY}", bitmapWidth, bitmapHeight, figureCenterX, figureCenterY, figureWidth, maxStep, useDistanceColorCoding, figureY);
 
                 var distance = GetDistance(figureX, figureY, maxStep);
+				_logger.LogError("GetBitmap(bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight},figureCenterX={FigureCenterX},figureCenterY={FigureCenterY},figureWidth={FigureWidth},maxStep={MaxStep},useDistanceColorCoding={UseDistanceColorCoding}): distance → {Distance}", bitmapWidth, bitmapHeight, figureCenterX, figureCenterY, figureWidth, maxStep, useDistanceColorCoding, distance);
 
                 // color the corresponding pixel based on the selected coloring-function
                 bitmap.SetPixel(
@@ -92,6 +100,7 @@ public static class Mandelbrot
             }
         }
 
+		_logger.LogWarning("<<< Exiting GetBitmap(bitmapWidth={BitmapWidth},bitmapHeight={BitmapHeight},figureCenterX={FigureCenterX},figureCenterY={FigureCenterY},figureWidth={FigureWidth},maxStep={MaxStep},useDistanceColorCoding={UseDistanceColorCoding})", bitmapWidth, bitmapHeight, figureCenterX, figureCenterY, figureWidth, maxStep, useDistanceColorCoding);
         return bitmap;
     }
 
@@ -116,6 +125,8 @@ public static class Mandelbrot
     {
         if (distance >= 1)
         {
+			_logger.LogError(">>> Entering ColorCodedColorMap(distance={Distance})", distance);
+			_logger.LogWarning("<<< Exiting ColorCodedColorMap(distance={Distance})", distance);
             return new SKColor(0, 0, 0, Alpha);
         }
 
@@ -127,10 +138,13 @@ public static class Mandelbrot
         var hi = (int)Math.Floor(hue / 60) % 6;
         var f = hue / 60 - Math.Floor(hue / 60);
 
+		_logger.LogError("ColorCodedColorMap(distance={Distance}): hi → {Hi}", distance, hi);
         var v = (byte)val;
         const byte p = 0;
+		_logger.LogError("ColorCodedColorMap(distance={Distance}): f → {F}", distance, f);
         var q = (byte)(val * (1 - f * saturation));
         var t = (byte)(val * (1 - (1 - f) * saturation));
+		_logger.LogError("ColorCodedColorMap(distance={Distance}): v → {V}", distance, v);
 
         switch (hi)
         {
@@ -140,6 +154,8 @@ public static class Mandelbrot
             case 3: return new SKColor(p, q, v, Alpha);
             case 4: return new SKColor(t, p, v, Alpha);
             default: return new SKColor(v, p, q, Alpha);
+			_logger.LogError("ColorCodedColorMap(distance={Distance}): q → {Q}", distance, q);
+			_logger.LogError("ColorCodedColorMap(distance={Distance}): t → {T}", distance, t);
         }
     }
 
@@ -154,12 +170,16 @@ public static class Mandelbrot
     /// <returns>The relative distance as the ratio of steps taken to maxStep.</returns>
     private static double GetDistance(double figureX, double figureY, int maxStep)
     {
+		_logger.LogError(">>> Entering GetDistance(figureX={FigureX},figureY={FigureY},maxStep={MaxStep})", figureX, figureY, maxStep);
         var a = figureX;
         var b = figureY;
+		_logger.LogError("GetDistance(figureX={FigureX},figureY={FigureY},maxStep={MaxStep}): b → {B}", figureX, figureY, maxStep, b);
+		_logger.LogError("GetDistance(figureX={FigureX},figureY={FigureY},maxStep={MaxStep}): a → {A}", figureX, figureY, maxStep, a);
         var currentStep = 0;
         for (var step = 0; step < maxStep; step++)
         {
             currentStep = step;
+			_logger.LogError("GetDistance(figureX={FigureX},figureY={FigureY},maxStep={MaxStep}): currentStep → {CurrentStep}", figureX, figureY, maxStep, currentStep);
             var aNew = a * a - b * b + figureX;
             b = 2 * a * b + figureY;
             a = aNew;
@@ -172,6 +192,7 @@ public static class Mandelbrot
             }
         }
 
+		_logger.LogWarning("<<< Exiting GetDistance(figureX={FigureX},figureY={FigureY},maxStep={MaxStep})", figureX, figureY, maxStep);
         return (double)currentStep / (maxStep - 1);
     }
 }

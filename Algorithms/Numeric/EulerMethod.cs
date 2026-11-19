@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -13,6 +14,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class EulerMethod
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Loops through all the steps until xEnd is reached, adds a point for each step and then
     ///     returns all the points.
@@ -30,8 +32,10 @@ public static class EulerMethod
         double yStart,
         Func<double, double, double> yDerivative)
     {
+		_logger.LogError(">>> Entering EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative})", xStart, xEnd, stepSize, yStart, yDerivative);
         if (xStart >= xEnd)
         {
+			_logger.LogError("Throwing ArgumentOutOfRangeException from EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative})", xStart, xEnd, stepSize, yStart, yDerivative);
             throw new ArgumentOutOfRangeException(
                 nameof(xEnd),
                 $"{nameof(xEnd)} should be greater than {nameof(xStart)}");
@@ -48,6 +52,7 @@ public static class EulerMethod
         double[] firstPoint = [xStart, yStart];
         points.Add(firstPoint);
         var yCurrent = yStart;
+		_logger.LogError("EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative}): yCurrent → {YCurrent}", xStart, xEnd, stepSize, yStart, yDerivative, yCurrent);
         var xCurrent = xStart;
 
         while (xCurrent < xEnd)
@@ -58,6 +63,7 @@ public static class EulerMethod
             points.Add(point);
         }
 
+		_logger.LogWarning("<<< Exiting EulerFull(xStart={XStart},xEnd={XEnd},stepSize={StepSize},yStart={YStart},yDerivative={YDerivative})", xStart, xEnd, stepSize, yStart, yDerivative);
         return points;
     }
 
@@ -75,7 +81,10 @@ public static class EulerMethod
         double yCurrent,
         Func<double, double, double> yDerivative)
     {
+		_logger.LogError(">>> Entering EulerStep(xCurrent={XCurrent},stepSize={StepSize},yCurrent={YCurrent},yDerivative={YDerivative})", xCurrent, stepSize, yCurrent, yDerivative);
         var yNext = yCurrent + stepSize * yDerivative(xCurrent, yCurrent);
+		_logger.LogWarning("<<< Exiting EulerStep(xCurrent={XCurrent},stepSize={StepSize},yCurrent={YCurrent},yDerivative={YDerivative})", xCurrent, stepSize, yCurrent, yDerivative);
+		_logger.LogError("EulerStep(xCurrent={XCurrent},stepSize={StepSize},yCurrent={YCurrent},yDerivative={YDerivative}): yNext → {YNext}", xCurrent, stepSize, yCurrent, yDerivative, yNext);
         return yNext;
     }
 }

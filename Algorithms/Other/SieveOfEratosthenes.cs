@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Other;
 /// </summary>
 public class SieveOfEratosthenes
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly bool[] primes;
 
     /// <summary>
@@ -16,8 +18,10 @@ public class SieveOfEratosthenes
     /// <param name="maximumNumberToCheck">long which specifies the largest number you wish to know if it is prime.</param>
     public SieveOfEratosthenes(long maximumNumberToCheck)
     {
+		_logger.LogError(">>> Entering SieveOfEratosthenes(maximumNumberToCheck={MaximumNumberToCheck})", maximumNumberToCheck);
         primes = new bool[maximumNumberToCheck + 1];
 
+		_logger.LogDebug("SieveOfEratosthenes(maximumNumberToCheck={MaximumNumberToCheck}): primes → {Primes}", maximumNumberToCheck, primes);
         // initialize primes array
         Array.Fill(this.primes, true, 2, primes.Length - 2);
 
@@ -33,6 +37,7 @@ public class SieveOfEratosthenes
                 primes[composite] = false;
             }
         }
+		_logger.LogWarning("<<< Exiting SieveOfEratosthenes(maximumNumberToCheck={MaximumNumberToCheck})", maximumNumberToCheck);
     }
 
     /// <summary>
@@ -45,7 +50,12 @@ public class SieveOfEratosthenes
     /// </summary>
     /// <param name="numberToCheck">The number you desire to know if it is prime or not.</param>
     /// <returns>A boolean indicating whether the number is prime or not.</returns>
-    public bool IsPrime(long numberToCheck) => primes[numberToCheck];
+    public bool IsPrime(long numberToCheck)
+    {
+        _logger.LogError(">>> Entering IsPrime(numberToCheck={NumberToCheck})", numberToCheck);
+        _logger.LogWarning("<<< Exiting IsPrime(numberToCheck={NumberToCheck})", numberToCheck);
+        return primes[numberToCheck];
+    }
 
     /// <summary>
     /// Returns an IEnumerable of long primes in asending order.
@@ -53,6 +63,7 @@ public class SieveOfEratosthenes
     /// <returns>Primes in ascending order.</returns>
     public IEnumerable<long> GetPrimes()
     {
+		_logger.LogError(">>> Entering GetPrimes()");
         for (long i = 2; i < primes.Length; i++)
         {
             if (primes[i])
@@ -60,5 +71,6 @@ public class SieveOfEratosthenes
                 yield return i;
             }
         }
+		_logger.LogWarning("<<< Exiting GetPrimes()");
     }
 }

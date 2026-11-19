@@ -1,9 +1,11 @@
 using Algorithms.Numeric;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
 public static class PerfectSquareTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase(-4, ExpectedResult = false)]
     [TestCase(4, ExpectedResult = true)]
     [TestCase(9, ExpectedResult = true)]
@@ -13,12 +15,15 @@ public static class PerfectSquareTests
     [TestCase(81, ExpectedResult = true)]
     public static bool IsPerfectSquare_ResultIsCorrect(int number)
     {
+		_logger.LogError(">>> Entering IsPerfectSquare_ResultIsCorrect(number={Number})", number);
         // Arrange
 
         // Act
         var result = PerfectSquareChecker.IsPerfectSquare(number);
+		_logger.LogError("IsPerfectSquare_ResultIsCorrect(number={Number}): result → {Result}", number, result);
 
         // Assert
+		_logger.LogWarning("<<< Exiting IsPerfectSquare_ResultIsCorrect(number={Number})", number);
         return result;
     }
 }

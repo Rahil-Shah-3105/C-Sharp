@@ -1,9 +1,11 @@
 using Algorithms.Numeric;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
 public static class PrimeNumberTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Tests the PrimeChecker.IsPrime method with various inputs (primes, composites, edge cases)
     ///     to ensure the result is correct.
@@ -26,12 +28,15 @@ public static class PrimeNumberTests
     [TestCase(100, ExpectedResult = false)] // Larger composite
     public static bool IsPrime_ResultIsCorrect(int number)
     {
+		_logger.LogError(">>> Entering IsPrime_ResultIsCorrect(number={Number})", number);
         // Arrange is implicit here
 
         // Act
         var result = PrimeChecker.IsPrime(number);
+		_logger.LogError("IsPrime_ResultIsCorrect(number={Number}): result → {Result}", number, result);
 
         // Assert
+		_logger.LogWarning("<<< Exiting IsPrime_ResultIsCorrect(number={Number})", number);
         return result;
     }
 }

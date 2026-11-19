@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Deque;
 
 /// <summary>
@@ -22,6 +23,7 @@ namespace DataStructures.Deque;
 /// <typeparam name="T">The type of elements in the deque.</typeparam>
 public class Deque<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // Internal circular array to store elements
     private T[] items;
 
@@ -51,15 +53,22 @@ public class Deque<T>
     /// <exception cref="ArgumentException">Thrown when capacity is less than 1.</exception>
     public Deque(int capacity)
     {
+		_logger.LogError(">>> Entering Deque(capacity={Capacity})", capacity);
         if (capacity < 1)
         {
+			_logger.LogWarning("<<< Exiting Deque()");
+			_logger.LogError("Throwing ArgumentException from Deque(capacity={Capacity})", capacity);
             throw new ArgumentException("Capacity must be at least 1.", nameof(capacity));
         }
 
         items = new T[capacity];
+		_logger.LogDebug("Deque(capacity={Capacity}): items → {Items}", capacity, items);
         front = 0;
+		_logger.LogDebug("Deque(capacity={Capacity}): front → {Front}", capacity, front);
         rear = 0;
+		_logger.LogDebug("Deque(capacity={Capacity}): rear → {Rear}", capacity, rear);
         count = 0;
+		_logger.LogError("Deque(capacity={Capacity}): count → {Count}", capacity, count);
     }
 
     /// <summary>
@@ -83,6 +92,7 @@ public class Deque<T>
     /// </example>
     public void AddFront(T item)
     {
+		_logger.LogError(">>> Entering AddFront(item={Item})", item);
         // Check if we need to resize before adding
         if (count == items.Length)
         {
@@ -92,8 +102,11 @@ public class Deque<T>
         // Move front pointer backward in circular fashion
         // Adding items.Length ensures the result is always positive
         front = (front - 1 + items.Length) % items.Length;
+		_logger.LogError("AddFront(item={Item}): front → {Front}", item, front);
+		_logger.LogDebug("AddFront(item={Item}): front → {Front}", item, front);
         items[front] = item;
         count++;
+		_logger.LogWarning("<<< Exiting AddFront(item={Item})", item);
     }
 
     /// <summary>
@@ -107,6 +120,7 @@ public class Deque<T>
     /// </example>
     public void AddRear(T item)
     {
+		_logger.LogError(">>> Entering AddRear(item={Item})", item);
         // Check if we need to resize before adding
         if (count == items.Length)
         {
@@ -117,7 +131,10 @@ public class Deque<T>
         items[rear] = item;
 
         // Move rear pointer forward in circular fashion
+		_logger.LogWarning("<<< Exiting AddRear(item={Item})", item);
         rear = (rear + 1) % items.Length;
+		_logger.LogError("AddRear(item={Item}): rear → {Rear}", item, rear);
+		_logger.LogDebug("AddRear(item={Item}): rear → {Rear}", item, rear);
         count++;
     }
 
@@ -133,9 +150,11 @@ public class Deque<T>
     /// </example>
     public T RemoveFront()
     {
+		_logger.LogError(">>> Entering RemoveFront()");
         // Validate that deque is not empty
         if (IsEmpty)
         {
+			_logger.LogError("Throwing InvalidOperationException from RemoveFront()");
             throw new InvalidOperationException("Deque is empty.");
         }
 
@@ -147,8 +166,11 @@ public class Deque<T>
 
         // Move front pointer forward in circular fashion
         front = (front + 1) % items.Length;
+		_logger.LogError("RemoveFront(): front → {Front}", front);
+		_logger.LogDebug("RemoveFront(): front → {Front}", front);
         count--;
 
+		_logger.LogWarning("<<< Exiting RemoveFront()");
         return item;
     }
 
@@ -164,14 +186,18 @@ public class Deque<T>
     /// </example>
     public T RemoveRear()
     {
+		_logger.LogError(">>> Entering RemoveRear()");
         // Validate that deque is not empty
         if (IsEmpty)
         {
+			_logger.LogError("Throwing InvalidOperationException from RemoveRear()");
             throw new InvalidOperationException("Deque is empty.");
         }
 
         // Move rear pointer backward to the last element
         rear = (rear - 1 + items.Length) % items.Length;
+		_logger.LogError("RemoveRear(): rear → {Rear}", rear);
+		_logger.LogDebug("RemoveRear(): rear → {Rear}", rear);
 
         // Retrieve the rear element
         T item = items[rear];
@@ -180,6 +206,7 @@ public class Deque<T>
         items[rear] = default!;
         count--;
 
+		_logger.LogWarning("<<< Exiting RemoveRear()");
         return item;
     }
 
@@ -195,12 +222,15 @@ public class Deque<T>
     /// </example>
     public T PeekFront()
     {
+		_logger.LogError(">>> Entering PeekFront()");
         // Validate that deque is not empty
         if (IsEmpty)
         {
+			_logger.LogError("Throwing InvalidOperationException from PeekFront()");
             throw new InvalidOperationException("Deque is empty.");
         }
 
+		_logger.LogWarning("<<< Exiting PeekFront()");
         return items[front];
     }
 
@@ -216,14 +246,18 @@ public class Deque<T>
     /// </example>
     public T PeekRear()
     {
+		_logger.LogError(">>> Entering PeekRear()");
         // Validate that deque is not empty
         if (IsEmpty)
         {
+			_logger.LogError("Throwing InvalidOperationException from PeekRear()");
             throw new InvalidOperationException("Deque is empty.");
         }
 
         // Calculate the index of the last element (rear - 1 in circular array)
         int rearIndex = (rear - 1 + items.Length) % items.Length;
+		_logger.LogError("PeekRear(): rearIndex → {RearIndex}", rearIndex);
+		_logger.LogWarning("<<< Exiting PeekRear()");
         return items[rearIndex];
     }
 
@@ -234,13 +268,18 @@ public class Deque<T>
     /// </summary>
     public void Clear()
     {
+		_logger.LogError(">>> Entering Clear()");
         // Clear all references in the array to help garbage collection
         Array.Clear(items, 0, items.Length);
 
+		_logger.LogWarning("<<< Exiting Clear()");
         // Reset pointers to initial state
         front = 0;
+		_logger.LogDebug("Clear(): front → {Front}", front);
         rear = 0;
+		_logger.LogDebug("Clear(): rear → {Rear}", rear);
         count = 0;
+		_logger.LogError("Clear(): count → {Count}", count);
     }
 
     /// <summary>
@@ -255,6 +294,7 @@ public class Deque<T>
     /// </example>
     public T[] ToArray()
     {
+		_logger.LogError(">>> Entering ToArray()");
         // Create result array with exact size needed
         T[] result = new T[count];
         int index = front;
@@ -266,6 +306,7 @@ public class Deque<T>
             index = (index + 1) % items.Length;
         }
 
+		_logger.LogWarning("<<< Exiting ToArray()");
         return result;
     }
 
@@ -283,6 +324,7 @@ public class Deque<T>
     /// </example>
     public bool Contains(T item)
     {
+		_logger.LogError(">>> Entering Contains(item={Item})", item);
         int index = front;
 
         // Iterate through all elements in order from front to rear
@@ -298,6 +340,7 @@ public class Deque<T>
             index = (index + 1) % items.Length;
         }
 
+		_logger.LogWarning("<<< Exiting Contains(item={Item})", item);
         return false;
     }
 
@@ -309,6 +352,7 @@ public class Deque<T>
     /// </summary>
     private void Resize()
     {
+		_logger.LogError(">>> Entering Resize()");
         // Double the capacity to reduce frequency of future resizes
         int newCapacity = items.Length * 2;
         T[] newItems = new T[newCapacity];
@@ -324,9 +368,13 @@ public class Deque<T>
 
         // Replace old array with new larger array
         items = newItems;
+		_logger.LogDebug("Resize(): items → {Items}", items);
 
         // Reset pointers: front at 0, rear at position after last element
+		_logger.LogWarning("<<< Exiting Resize()");
         front = 0;
+		_logger.LogDebug("Resize(): front → {Front}", front);
         rear = count;
+		_logger.LogDebug("Resize(): rear → {Rear}", rear);
     }
 }

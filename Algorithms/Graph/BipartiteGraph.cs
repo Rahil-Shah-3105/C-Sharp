@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -11,6 +12,7 @@ namespace Algorithms.Graph;
 /// </summary>
 public static class BipartiteGraph
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Checks if a graph is bipartite using BFS-based coloring.
     /// </summary>
@@ -22,8 +24,10 @@ public static class BipartiteGraph
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering IsBipartite(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         if (vertices == null)
         {
+			_logger.LogError("Throwing ArgumentNullException from IsBipartite(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
             throw new ArgumentNullException(nameof(vertices));
         }
 
@@ -33,12 +37,14 @@ public static class BipartiteGraph
         }
 
         var vertexList = vertices.ToList();
+		_logger.LogError("IsBipartite(vertices={Vertices},getNeighbors={GetNeighbors}): vertexList → {VertexList}", vertices, getNeighbors, vertexList);
         if (vertexList.Count == 0)
         {
             return true; // Empty graph is bipartite
         }
 
         var colors = new Dictionary<T, int>();
+		_logger.LogError("IsBipartite(vertices={Vertices},getNeighbors={GetNeighbors}): colors → {Colors}", vertices, getNeighbors, colors);
 
         // Check each connected component
         foreach (var start in vertexList)
@@ -54,6 +60,7 @@ public static class BipartiteGraph
             }
         }
 
+		_logger.LogWarning("<<< Exiting IsBipartite(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         return true;
     }
 
@@ -68,8 +75,10 @@ public static class BipartiteGraph
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering static()");
         if (vertices == null)
         {
+			_logger.LogError("Throwing ArgumentNullException from static()");
             throw new ArgumentNullException(nameof(vertices));
         }
 
@@ -79,12 +88,14 @@ public static class BipartiteGraph
         }
 
         var vertexList = vertices.ToList();
+		_logger.LogError("static(): vertexList → {VertexList}", vertexList);
         if (vertexList.Count == 0)
         {
             return (new HashSet<T>(), new HashSet<T>());
         }
 
         var colors = new Dictionary<T, int>();
+		_logger.LogError("static(): colors → {Colors}", colors);
 
         // Color all components
         foreach (var start in vertexList)
@@ -102,7 +113,9 @@ public static class BipartiteGraph
 
         // Split into two sets based on color
         var setA = new HashSet<T>();
+		_logger.LogError("static(): setA → {SetA}", setA);
         var setB = new HashSet<T>();
+		_logger.LogError("static(): setB → {SetB}", setB);
 
         foreach (var vertex in vertexList)
         {
@@ -116,6 +129,7 @@ public static class BipartiteGraph
             }
         }
 
+		_logger.LogWarning("<<< Exiting static()");
         return (setA, setB);
     }
 
@@ -130,8 +144,10 @@ public static class BipartiteGraph
         IEnumerable<T> vertices,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering IsBipartiteDfs(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         if (vertices == null)
         {
+			_logger.LogError("Throwing ArgumentNullException from IsBipartiteDfs(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
             throw new ArgumentNullException(nameof(vertices));
         }
 
@@ -141,12 +157,14 @@ public static class BipartiteGraph
         }
 
         var vertexList = vertices.ToList();
+		_logger.LogError("IsBipartiteDfs(vertices={Vertices},getNeighbors={GetNeighbors}): vertexList → {VertexList}", vertices, getNeighbors, vertexList);
         if (vertexList.Count == 0)
         {
             return true;
         }
 
         var colors = new Dictionary<T, int>();
+		_logger.LogError("IsBipartiteDfs(vertices={Vertices},getNeighbors={GetNeighbors}): colors → {Colors}", vertices, getNeighbors, colors);
 
         foreach (var start in vertexList)
         {
@@ -161,6 +179,7 @@ public static class BipartiteGraph
             }
         }
 
+		_logger.LogWarning("<<< Exiting IsBipartiteDfs(vertices={Vertices},getNeighbors={GetNeighbors})", vertices, getNeighbors);
         return true;
     }
 
@@ -169,13 +188,17 @@ public static class BipartiteGraph
         Dictionary<T, int> colors,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering BfsColor(start={Start},colors={Colors},getNeighbors={GetNeighbors})", start, colors, getNeighbors);
+        _logger.LogError(">>> Entering BfsColor(start={Start},colors={Colors},getNeighbors={GetNeighbors})", start, colors, getNeighbors);
         var queue = new Queue<T>();
+		_logger.LogError("BfsColor(start={Start},colors={Colors},getNeighbors={GetNeighbors}): queue → {Queue}", start, colors, getNeighbors, queue);
         queue.Enqueue(start);
         colors[start] = 0;
 
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
+			_logger.LogError("BfsColor(start={Start},colors={Colors},getNeighbors={GetNeighbors}): current → {Current}", start, colors, getNeighbors, current);
             var currentColor = colors[current];
             var nextColor = 1 - currentColor;
 
@@ -197,6 +220,7 @@ public static class BipartiteGraph
             }
         }
 
+		_logger.LogWarning("<<< Exiting BfsColor(start={Start},colors={Colors},getNeighbors={GetNeighbors})", start, colors, getNeighbors);
         return true;
     }
 
@@ -206,6 +230,7 @@ public static class BipartiteGraph
         Dictionary<T, int> colors,
         Func<T, IEnumerable<T>> getNeighbors) where T : notnull
     {
+		_logger.LogError(">>> Entering DfsColor(vertex={Vertex},color={Color},colors={Colors},getNeighbors={GetNeighbors})", vertex, color, colors, getNeighbors);
         colors[vertex] = color;
         var nextColor = 1 - color;
 
@@ -228,6 +253,7 @@ public static class BipartiteGraph
             }
         }
 
+		_logger.LogWarning("<<< Exiting DfsColor(vertex={Vertex},color={Color},colors={Colors},getNeighbors={GetNeighbors})", vertex, color, colors, getNeighbors);
         return true;
     }
 }

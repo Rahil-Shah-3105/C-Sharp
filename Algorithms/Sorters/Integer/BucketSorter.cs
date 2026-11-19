@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Integer;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.Sorters.Integer;
 /// </summary>
 public class BucketSorter : IIntegerSorter
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private const int NumOfDigitsInBase10 = 10;
 
     /// <summary>
@@ -13,6 +15,7 @@ public class BucketSorter : IIntegerSorter
     /// <param name="array">Array to sort.</param>
     public void Sort(int[] array)
     {
+		_logger.LogError(">>> Entering Sort(array={Array})", array);
         if (array.Length <= 1)
         {
             return;
@@ -20,6 +23,7 @@ public class BucketSorter : IIntegerSorter
 
         // store maximum number of digits in numbers to sort
         var totalDigits = NumberOfDigits(array);
+		_logger.LogError("Sort(array={Array}): totalDigits → {TotalDigits}", array, totalDigits);
 
         // bucket array where numbers will be placed
         var buckets = new int[NumOfDigitsInBase10, array.Length + 1];
@@ -36,6 +40,7 @@ public class BucketSorter : IIntegerSorter
                 EmptyBucket(buckets); // set size of buckets to 0
             }
         }
+		_logger.LogWarning("<<< Exiting Sort(array={Array})", array);
     }
 
     /// <summary>
@@ -43,7 +48,12 @@ public class BucketSorter : IIntegerSorter
     /// </summary>
     /// <param name="array">Input array.</param>
     /// <returns>Number of digits.</returns>
-    private static int NumberOfDigits(IEnumerable<int> array) => (int)Math.Floor(Math.Log10(array.Max()) + 1);
+    private static int NumberOfDigits(IEnumerable<int> array)
+    {
+        _logger.LogError(">>> Entering NumberOfDigits(array={Array})", array);
+        _logger.LogWarning("<<< Exiting NumberOfDigits(array={Array})", array);
+        return (int)Math.Floor(Math.Log10(array.Max()) + 1);
+    }
 
     /// <summary>
     ///     To distribute elements into buckets based on specified digit.
@@ -53,20 +63,24 @@ public class BucketSorter : IIntegerSorter
     /// <param name="digit">Digit.</param>
     private static void DistributeElements(IEnumerable<int> data, int[,] buckets, int digit)
     {
+		_logger.LogError(">>> Entering DistributeElements(data={Data},buckets={Buckets},digit={Digit})", data, buckets, digit);
         // determine the divisor used to get specific digit
         var divisor = (int)Math.Pow(10, digit);
+		_logger.LogError("DistributeElements(data={Data},buckets={Buckets},digit={Digit}): divisor → {Divisor}", data, buckets, digit, divisor);
 
         foreach (var element in data)
         {
             // bucketNumber example for hundreds digit:
             // ( 1234 % 1000 ) / 100 --> 2
             var bucketNumber = NumOfDigitsInBase10 * (element % divisor) / divisor;
+			_logger.LogError("DistributeElements(data={Data},buckets={Buckets},digit={Digit}): bucketNumber → {BucketNumber}", data, buckets, digit, bucketNumber);
 
             // retrieve value in pail[ bucketNumber , 0 ] to
             // determine the location in row to store element
             var elementNumber = ++buckets[bucketNumber, 0]; // location in bucket to place element
             buckets[bucketNumber, elementNumber] = element;
         }
+		_logger.LogWarning("<<< Exiting DistributeElements(data={Data},buckets={Buckets},digit={Digit})", data, buckets, digit);
     }
 
     /// <summary>
@@ -76,6 +90,7 @@ public class BucketSorter : IIntegerSorter
     /// <param name="buckets">Array of buckets.</param>
     private static void CollectElements(IList<int> data, int[,] buckets)
     {
+		_logger.LogError(">>> Entering CollectElements(data={Data},buckets={Buckets})", data, buckets);
         var subscript = 0; // initialize location in data
 
         // loop over buckets
@@ -87,6 +102,7 @@ public class BucketSorter : IIntegerSorter
                 data[subscript++] = buckets[i, j]; // add element to array
             }
         }
+		_logger.LogWarning("<<< Exiting CollectElements(data={Data},buckets={Buckets})", data, buckets);
     }
 
     /// <summary>
@@ -95,9 +111,11 @@ public class BucketSorter : IIntegerSorter
     /// <param name="buckets">Array of buckets.</param>
     private static void EmptyBucket(int[,] buckets)
     {
+		_logger.LogError(">>> Entering EmptyBucket(buckets={Buckets})", buckets);
         for (var i = 0; i < NumOfDigitsInBase10; i++)
         {
             buckets[i, 0] = 0; // set size of bucket to 0
         }
+		_logger.LogWarning("<<< Exiting EmptyBucket(buckets={Buckets})", buckets);
     }
 }

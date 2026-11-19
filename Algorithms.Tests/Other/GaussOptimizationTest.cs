@@ -1,14 +1,18 @@
 using Algorithms.Other;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
 public static class GaussOptimizationTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void Verify_Gauss_Optimization_Positive()
     {
+		_logger.LogError(">>> Entering Verify_Gauss_Optimization_Positive()");
         // Arrange
         var gaussOptimization = new GaussOptimization();
+		_logger.LogError("Verify_Gauss_Optimization_Positive(): gaussOptimization → {GaussOptimization}", gaussOptimization);
 
         // Declaration of the constants that are used in the function
         var coefficients = new List<double> { 0.3, 0.6, 2.6, 0.3, 0.2, 1.4 };
@@ -39,6 +43,7 @@ public static class GaussOptimizationTest
         // This value is used to control the accuracy of the optimization. In case if the error is less
         // than eps, optimization will be stopped
         double eps = Math.Pow(0.1, 10);
+		_logger.LogError("Verify_Gauss_Optimization_Positive(): eps → {Eps}", eps);
 
         // Act
         (x1, x2) = gaussOptimization.Optimize(func, n, step, eps, x1, x2);
@@ -46,13 +51,16 @@ public static class GaussOptimizationTest
         // Assert
         Assert.That(x1, Is.EqualTo(1).Within(0.3));
         Assert.That(x2, Is.EqualTo(1).Within(0.3));
+		_logger.LogWarning("<<< Exiting Verify_Gauss_Optimization_Positive()");
     }
 
     [Test]
     public static void Verify_Gauss_Optimization_Negative()
     {
+		_logger.LogError(">>> Entering Verify_Gauss_Optimization_Negative()");
         // Arrange
         var gaussOptimization = new GaussOptimization();
+		_logger.LogError("Verify_Gauss_Optimization_Negative(): gaussOptimization → {GaussOptimization}", gaussOptimization);
 
         // Declaration of the constants that are used in the function
         var coefficients = new List<double> { -0.3, -0.6, -2.6, -0.3, -0.2, -1.4 };
@@ -83,6 +91,7 @@ public static class GaussOptimizationTest
         // This value is used to control the accuracy of the optimization. In case if the error is less
         // than eps, optimization will be stopped
         double eps = Math.Pow(0.1, 10);
+		_logger.LogError("Verify_Gauss_Optimization_Negative(): eps → {Eps}", eps);
 
         // Act
         (x1, x2) = gaussOptimization.Optimize(func, n, step, eps, x1, x2);
@@ -90,5 +99,6 @@ public static class GaussOptimizationTest
         // Assert
         Assert.That(x1, Is.EqualTo(-1).Within(0.3));
         Assert.That(x2, Is.EqualTo(-1).Within(0.3));
+		_logger.LogWarning("<<< Exiting Verify_Gauss_Optimization_Negative()");
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Integer;
 
 /// <summary>
@@ -11,6 +12,7 @@ namespace Algorithms.Sorters.Integer;
 /// </summary>
 public class CountingSorter : IIntegerSorter
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     <para>
     ///         Sorts input array using counting sort algorithm.
@@ -25,14 +27,18 @@ public class CountingSorter : IIntegerSorter
     /// <param name="array">Input array.</param>
     public void Sort(int[] array)
     {
+		_logger.LogError(">>> Entering Sort(array={Array})", array);
         if (array.Length == 0)
         {
             return;
         }
 
         var max = array.Max();
+		_logger.LogError("Sort(array={Array}): max → {Max}", array, max);
         var min = array.Min();
+		_logger.LogError("Sort(array={Array}): min → {Min}", array, min);
         var count = new int[max - min + 1];
+		_logger.LogError("Sort(array={Array}): count → {Count}", array, count);
         var output = new int[array.Length];
         for (var i = 0; i < array.Length; i++)
         {
@@ -51,5 +57,6 @@ public class CountingSorter : IIntegerSorter
         }
 
         Array.Copy(output, array, array.Length);
+		_logger.LogWarning("<<< Exiting Sort(array={Array})", array);
     }
 }

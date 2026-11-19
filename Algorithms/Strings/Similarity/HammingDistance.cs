@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.Similarity;
 
 /// <summary>
@@ -11,6 +12,7 @@ namespace Algorithms.Strings.Similarity;
 /// </summary>
 public static class HammingDistance
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates Hamming distance between two strings of equal length.
     /// </summary>
@@ -19,8 +21,10 @@ public static class HammingDistance
     /// <returns>Levenshtein distance between source and target strings.</returns>
     public static int Calculate(string s1, string s2)
     {
+		_logger.LogError(">>> Entering Calculate(s1={S1},s2={S2})", s1, s2);
         if (s1.Length != s2.Length)
         {
+			_logger.LogError("Throwing ArgumentException from Calculate(s1={S1},s2={S2})", s1, s2);
             throw new ArgumentException("Strings must be equal length.");
         }
 
@@ -30,6 +34,7 @@ public static class HammingDistance
             distance += s1[i] != s2[i] ? 1 : 0;
         }
 
+		_logger.LogWarning("<<< Exiting Calculate(s1={S1},s2={S2})", s1, s2);
         return distance;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Problems.DynamicProgramming;
 
 /// <summary>
@@ -10,6 +11,7 @@ namespace Algorithms.Problems.DynamicProgramming;
 /// </summary>
 public static class LevenshteinDistance
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates Levenshtein distance.
     ///     Time and space complexity is O(ab) where a and b are the lengths of the source and target strings.
@@ -19,6 +21,7 @@ public static class LevenshteinDistance
     /// <returns>Levenshtein distance between source and target strings.</returns>
     public static int Calculate(string source, string target)
     {
+		_logger.LogError(">>> Entering Calculate(source={Source},target={Target})", source, target);
         var distances = new int[source.Length + 1, target.Length + 1];
 
         for (var i = 0; i <= source.Length; i++)
@@ -40,6 +43,7 @@ public static class LevenshteinDistance
             }
         }
 
+		_logger.LogWarning("<<< Exiting Calculate(source={Source},target={Target})", source, target);
         return distances[source.Length, target.Length];
     }
 }

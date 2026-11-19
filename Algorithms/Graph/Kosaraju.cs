@@ -1,4 +1,5 @@
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -10,6 +11,7 @@ namespace Algorithms.Graph;
 /// <typeparam name="T">Vertex data type.</typeparam>
 public static class Kosaraju<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// First DFS for Kosaraju algorithm: traverse the graph creating a reverse order explore list <paramref name="reversed"/>.
     /// </summary>
@@ -19,6 +21,7 @@ public static class Kosaraju<T>
     /// <param name="reversed">Reversed list of vertex for the second DFS.</param>
     public static void Visit(Vertex<T> v, IDirectedWeightedGraph<T> graph, HashSet<Vertex<T>> visited, Stack<Vertex<T>> reversed)
     {
+		_logger.LogError(">>> Entering Visit(v={V},graph={Graph},visited={Visited},reversed={Reversed})", v, graph, visited, reversed);
         if (visited.Contains(v))
         {
             return;
@@ -37,6 +40,7 @@ public static class Kosaraju<T>
         {
             Visit(u!, graph, visited, reversed);
         }
+		_logger.LogWarning("<<< Exiting Visit(v={V},graph={Graph},visited={Visited},reversed={Reversed})", v, graph, visited, reversed);
     }
 
     /// <summary>
@@ -51,6 +55,7 @@ public static class Kosaraju<T>
     /// </param>
     public static void Assign(Vertex<T> v, Vertex<T> root, IDirectedWeightedGraph<T> graph, Dictionary<Vertex<T>, Vertex<T>> roots)
     {
+		_logger.LogError(">>> Entering Assign(v={V},root={Root},graph={Graph},roots={Roots})", v, root, graph, roots);
         // If v already has a representative vertex (root) already assigned, do nothing.
         if (roots.ContainsKey(v))
         {
@@ -65,6 +70,7 @@ public static class Kosaraju<T>
         {
             Assign(u!, root, graph, roots);
         }
+		_logger.LogWarning("<<< Exiting Assign(v={V},root={Root},graph={Graph},roots={Roots})", v, root, graph, roots);
     }
 
     /// <summary>
@@ -104,8 +110,10 @@ public static class Kosaraju<T>
     /// <returns>An array of SCC.</returns>
     public static IEnumerable<Vertex<T>>[] GetScc(IDirectedWeightedGraph<T> graph)
     {
+		_logger.LogError(">>> Entering GetScc(graph={Graph})", graph);
         var representatives = GetRepresentatives(graph);
         Dictionary<Vertex<T>, List<Vertex<T>>> scc = [];
+		_logger.LogError("GetScc(graph={Graph}): representatives → {Representatives}", graph, representatives);
         foreach (var kv in representatives)
         {
             // Assign all vertex (key) that have the seem root (value) to a single list.
@@ -119,6 +127,7 @@ public static class Kosaraju<T>
             }
         }
 
+		_logger.LogWarning("<<< Exiting GetScc(graph={Graph})", graph);
         return scc.Values.ToArray();
     }
 }

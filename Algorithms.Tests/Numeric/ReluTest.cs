@@ -1,12 +1,14 @@
 using Algorithms.Numeric;
 using NUnit.Framework;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
 [TestFixture]
 public static class ReluTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // Tolerance for floating-point comparisons
     private const double Tolerance = 1e-9;
 
@@ -19,21 +21,40 @@ public static class ReluTests
     [TestCase(-5.0, 0.0)]
     public static void ReluFunction_Scalar_ReturnsCorrectValue(double input, double expected)
     {
+		_logger.LogError(">>> Entering ReluFunction_Scalar_ReturnsCorrectValue(input={Input},expected={Expected})", input, expected);
         var result = Relu.Compute(input);
+		_logger.LogWarning("<<< Exiting ReluFunction_Scalar_ReturnsCorrectValue(input={Input},expected={Expected})", input, expected);
+		_logger.LogError("ReluFunction_Scalar_ReturnsCorrectValue(input={Input},expected={Expected}): result → {Result}", input, expected, result);
         Assert.That(result, Is.EqualTo(expected).Within(Tolerance));
     }
 
     [Test]
     public static void ReluFunction_Scalar_HandlesLimitsAndNaN()
     {
+		_logger.LogError(">>> Entering ReluFunction_Scalar_HandlesLimitsAndNaN()");
         // Positive infinity stays +Infinity, negative infinity becomes 0, NaN propagates
         Assert.That(RelUComputePositiveInfinity(), Is.EqualTo(double.PositiveInfinity));
         Assert.That(RelUComputeNegativeInfinity(), Is.EqualTo(0.0).Within(Tolerance));
         Assert.That(RelUComputeNaN(), Is.NaN);
 
-        static double RelUComputePositiveInfinity() => Relu.Compute(double.PositiveInfinity);
-        static double RelUComputeNegativeInfinity() => Relu.Compute(double.NegativeInfinity);
-        static double RelUComputeNaN() => Relu.Compute(double.NaN);
+        static double RelUComputePositiveInfinity()
+        {
+            _logger.LogError(">>> Entering RelUComputePositiveInfinity()");
+            _logger.LogWarning("<<< Exiting RelUComputePositiveInfinity()");
+            return Relu.Compute(double.PositiveInfinity);
+        }
+        static double RelUComputeNegativeInfinity()
+        {
+            _logger.LogError(">>> Entering RelUComputeNegativeInfinity()");
+            _logger.LogWarning("<<< Exiting RelUComputeNegativeInfinity()");
+            return Relu.Compute(double.NegativeInfinity);
+        }
+        static double RelUComputeNaN()
+        {
+            _logger.LogError(">>> Entering RelUComputeNaN()");
+            _logger.LogWarning("<<< Exiting RelUComputeNaN()");
+            return Relu.Compute(double.NaN);
+        }
     }
 
     [TestCase(100.0)]
@@ -41,7 +62,10 @@ public static class ReluTests
     [TestCase(-100.0)]
     public static void ReluFunction_Scalar_ResultIsNonNegative(double input)
     {
+		_logger.LogError(">>> Entering ReluFunction_Scalar_ResultIsNonNegative(input={Input})", input);
         var result = Relu.Compute(input);
+		_logger.LogWarning("<<< Exiting ReluFunction_Scalar_ResultIsNonNegative(input={Input})", input);
+		_logger.LogError("ReluFunction_Scalar_ResultIsNonNegative(input={Input}): result → {Result}", input, result);
         Assert.That(result, Is.GreaterThanOrEqualTo(0.0));
     }
 
@@ -50,24 +74,30 @@ public static class ReluTests
     [Test]
     public static void ReluFunction_Vector_ReturnsCorrectValues()
     {
+		_logger.LogError(">>> Entering ReluFunction_Vector_ReturnsCorrectValues()");
         var input = new[] { 0.0, 1.0, -2.0 };
         var expected = new[] { 0.0, 1.0, 0.0 };
 
         var result = Relu.Compute(input);
+		_logger.LogError("ReluFunction_Vector_ReturnsCorrectValues(): result → {Result}", result);
 
         Assert.That(result, Is.EqualTo(expected).Within(Tolerance));
+		_logger.LogWarning("<<< Exiting ReluFunction_Vector_ReturnsCorrectValues()");
     }
 
     [Test]
     public static void ReluFunction_Vector_HandlesLimitsAndNaN()
     {
+		_logger.LogError(">>> Entering ReluFunction_Vector_HandlesLimitsAndNaN()");
         var input = new[] { double.PositiveInfinity, 0.0, double.NaN };
         var result = Relu.Compute(input);
+		_logger.LogError("ReluFunction_Vector_HandlesLimitsAndNaN(): result → {Result}", result);
 
         Assert.That(result.Length, Is.EqualTo(input.Length));
         Assert.That(result[0], Is.EqualTo(double.PositiveInfinity));
         Assert.That(result[1], Is.EqualTo(0.0).Within(Tolerance));
         Assert.That(result[2], Is.NaN);
+		_logger.LogWarning("<<< Exiting ReluFunction_Vector_HandlesLimitsAndNaN()");
     }
 
     // --- EXCEPTION TESTS ---
@@ -75,14 +105,19 @@ public static class ReluTests
     [Test]
     public static void ReluFunction_Vector_ThrowsOnNullInput()
     {
+		_logger.LogError(">>> Entering ReluFunction_Vector_ThrowsOnNullInput()");
         double[]? input = null;
         Assert.Throws<ArgumentNullException>(() => Relu.Compute(input!));
+		_logger.LogWarning("<<< Exiting ReluFunction_Vector_ThrowsOnNullInput()");
     }
 
     [Test]
     public static void ReluFunction_Vector_ThrowsOnEmptyInput()
     {
+		_logger.LogError(">>> Entering ReluFunction_Vector_ThrowsOnEmptyInput()");
         var input = Array.Empty<double>();
+		_logger.LogWarning("<<< Exiting ReluFunction_Vector_ThrowsOnEmptyInput()");
+		_logger.LogError("ReluFunction_Vector_ThrowsOnEmptyInput(): input → {Input}", input);
         Assert.Throws<ArgumentException>(() => Relu.Compute(input));
     }
 }

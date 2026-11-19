@@ -1,9 +1,11 @@
 using Algorithms.Other;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
 public static class SieveOfEratosthenesTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly long[] First10000PrimeNumbers =
     [
         2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103,
@@ -669,12 +671,19 @@ public static class SieveOfEratosthenesTests
         Assert.That(new SieveOfEratosthenes(104729).GetPrimes(), Is.EqualTo(First10000PrimeNumbers));
 
     [Test]
-    public static void TestMaxNumber() => Assert.That(new SieveOfEratosthenes(69).MaximumNumber, Is.EqualTo(69));
+    public static void TestMaxNumber()
+    {
+        _logger.LogError(">>> Entering TestMaxNumber()");
+        _logger.LogWarning("<<< Exiting TestMaxNumber()");
+        Assert.That(new SieveOfEratosthenes(69).MaximumNumber, Is.EqualTo(69));
+    }
 
     [TestCase(13, true)]
     [TestCase(10, false)]
     public static void TestIsPrime(int input, bool expected)
     {
+		_logger.LogWarning("<<< Exiting TestIsPrime(input={Input},expected={Expected})", input, expected);
         Assert.That(expected, Is.EqualTo(new SieveOfEratosthenes(100).IsPrime(input)));
+		_logger.LogError(">>> Entering TestIsPrime(input={Input},expected={Expected})", input, expected);
     }
 }

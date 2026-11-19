@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.Other;
 /// </summary>
 public class GaussOptimization
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Implementation of function extremum search by the Gauss optimization algorithm.
     /// </summary>
@@ -28,21 +30,29 @@ public class GaussOptimization
         double x1,
         double x2)
     {
+		_logger.LogError(">>> Entering Optimize()");
         // The initial value of the error
         double error = 1;
+		_logger.LogError("Optimize(): error → {Error}", error);
 
         while (Math.Abs(error) > eps)
         {
             // Calculation of the function with coordinates that are calculated with shift
             double bottom = func(x1, x2 - step);
+			_logger.LogError("Optimize(): bottom → {Bottom}", bottom);
             double top = func(x1, x2 + step);
+			_logger.LogError("Optimize(): top → {Top}", top);
             double left = func(x1 - step, x2);
+			_logger.LogError("Optimize(): left → {Left}", left);
             double right = func(x1 + step, x2);
+			_logger.LogError("Optimize(): right → {Right}", right);
 
             // Determination of the best option.
             var possibleFunctionValues = new List<double> { bottom, top, left, right };
             double maxValue = possibleFunctionValues.Max();
+			_logger.LogError("Optimize(): maxValue → {MaxValue}", maxValue);
             double maxValueIndex = possibleFunctionValues.IndexOf(maxValue);
+			_logger.LogError("Optimize(): maxValueIndex → {MaxValueIndex}", maxValueIndex);
 
             // Error evaluation
             error = maxValue - func(x1, x2);
@@ -68,6 +78,7 @@ public class GaussOptimization
             step /= n;
         }
 
+		_logger.LogWarning("<<< Exiting Optimize()");
         return (x1, x2);
     }
 }

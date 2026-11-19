@@ -1,10 +1,12 @@
 using Algorithms.Graph;
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Graph;
 
 public class TopologicalSortTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Test topological sort on a simple linear DAG: A → B → C.
     ///     Expected order: [A, B, C].
@@ -12,25 +14,33 @@ public class TopologicalSortTests
     [Test]
     public void Sort_SimpleLinearGraph_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering Sort_SimpleLinearGraph_ReturnsCorrectOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(3);
+		_logger.LogError("Sort_SimpleLinearGraph_ReturnsCorrectOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("Sort_SimpleLinearGraph_ReturnsCorrectOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("Sort_SimpleLinearGraph_ReturnsCorrectOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("Sort_SimpleLinearGraph_ReturnsCorrectOrder(): vertexC → {VertexC}", vertexC);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexB, vertexC, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_SimpleLinearGraph_ReturnsCorrectOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.Sort(graph);
+		_logger.LogError("Sort_SimpleLinearGraph_ReturnsCorrectOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(3));
         Assert.That(result[0], Is.EqualTo(vertexA));
         Assert.That(result[1], Is.EqualTo(vertexB));
         Assert.That(result[2], Is.EqualTo(vertexC));
+		_logger.LogWarning("<<< Exiting Sort_SimpleLinearGraph_ReturnsCorrectOrder()");
     }
 
     /// <summary>
@@ -40,25 +50,33 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_SimpleLinearGraph_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering SortKahn_SimpleLinearGraph_ReturnsCorrectOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(3);
+		_logger.LogError("SortKahn_SimpleLinearGraph_ReturnsCorrectOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("SortKahn_SimpleLinearGraph_ReturnsCorrectOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("SortKahn_SimpleLinearGraph_ReturnsCorrectOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("SortKahn_SimpleLinearGraph_ReturnsCorrectOrder(): vertexC → {VertexC}", vertexC);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexB, vertexC, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_SimpleLinearGraph_ReturnsCorrectOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.SortKahn(graph);
+		_logger.LogError("SortKahn_SimpleLinearGraph_ReturnsCorrectOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(3));
         Assert.That(result[0], Is.EqualTo(vertexA));
         Assert.That(result[1], Is.EqualTo(vertexB));
         Assert.That(result[2], Is.EqualTo(vertexC));
+		_logger.LogWarning("<<< Exiting SortKahn_SimpleLinearGraph_ReturnsCorrectOrder()");
     }
 
     /// <summary>
@@ -71,30 +89,41 @@ public class TopologicalSortTests
     [Test]
     public void Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(3);
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): vertexC → {VertexC}", vertexC);
 
         graph.AddEdge(vertexA, vertexC, 1);
         graph.AddEdge(vertexB, vertexC, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.Sort(graph);
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(3));
 
         // C should come after both A and B
         var indexA = result.IndexOf(vertexA);
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): indexA → {IndexA}", indexA);
         var indexB = result.IndexOf(vertexB);
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): indexB → {IndexB}", indexB);
         var indexC = result.IndexOf(vertexC);
+		_logger.LogError("Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder(): indexC → {IndexC}", indexC);
 
         Assert.That(indexC, Is.GreaterThan(indexA));
         Assert.That(indexC, Is.GreaterThan(indexB));
+		_logger.LogWarning("<<< Exiting Sort_GraphWithMultipleValidOrderings_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -107,30 +136,41 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(3);
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): vertexC → {VertexC}", vertexC);
 
         graph.AddEdge(vertexA, vertexC, 1);
         graph.AddEdge(vertexB, vertexC, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.SortKahn(graph);
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(3));
 
         // C should come after both A and B
         var indexA = result.IndexOf(vertexA);
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): indexA → {IndexA}", indexA);
         var indexB = result.IndexOf(vertexB);
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): indexB → {IndexB}", indexB);
         var indexC = result.IndexOf(vertexC);
+		_logger.LogError("SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder(): indexC → {IndexC}", indexC);
 
         Assert.That(indexC, Is.GreaterThan(indexA));
         Assert.That(indexC, Is.GreaterThan(indexB));
+		_logger.LogWarning("<<< Exiting SortKahn_GraphWithMultipleValidOrderings_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -143,12 +183,18 @@ public class TopologicalSortTests
     [Test]
     public void Sort_ComplexDAG_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering Sort_ComplexDAG_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(4);
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): vertexC → {VertexC}", vertexC);
         var vertexD = graph.AddVertex("D");
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): vertexD → {VertexD}", vertexD);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexA, vertexC, 1);
@@ -156,9 +202,11 @@ public class TopologicalSortTests
         graph.AddEdge(vertexC, vertexD, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.Sort(graph);
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
@@ -167,12 +215,15 @@ public class TopologicalSortTests
 
         // B and C should come after A and before D
         var indexB = result.IndexOf(vertexB);
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): indexB → {IndexB}", indexB);
         var indexC = result.IndexOf(vertexC);
+		_logger.LogError("Sort_ComplexDAG_ReturnsValidOrder(): indexC → {IndexC}", indexC);
 
         Assert.That(indexB, Is.GreaterThan(0));
         Assert.That(indexB, Is.LessThan(3));
         Assert.That(indexC, Is.GreaterThan(0));
         Assert.That(indexC, Is.LessThan(3));
+		_logger.LogWarning("<<< Exiting Sort_ComplexDAG_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -185,12 +236,18 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_ComplexDAG_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering SortKahn_ComplexDAG_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(4);
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): vertexC → {VertexC}", vertexC);
         var vertexD = graph.AddVertex("D");
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): vertexD → {VertexD}", vertexD);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexA, vertexC, 1);
@@ -198,9 +255,11 @@ public class TopologicalSortTests
         graph.AddEdge(vertexC, vertexD, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.SortKahn(graph);
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
@@ -209,12 +268,15 @@ public class TopologicalSortTests
 
         // B and C should come after A and before D
         var indexB = result.IndexOf(vertexB);
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): indexB → {IndexB}", indexB);
         var indexC = result.IndexOf(vertexC);
+		_logger.LogError("SortKahn_ComplexDAG_ReturnsValidOrder(): indexC → {IndexC}", indexC);
 
         Assert.That(indexB, Is.GreaterThan(0));
         Assert.That(indexB, Is.LessThan(3));
         Assert.That(indexC, Is.GreaterThan(0));
         Assert.That(indexC, Is.LessThan(3));
+		_logger.LogWarning("<<< Exiting SortKahn_ComplexDAG_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -225,20 +287,27 @@ public class TopologicalSortTests
     [Test]
     public void Sort_GraphWithCycle_ThrowsInvalidOperationException()
     {
+		_logger.LogError(">>> Entering Sort_GraphWithCycle_ThrowsInvalidOperationException()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(3);
+		_logger.LogError("Sort_GraphWithCycle_ThrowsInvalidOperationException(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("Sort_GraphWithCycle_ThrowsInvalidOperationException(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("Sort_GraphWithCycle_ThrowsInvalidOperationException(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("Sort_GraphWithCycle_ThrowsInvalidOperationException(): vertexC → {VertexC}", vertexC);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexB, vertexC, 1);
         graph.AddEdge(vertexC, vertexA, 1); // Creates a cycle
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_GraphWithCycle_ThrowsInvalidOperationException(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() => topologicalSort.Sort(graph));
+		_logger.LogWarning("<<< Exiting Sort_GraphWithCycle_ThrowsInvalidOperationException()");
     }
 
     /// <summary>
@@ -249,20 +318,27 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_GraphWithCycle_ThrowsInvalidOperationException()
     {
+		_logger.LogError(">>> Entering SortKahn_GraphWithCycle_ThrowsInvalidOperationException()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(3);
+		_logger.LogError("SortKahn_GraphWithCycle_ThrowsInvalidOperationException(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("SortKahn_GraphWithCycle_ThrowsInvalidOperationException(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("SortKahn_GraphWithCycle_ThrowsInvalidOperationException(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("SortKahn_GraphWithCycle_ThrowsInvalidOperationException(): vertexC → {VertexC}", vertexC);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexB, vertexC, 1);
         graph.AddEdge(vertexC, vertexA, 1); // Creates a cycle
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_GraphWithCycle_ThrowsInvalidOperationException(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() => topologicalSort.SortKahn(graph));
+		_logger.LogWarning("<<< Exiting SortKahn_GraphWithCycle_ThrowsInvalidOperationException()");
     }
 
     /// <summary>
@@ -273,18 +349,24 @@ public class TopologicalSortTests
     [Test]
     public void Sort_SingleVertexGraph_ReturnsSingleVertex()
     {
+		_logger.LogError(">>> Entering Sort_SingleVertexGraph_ReturnsSingleVertex()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(1);
+		_logger.LogError("Sort_SingleVertexGraph_ReturnsSingleVertex(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("Sort_SingleVertexGraph_ReturnsSingleVertex(): vertexA → {VertexA}", vertexA);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_SingleVertexGraph_ReturnsSingleVertex(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.Sort(graph);
+		_logger.LogError("Sort_SingleVertexGraph_ReturnsSingleVertex(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0], Is.EqualTo(vertexA));
+		_logger.LogWarning("<<< Exiting Sort_SingleVertexGraph_ReturnsSingleVertex()");
     }
 
     /// <summary>
@@ -295,18 +377,24 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_SingleVertexGraph_ReturnsSingleVertex()
     {
+		_logger.LogError(">>> Entering SortKahn_SingleVertexGraph_ReturnsSingleVertex()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(1);
+		_logger.LogError("SortKahn_SingleVertexGraph_ReturnsSingleVertex(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("SortKahn_SingleVertexGraph_ReturnsSingleVertex(): vertexA → {VertexA}", vertexA);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_SingleVertexGraph_ReturnsSingleVertex(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.SortKahn(graph);
+		_logger.LogError("SortKahn_SingleVertexGraph_ReturnsSingleVertex(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0], Is.EqualTo(vertexA));
+		_logger.LogWarning("<<< Exiting SortKahn_SingleVertexGraph_ReturnsSingleVertex()");
     }
 
     /// <summary>
@@ -319,33 +407,46 @@ public class TopologicalSortTests
     [Test]
     public void Sort_DisconnectedDAG_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering Sort_DisconnectedDAG_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(4);
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): vertexC → {VertexC}", vertexC);
         var vertexD = graph.AddVertex("D");
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): vertexD → {VertexD}", vertexD);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexC, vertexD, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.Sort(graph);
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
 
         // A should come before B
         var indexA = result.IndexOf(vertexA);
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): indexA → {IndexA}", indexA);
         var indexB = result.IndexOf(vertexB);
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): indexB → {IndexB}", indexB);
         Assert.That(indexB, Is.GreaterThan(indexA));
 
         // C should come before D
         var indexC = result.IndexOf(vertexC);
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): indexC → {IndexC}", indexC);
         var indexD = result.IndexOf(vertexD);
+		_logger.LogError("Sort_DisconnectedDAG_ReturnsValidOrder(): indexD → {IndexD}", indexD);
         Assert.That(indexD, Is.GreaterThan(indexC));
+		_logger.LogWarning("<<< Exiting Sort_DisconnectedDAG_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -358,33 +459,46 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_DisconnectedDAG_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering SortKahn_DisconnectedDAG_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(4);
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): vertexA → {VertexA}", vertexA);
         var vertexB = graph.AddVertex("B");
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): vertexB → {VertexB}", vertexB);
         var vertexC = graph.AddVertex("C");
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): vertexC → {VertexC}", vertexC);
         var vertexD = graph.AddVertex("D");
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): vertexD → {VertexD}", vertexD);
 
         graph.AddEdge(vertexA, vertexB, 1);
         graph.AddEdge(vertexC, vertexD, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.SortKahn(graph);
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
 
         // A should come before B
         var indexA = result.IndexOf(vertexA);
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): indexA → {IndexA}", indexA);
         var indexB = result.IndexOf(vertexB);
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): indexB → {IndexB}", indexB);
         Assert.That(indexB, Is.GreaterThan(indexA));
 
         // C should come before D
         var indexC = result.IndexOf(vertexC);
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): indexC → {IndexC}", indexC);
         var indexD = result.IndexOf(vertexD);
+		_logger.LogError("SortKahn_DisconnectedDAG_ReturnsValidOrder(): indexD → {IndexD}", indexD);
         Assert.That(indexD, Is.GreaterThan(indexC));
+		_logger.LogWarning("<<< Exiting SortKahn_DisconnectedDAG_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -398,12 +512,18 @@ public class TopologicalSortTests
     [Test]
     public void Sort_CoursePrerequisitesScenario_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering Sort_CoursePrerequisitesScenario_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(4);
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): graph → {Graph}", graph);
         var introCS = graph.AddVertex("Intro to CS");
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): introCS → {IntroCS}", introCS);
         var dataStructures = graph.AddVertex("Data Structures");
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): dataStructures → {DataStructures}", dataStructures);
         var algorithms = graph.AddVertex("Algorithms");
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): algorithms → {Algorithms}", algorithms);
         var advancedAlgorithms = graph.AddVertex("Advanced Algorithms");
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): advancedAlgorithms → {AdvancedAlgorithms}", advancedAlgorithms);
 
         graph.AddEdge(introCS, dataStructures, 1);
         graph.AddEdge(introCS, algorithms, 1);
@@ -411,9 +531,11 @@ public class TopologicalSortTests
         graph.AddEdge(algorithms, advancedAlgorithms, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.Sort(graph);
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
@@ -422,12 +544,15 @@ public class TopologicalSortTests
 
         // Data Structures and Algorithms should be in the middle
         var indexDS = result.IndexOf(dataStructures);
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): indexDS → {IndexDS}", indexDS);
         var indexAlgo = result.IndexOf(algorithms);
+		_logger.LogError("Sort_CoursePrerequisitesScenario_ReturnsValidOrder(): indexAlgo → {IndexAlgo}", indexAlgo);
 
         Assert.That(indexDS, Is.GreaterThan(0));
         Assert.That(indexDS, Is.LessThan(3));
         Assert.That(indexAlgo, Is.GreaterThan(0));
         Assert.That(indexAlgo, Is.LessThan(3));
+		_logger.LogWarning("<<< Exiting Sort_CoursePrerequisitesScenario_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -441,12 +566,18 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder()
     {
+		_logger.LogError(">>> Entering SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(4);
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): graph → {Graph}", graph);
         var introCS = graph.AddVertex("Intro to CS");
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): introCS → {IntroCS}", introCS);
         var dataStructures = graph.AddVertex("Data Structures");
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): dataStructures → {DataStructures}", dataStructures);
         var algorithms = graph.AddVertex("Algorithms");
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): algorithms → {Algorithms}", algorithms);
         var advancedAlgorithms = graph.AddVertex("Advanced Algorithms");
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): advancedAlgorithms → {AdvancedAlgorithms}", advancedAlgorithms);
 
         graph.AddEdge(introCS, dataStructures, 1);
         graph.AddEdge(introCS, algorithms, 1);
@@ -454,9 +585,11 @@ public class TopologicalSortTests
         graph.AddEdge(algorithms, advancedAlgorithms, 1);
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.SortKahn(graph);
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(4));
@@ -465,12 +598,15 @@ public class TopologicalSortTests
 
         // Data Structures and Algorithms should be in the middle
         var indexDS = result.IndexOf(dataStructures);
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): indexDS → {IndexDS}", indexDS);
         var indexAlgo = result.IndexOf(algorithms);
+		_logger.LogError("SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder(): indexAlgo → {IndexAlgo}", indexAlgo);
 
         Assert.That(indexDS, Is.GreaterThan(0));
         Assert.That(indexDS, Is.LessThan(3));
         Assert.That(indexAlgo, Is.GreaterThan(0));
         Assert.That(indexAlgo, Is.LessThan(3));
+		_logger.LogWarning("<<< Exiting SortKahn_CoursePrerequisitesScenario_ReturnsValidOrder()");
     }
 
     /// <summary>
@@ -481,25 +617,33 @@ public class TopologicalSortTests
     [Test]
     public void Sort_IntegerVertices_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering Sort_IntegerVertices_ReturnsCorrectOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<int>(3);
+		_logger.LogError("Sort_IntegerVertices_ReturnsCorrectOrder(): graph → {Graph}", graph);
         var vertex1 = graph.AddVertex(1);
+		_logger.LogError("Sort_IntegerVertices_ReturnsCorrectOrder(): vertex1 → {Vertex1}", vertex1);
         var vertex2 = graph.AddVertex(2);
+		_logger.LogError("Sort_IntegerVertices_ReturnsCorrectOrder(): vertex2 → {Vertex2}", vertex2);
         var vertex3 = graph.AddVertex(3);
+		_logger.LogError("Sort_IntegerVertices_ReturnsCorrectOrder(): vertex3 → {Vertex3}", vertex3);
 
         graph.AddEdge(vertex1, vertex2, 1);
         graph.AddEdge(vertex2, vertex3, 1);
 
         var topologicalSort = new TopologicalSort<int>();
+		_logger.LogError("Sort_IntegerVertices_ReturnsCorrectOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.Sort(graph);
+		_logger.LogError("Sort_IntegerVertices_ReturnsCorrectOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(3));
         Assert.That(result[0], Is.EqualTo(vertex1));
         Assert.That(result[1], Is.EqualTo(vertex2));
         Assert.That(result[2], Is.EqualTo(vertex3));
+		_logger.LogWarning("<<< Exiting Sort_IntegerVertices_ReturnsCorrectOrder()");
     }
 
     /// <summary>
@@ -510,25 +654,33 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_IntegerVertices_ReturnsCorrectOrder()
     {
+		_logger.LogError(">>> Entering SortKahn_IntegerVertices_ReturnsCorrectOrder()");
         // Arrange
         var graph = new DirectedWeightedGraph<int>(3);
+		_logger.LogError("SortKahn_IntegerVertices_ReturnsCorrectOrder(): graph → {Graph}", graph);
         var vertex1 = graph.AddVertex(1);
+		_logger.LogError("SortKahn_IntegerVertices_ReturnsCorrectOrder(): vertex1 → {Vertex1}", vertex1);
         var vertex2 = graph.AddVertex(2);
+		_logger.LogError("SortKahn_IntegerVertices_ReturnsCorrectOrder(): vertex2 → {Vertex2}", vertex2);
         var vertex3 = graph.AddVertex(3);
+		_logger.LogError("SortKahn_IntegerVertices_ReturnsCorrectOrder(): vertex3 → {Vertex3}", vertex3);
 
         graph.AddEdge(vertex1, vertex2, 1);
         graph.AddEdge(vertex2, vertex3, 1);
 
         var topologicalSort = new TopologicalSort<int>();
+		_logger.LogError("SortKahn_IntegerVertices_ReturnsCorrectOrder(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act
         var result = topologicalSort.SortKahn(graph);
+		_logger.LogError("SortKahn_IntegerVertices_ReturnsCorrectOrder(): result → {Result}", result);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(3));
         Assert.That(result[0], Is.EqualTo(vertex1));
         Assert.That(result[1], Is.EqualTo(vertex2));
         Assert.That(result[2], Is.EqualTo(vertex3));
+		_logger.LogWarning("<<< Exiting SortKahn_IntegerVertices_ReturnsCorrectOrder()");
     }
 
     /// <summary>
@@ -539,16 +691,21 @@ public class TopologicalSortTests
     [Test]
     public void Sort_GraphWithSelfLoop_ThrowsInvalidOperationException()
     {
+		_logger.LogError(">>> Entering Sort_GraphWithSelfLoop_ThrowsInvalidOperationException()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(1);
+		_logger.LogError("Sort_GraphWithSelfLoop_ThrowsInvalidOperationException(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("Sort_GraphWithSelfLoop_ThrowsInvalidOperationException(): vertexA → {VertexA}", vertexA);
 
         graph.AddEdge(vertexA, vertexA, 1); // Self-loop
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("Sort_GraphWithSelfLoop_ThrowsInvalidOperationException(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() => topologicalSort.Sort(graph));
+		_logger.LogWarning("<<< Exiting Sort_GraphWithSelfLoop_ThrowsInvalidOperationException()");
     }
 
     /// <summary>
@@ -559,15 +716,20 @@ public class TopologicalSortTests
     [Test]
     public void SortKahn_GraphWithSelfLoop_ThrowsInvalidOperationException()
     {
+		_logger.LogError(">>> Entering SortKahn_GraphWithSelfLoop_ThrowsInvalidOperationException()");
         // Arrange
         var graph = new DirectedWeightedGraph<string>(1);
+		_logger.LogError("SortKahn_GraphWithSelfLoop_ThrowsInvalidOperationException(): graph → {Graph}", graph);
         var vertexA = graph.AddVertex("A");
+		_logger.LogError("SortKahn_GraphWithSelfLoop_ThrowsInvalidOperationException(): vertexA → {VertexA}", vertexA);
 
         graph.AddEdge(vertexA, vertexA, 1); // Self-loop
 
         var topologicalSort = new TopologicalSort<string>();
+		_logger.LogError("SortKahn_GraphWithSelfLoop_ThrowsInvalidOperationException(): topologicalSort → {TopologicalSort}", topologicalSort);
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() => topologicalSort.SortKahn(graph));
+		_logger.LogWarning("<<< Exiting SortKahn_GraphWithSelfLoop_ThrowsInvalidOperationException()");
     }
 }

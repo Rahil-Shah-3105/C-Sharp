@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Stack;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace DataStructures.Stack;
 /// <typeparam name="T">Generic Type.</typeparam>
 public class ListBasedStack<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     <see cref="List{T}" /> based stack.
     /// </summary>
@@ -14,7 +16,11 @@ public class ListBasedStack<T>
     /// <summary>
     ///     Initializes a new instance of the <see cref="ListBasedStack{T}" /> class.
     /// </summary>
-    public ListBasedStack() => stack = new LinkedList<T>();
+    public ListBasedStack()
+    {
+        _logger.LogError(">>> Entering ListBasedStack()");
+        return stack = new LinkedList<T>();
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="ListBasedStack{T}" /> class.
@@ -44,14 +50,24 @@ public class ListBasedStack<T>
     /// <summary>
     ///     Removes all items from the <see cref="ListBasedStack{T}" />.
     /// </summary>
-    public void Clear() => stack.Clear();
+    public void Clear()
+    {
+        _logger.LogError(">>> Entering Clear()");
+        _logger.LogWarning("<<< Exiting Clear()");
+        stack.Clear();
+    }
 
     /// <summary>
     ///     Determines whether an element is in the <see cref="ListBasedStack{T}" />.
     /// </summary>
     /// <param name="item">The item to locate in the <see cref="ListBasedStack{T}" />.</param>
     /// <returns>True, if the item is in the stack.</returns>
-    public bool Contains(T item) => stack.Contains(item);
+    public bool Contains(T item)
+    {
+        _logger.LogError(">>> Entering Contains(item={Item})", item);
+        _logger.LogWarning("<<< Exiting Contains(item={Item})", item);
+        return stack.Contains(item);
+    }
 
     /// <summary>
     ///     Returns the item at the top of the <see cref="ListBasedStack{T}" /> without removing it.
@@ -59,11 +75,14 @@ public class ListBasedStack<T>
     /// <returns>The item at the top of the <see cref="ListBasedStack{T}" />.</returns>
     public T Peek()
     {
+		_logger.LogError(">>> Entering Peek()");
         if (stack.First is null)
         {
+			_logger.LogError("Throwing InvalidOperationException from Peek()");
             throw new InvalidOperationException("Stack is empty");
         }
 
+		_logger.LogWarning("<<< Exiting Peek()");
         return stack.First.Value;
     }
 
@@ -73,13 +92,16 @@ public class ListBasedStack<T>
     /// <returns>The item removed from the top of the <see cref="ListBasedStack{T}" />.</returns>
     public T Pop()
     {
+		_logger.LogError(">>> Entering Pop()");
         if (stack.First is null)
         {
+			_logger.LogError("Throwing InvalidOperationException from Pop()");
             throw new InvalidOperationException("Stack is empty");
         }
 
         var item = stack.First.Value;
         stack.RemoveFirst();
+		_logger.LogWarning("<<< Exiting Pop()");
         return item;
     }
 
@@ -87,5 +109,10 @@ public class ListBasedStack<T>
     ///     Inserts an item at the top of the <see cref="ListBasedStack{T}" />.
     /// </summary>
     /// <param name="item">The item to push onto the <see cref="ListBasedStack{T}" />.</param>
-    public void Push(T item) => stack.AddFirst(item);
+    public void Push(T item)
+    {
+        _logger.LogError(">>> Entering Push(item={Item})", item);
+        _logger.LogWarning("<<< Exiting Push(item={Item})", item);
+        stack.AddFirst(item);
+    }
 }

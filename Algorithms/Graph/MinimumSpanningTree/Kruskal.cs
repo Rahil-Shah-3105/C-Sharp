@@ -1,4 +1,5 @@
 using DataStructures.DisjointSet;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph.MinimumSpanningTree;
 
@@ -17,6 +18,7 @@ namespace Algorithms.Graph.MinimumSpanningTree;
 /// </remarks>
 public static class Kruskal
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Determine the minimum spanning tree/forest of the given graph.
     /// </summary>
@@ -24,13 +26,18 @@ public static class Kruskal
     /// <returns>Adjacency matrix of the minimum spanning tree/forest.</returns>
     public static float[,] Solve(float[,] adjacencyMatrix)
     {
+		_logger.LogError(">>> Entering Solve(adjacencyMatrix={AdjacencyMatrix})", adjacencyMatrix);
         ValidateGraph(adjacencyMatrix);
 
         var numNodes = adjacencyMatrix.GetLength(0);
+		_logger.LogError("Solve(adjacencyMatrix={AdjacencyMatrix}): numNodes → {NumNodes}", adjacencyMatrix, numNodes);
         var set = new DisjointSet<int>();
+		_logger.LogError("Solve(adjacencyMatrix={AdjacencyMatrix}): set → {Set}", adjacencyMatrix, set);
         var nodes = new Node<int>[numNodes];
         var edgeWeightList = new List<float>();
+		_logger.LogError("Solve(adjacencyMatrix={AdjacencyMatrix}): edgeWeightList → {EdgeWeightList}", adjacencyMatrix, edgeWeightList);
         var nodeConnectList = new List<(int, int)>();
+		_logger.LogError("Solve(adjacencyMatrix={AdjacencyMatrix}): nodeConnectList → {NodeConnectList}", adjacencyMatrix, nodeConnectList);
 
         // Add nodes to disjoint set
         for (var i = 0; i < numNodes; i++)
@@ -52,6 +59,7 @@ public static class Kruskal
         }
 
         var edges = Solve(set, nodes, edgeWeightList.ToArray(), nodeConnectList.ToArray());
+		_logger.LogError("Solve(adjacencyMatrix={AdjacencyMatrix}): edges → {Edges}", adjacencyMatrix, edges);
 
         // Initialize minimum spanning tree
         var mst = new float[numNodes, numNodes];
@@ -72,6 +80,7 @@ public static class Kruskal
             mst[node2, node1] = adjacencyMatrix[node1, node2];
         }
 
+		_logger.LogWarning("<<< Exiting Solve(adjacencyMatrix={AdjacencyMatrix})", adjacencyMatrix);
         return mst;
     }
 
@@ -126,8 +135,10 @@ public static class Kruskal
     /// <param name="adj">Adjacency matrix of graph to check.</param>
     private static void ValidateGraph(float[,] adj)
     {
+		_logger.LogError(">>> Entering ValidateGraph(adj={Adj})", adj);
         if (adj.GetLength(0) != adj.GetLength(1))
         {
+			_logger.LogError("Throwing ArgumentException from ValidateGraph(adj={Adj})", adj);
             throw new ArgumentException("Matrix must be square!");
         }
 
@@ -141,6 +152,7 @@ public static class Kruskal
                 }
             }
         }
+		_logger.LogWarning("<<< Exiting ValidateGraph(adj={Adj})", adj);
     }
 
     /// <summary>
@@ -171,8 +183,10 @@ public static class Kruskal
     /// <returns>Array of edges in the minimum spanning tree/forest.</returns>
     private static (int, int)[] Solve(DisjointSet<int> set, Node<int>[] nodes, float[] edgeWeights, (int, int)[] connections)
     {
+		_logger.LogError(">>> Entering static(set={Set},nodes={Nodes},edgeWeights={EdgeWeights},connections={Connections})", set, nodes, edgeWeights, connections);
         var edges = new List<(int, int)>();
 
+		_logger.LogError("static(set={Set},nodes={Nodes},edgeWeights={EdgeWeights},connections={Connections}): edges → {Edges}", set, nodes, edgeWeights, connections, edges);
         Array.Sort(edgeWeights, connections);
 
         foreach (var (node1, node2) in connections)
@@ -184,6 +198,7 @@ public static class Kruskal
             }
         }
 
+		_logger.LogWarning("<<< Exiting static(set={Set},nodes={Nodes},edgeWeights={EdgeWeights},connections={Connections})", set, nodes, edgeWeights, connections);
         return edges.ToArray();
     }
 }

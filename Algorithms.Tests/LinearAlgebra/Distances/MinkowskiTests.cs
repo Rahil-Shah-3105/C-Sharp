@@ -1,9 +1,11 @@
 using Algorithms.LinearAlgebra.Distances;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.LinearAlgebra.Distances;
 
 public class MinkowskiTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase(new[] { 2.0, 3.0 }, new[] { -1.0, 5.0 }, 1, 5.0)] // Simulate Manhattan condition
     [TestCase(new[] { 7.0, 4.0, 3.0 }, new[] { 17.0, 6.0, 2.0 }, 2, 10.247)] // Simulate Euclidean condition
     [TestCase(new[] { 1.0, 2.0, 3.0, 4.0 }, new[] { 1.75, 2.25, -3.0, 0.5 }, 20, 6.0)] // Simulate Chebyshev condition
@@ -11,7 +13,9 @@ public class MinkowskiTests
     [TestCase(new[] { 1.0, 2.0, 3.0 }, new[] { 1.0, 2.0, 3.0 }, 5, 0.0)]
     public void DistanceTest(double[] point1, double[] point2, int order, double expectedDistance)
     {
+		_logger.LogError(">>> Entering DistanceTest(point1={Point1},point2={Point2},order={Order},expectedDistance={ExpectedDistance})", point1, point2, order, expectedDistance);
         Minkowski.Distance(point1, point2, order).Should().BeApproximately(expectedDistance, 0.01);
+		_logger.LogWarning("<<< Exiting DistanceTest(point1={Point1},point2={Point2},order={Order},expectedDistance={ExpectedDistance})", point1, point2, order, expectedDistance);
     }
 
     [TestCase(new[] { 2.0, 3.0 }, new[] { -1.0 }, 2)]
@@ -19,7 +23,10 @@ public class MinkowskiTests
     [TestCase(new[] { 1.0, 1.0 }, new[] { 2.0, 2.0 }, 0)]
     public void DistanceThrowsArgumentExceptionOnInvalidInput(double[] point1, double[] point2, int order)
     {
+		_logger.LogError(">>> Entering DistanceThrowsArgumentExceptionOnInvalidInput(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
         Action action = () => Minkowski.Distance(point1, point2, order);
+		_logger.LogWarning("<<< Exiting DistanceThrowsArgumentExceptionOnInvalidInput(point1={Point1},point2={Point2},order={Order})", point1, point2, order);
+		_logger.LogError("DistanceThrowsArgumentExceptionOnInvalidInput(point1={Point1},point2={Point2},order={Order}): action → {Action}", point1, point2, order, action);
         action.Should().Throw<ArgumentException>();
     }
 }

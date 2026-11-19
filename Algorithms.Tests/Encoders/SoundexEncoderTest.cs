@@ -1,9 +1,11 @@
 using Algorithms.Encoders;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Encoders;
 
 public static class SoundexEncoderTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly string[] Names =
     [
         "Robert", "Rupert", "Rubin", "Ashcraft", "Ashcroft", "Tymczak", "Pfister", "Honeyman",
@@ -16,8 +18,12 @@ public static class SoundexEncoderTest
     [TestCaseSource(nameof(TestData))]
     public static void AttemptSoundex(string source, string encoded)
     {
+		_logger.LogError(">>> Entering AttemptSoundex(source={Source},encoded={Encoded})", source, encoded);
         SoundexEncoder enc = new();
+		_logger.LogWarning("<<< Exiting AttemptSoundex(source={Source},encoded={Encoded})", source, encoded);
         var nysiis = enc.Encode(source);
+		_logger.LogError("AttemptSoundex(source={Source},encoded={Encoded}): nysiis → {Nysiis}", source, encoded, nysiis);
+		_logger.LogError("AttemptSoundex(source={Source},encoded={Encoded}): enc → {Enc}", source, encoded, enc);
         Assert.That(encoded, Is.EqualTo(nysiis));
     }
 }

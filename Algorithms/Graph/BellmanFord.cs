@@ -1,4 +1,5 @@
 using DataStructures.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Graph;
 
@@ -8,6 +9,7 @@ namespace Algorithms.Graph;
 /// <typeparam name="T">Generic type of data in the graph.</typeparam>
 public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>, double> distances, Dictionary<Vertex<T>, Vertex<T>?> predecessors)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly DirectedWeightedGraph<T> graph = graph;
     private readonly Dictionary<Vertex<T>, double> distances = distances;
     private readonly Dictionary<Vertex<T>, Vertex<T>?> predecessors = predecessors;
@@ -30,6 +32,7 @@ public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>
 
     private void InitializeDistances(Vertex<T> sourceVertex)
     {
+		_logger.LogError(">>> Entering InitializeDistances(sourceVertex={SourceVertex})", sourceVertex);
         foreach (var vertex in graph.Vertices)
         {
             if (vertex != null)
@@ -40,10 +43,12 @@ public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>
         }
 
         distances[sourceVertex] = 0;
+		_logger.LogWarning("<<< Exiting InitializeDistances(sourceVertex={SourceVertex})", sourceVertex);
     }
 
     private void RelaxEdges()
     {
+		_logger.LogError(">>> Entering RelaxEdges()");
         int vertexCount = graph.Count;
 
         for (int i = 0; i < vertexCount - 1; i++)
@@ -56,10 +61,12 @@ public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>
                 }
             }
         }
+		_logger.LogWarning("<<< Exiting RelaxEdges()");
     }
 
     private void RelaxEdgesForVertex(Vertex<T> u)
     {
+		_logger.LogError(">>> Entering RelaxEdgesForVertex(u={U})", u);
         foreach (var neighbor in graph.GetNeighbors(u))
         {
             if (neighbor == null)
@@ -69,6 +76,7 @@ public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>
 
             var v = neighbor;
             var weight = graph.AdjacentDistance(u, v);
+			_logger.LogError("RelaxEdgesForVertex(u={U}): weight → {Weight}", u, weight);
 
             if (distances[u] + weight < distances[v])
             {
@@ -76,10 +84,12 @@ public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>
                 predecessors[v] = u;
             }
         }
+		_logger.LogWarning("<<< Exiting RelaxEdgesForVertex(u={U})", u);
     }
 
     private void CheckForNegativeCycles()
     {
+		_logger.LogError(">>> Entering CheckForNegativeCycles()");
         foreach (var vertex in graph.Vertices)
         {
             if (vertex != null)
@@ -87,10 +97,12 @@ public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>
                 CheckForNegativeCyclesForVertex(vertex);
             }
         }
+		_logger.LogWarning("<<< Exiting CheckForNegativeCycles()");
     }
 
     private void CheckForNegativeCyclesForVertex(Vertex<T> u)
     {
+		_logger.LogError(">>> Entering CheckForNegativeCyclesForVertex(u={U})", u);
         foreach (var neighbor in graph.GetNeighbors(u))
         {
             if (neighbor == null)
@@ -100,11 +112,14 @@ public class BellmanFord<T>(DirectedWeightedGraph<T> graph, Dictionary<Vertex<T>
 
             var v = neighbor;
             var weight = graph.AdjacentDistance(u, v);
+			_logger.LogError("CheckForNegativeCyclesForVertex(u={U}): weight → {Weight}", u, weight);
 
             if (distances[u] + weight < distances[v])
             {
+				_logger.LogError("Throwing InvalidOperationException from CheckForNegativeCyclesForVertex(u={U})", u);
                 throw new InvalidOperationException("Graph contains a negative weight cycle.");
             }
         }
+		_logger.LogWarning("<<< Exiting CheckForNegativeCyclesForVertex(u={U})", u);
     }
 }

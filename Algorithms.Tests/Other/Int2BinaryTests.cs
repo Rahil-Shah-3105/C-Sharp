@@ -1,9 +1,11 @@
 using Algorithms.Other;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
 public static class Int2BinaryTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase((ushort)0, "0000000000000000")]
     [TestCase((ushort)0b1, "0000000000000001")]
     [TestCase((ushort)0b0001010100111000, "0001010100111000")]
@@ -12,13 +14,16 @@ public static class Int2BinaryTests
     [TestCase(ushort.MaxValue, "1111111111111111")]
     public static void GetsBinary(ushort input, string expected)
     {
+		_logger.LogError(">>> Entering GetsBinary(input={Input},expected={Expected})", input, expected);
         // Arrange
 
         // Act
         var result = Int2Binary.Int2Bin(input);
+		_logger.LogError("GetsBinary(input={Input},expected={Expected}): result → {Result}", input, expected, result);
 
         // Assert
         Assert.That(result, Is.EqualTo(expected));
+		_logger.LogWarning("<<< Exiting GetsBinary(input={Input},expected={Expected})", input, expected);
     }
 
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.Similarity;
 
 /// <summary>
@@ -12,6 +13,7 @@ namespace Algorithms.Strings.Similarity;
 /// </summary>
 public static class JaroSimilarity
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates Jaro Similarity between two strings.
     /// </summary>
@@ -19,6 +21,7 @@ public static class JaroSimilarity
     /// <param name="s2">Second string.</param>
     public static double Calculate(string s1, string s2)
     {
+		_logger.LogError(">>> Entering Calculate(s1={S1},s2={S2})", s1, s2);
         if (s1 == s2)
         {
             return 1;
@@ -29,6 +32,7 @@ public static class JaroSimilarity
 
         // will look for matching characters in this range
         var matchingCharacterRange = Math.Max((longerString.Length / 2) - 1, 0);
+		_logger.LogError("Calculate(s1={S1},s2={S2}): matchingCharacterRange → {MatchingCharacterRange}", s1, s2, matchingCharacterRange);
         var matches = 0d;
 
         // true if i-th index of s1 was matched in s2
@@ -40,7 +44,9 @@ public static class JaroSimilarity
         for (var i = 0; i < longerString.Length; i++)
         {
             var startIndex = Math.Max(i - matchingCharacterRange, 0);
+			_logger.LogError("Calculate(s1={S1},s2={S2}): startIndex → {StartIndex}", s1, s2, startIndex);
             var endIndex = Math.Min(i + matchingCharacterRange, shorterString.Length - 1);
+			_logger.LogError("Calculate(s1={S1},s2={S2}): endIndex → {EndIndex}", s1, s2, endIndex);
             for (var j = startIndex; j <= endIndex; j++)
             {
                 if (s1[i] == s2[j] && !s2MatchedIndeces[j])
@@ -59,7 +65,9 @@ public static class JaroSimilarity
         }
 
         var transpositions = CalculateTranspositions(s1, s2, s1MatchedIndeces, s2MatchedIndeces);
+		_logger.LogError("Calculate(s1={S1},s2={S2}): transpositions → {Transpositions}", s1, s2, transpositions);
 
+		_logger.LogWarning("<<< Exiting Calculate(s1={S1},s2={S2})", s1, s2);
         return ((matches / s1.Length) + (matches / s2.Length) + ((matches - transpositions) / matches)) / 3;
     }
 
@@ -68,6 +76,7 @@ public static class JaroSimilarity
     /// </summary>
     private static int CalculateTranspositions(string s1, string s2, bool[] s1MatchedIndeces, bool[] s2MatchedIndeces)
     {
+		_logger.LogError(">>> Entering CalculateTranspositions(s1={S1},s2={S2},s1MatchedIndeces={S1MatchedIndeces},s2MatchedIndeces={S2MatchedIndeces})", s1, s2, s1MatchedIndeces, s2MatchedIndeces);
         var transpositions = 0;
         var s2Index = 0;
         for (var s1Index = 0; s1Index < s1.Length; s1Index++)
@@ -89,6 +98,7 @@ public static class JaroSimilarity
         }
 
         transpositions /= 2;
+		_logger.LogWarning("<<< Exiting CalculateTranspositions(s1={S1},s2={S2},s1MatchedIndeces={S1MatchedIndeces},s2MatchedIndeces={S2MatchedIndeces})", s1, s2, s1MatchedIndeces, s2MatchedIndeces);
         return transpositions;
     }
 }

@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Other;
 
 public class Geofence(double latitude, double longitude, double radiusInMeters)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public double Latitude { get; set; } = latitude;
 
     public double Longitude { get; set; } = longitude;
@@ -17,7 +19,10 @@ public class Geofence(double latitude, double longitude, double radiusInMeters)
     /// <returns>Returns true if the user is inside the geofence, otherwise returns false.</returns>
     public bool IsInside(double userLatitude, double userLongitude)
     {
+		_logger.LogError(">>> Entering IsInside(userLatitude={UserLatitude},userLongitude={UserLongitude})", userLatitude, userLongitude);
         double distance = GeoLocation.CalculateDistanceFromLatLng(Latitude, Longitude, userLatitude, userLongitude);
+		_logger.LogError("IsInside(userLatitude={UserLatitude},userLongitude={UserLongitude}): distance → {Distance}", userLatitude, userLongitude, distance);
+		_logger.LogWarning("<<< Exiting IsInside(userLatitude={UserLatitude},userLongitude={UserLongitude})", userLatitude, userLongitude);
         return distance <= RadiusInMeters;
     }
 }

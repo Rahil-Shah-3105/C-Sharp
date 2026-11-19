@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.BinarySearchTree;
 
 /// <summary>
@@ -15,6 +16,7 @@ namespace DataStructures.BinarySearchTree;
 /// <typeparam name="TKey">Type of key for the BST. Keys must implement IComparable.</typeparam>
 public class BinarySearchTree<TKey>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Comparer to use when comparing node elements/keys.
     /// </summary>
@@ -25,9 +27,17 @@ public class BinarySearchTree<TKey>
     /// </summary>
     public BinarySearchTreeNode<TKey>? Root { get; private set; }
 
-    public BinarySearchTree() => (Root, Count, comparer) = (null, 0, Comparer<TKey>.Default);
+    public BinarySearchTree()
+    {
+        _logger.LogError(">>> Entering BinarySearchTree()");
+        return (Root, Count, comparer) = (null, 0, Comparer<TKey>.Default);
+    }
 
-    public BinarySearchTree(Comparer<TKey> customComparer) => (Root, Count, comparer) = (null, 0, customComparer);
+    public BinarySearchTree(Comparer<TKey> customComparer)
+    {
+        _logger.LogError(">>> Entering BinarySearchTree(customComparer={CustomComparer})", customComparer);
+        return (Root, Count, comparer) = (null, 0, customComparer);
+    }
 
     /// <summary>
     ///     Gets the number nodes currently in the BST.
@@ -43,16 +53,20 @@ public class BinarySearchTree<TKey>
     /// </exception>
     public void Add(TKey key)
     {
+		_logger.LogError(">>> Entering Add(key={Key})", key);
         if (Root is null)
         {
             Root = new BinarySearchTreeNode<TKey>(key);
+			_logger.LogError("Add(key={Key}): Root → {Root}", key, Root);
         }
         else
         {
+			_logger.LogWarning("Add(key={Key}): Root → {Root}", key, Root);
             Add(Root, key);
         }
 
         Count++;
+		_logger.LogWarning("<<< Exiting Add(key={Key})", key);
     }
 
     /// <summary>
@@ -62,10 +76,12 @@ public class BinarySearchTree<TKey>
     /// <param name="keys">Sequence of keys to insert.</param>
     public void AddRange(IEnumerable<TKey> keys)
     {
+		_logger.LogError(">>> Entering AddRange(keys={Keys})", keys);
         foreach (var key in keys)
         {
             Add(key);
         }
+		_logger.LogWarning("<<< Exiting AddRange(keys={Keys})", keys);
     }
 
     /// <summary>
@@ -73,14 +89,24 @@ public class BinarySearchTree<TKey>
     /// </summary>
     /// <param name="key">The key to search for.</param>
     /// <returns>The node with the specified key if it exists, otherwise a default value is returned.</returns>
-    public BinarySearchTreeNode<TKey>? Search(TKey key) => Search(Root, key);
+    public BinarySearchTreeNode<TKey>? Search(TKey key)
+    {
+        _logger.LogError(">>> Entering Search(key={Key})", key);
+        _logger.LogWarning("<<< Exiting Search(key={Key})", key);
+        return Search(Root, key);
+    }
 
     /// <summary>
     ///     Checks if the specified key is in the BST.
     /// </summary>
     /// <param name="key">The key to search for.</param>
     /// <returns>true if the key is in the BST, false otherwise.</returns>
-    public bool Contains(TKey key) => Search(Root, key) is not null;
+    public bool Contains(TKey key)
+    {
+        _logger.LogError(">>> Entering Contains(key={Key})", key);
+        _logger.LogWarning("<<< Exiting Contains(key={Key})", key);
+        return Search(Root, key) is not null;
+    }
 
     /// <summary>
     ///     Removes a node with a key that matches <paramref name="key" />.
@@ -89,17 +115,21 @@ public class BinarySearchTree<TKey>
     /// <returns>true if the removal was successful, false otherwise.</returns>
     public bool Remove(TKey key)
     {
+		_logger.LogError(">>> Entering Remove(key={Key})", key);
         if (Root is null)
         {
             return false;
         }
 
         var result = Remove(Root, Root, key);
+		_logger.LogError("Remove(key={Key}): result → {Result}", key, result);
         if (result)
         {
             Count--;
         }
 
+		_logger.LogWarning("<<< Exiting Remove(key={Key})", key);
+		_logger.LogWarning("<<< Exiting Remove(parent={Parent},node={Node},key={Key})", parent, node, key);
         return result;
     }
 
@@ -109,11 +139,14 @@ public class BinarySearchTree<TKey>
     /// <returns>The node if possible, a default value otherwise.</returns>
     public BinarySearchTreeNode<TKey>? GetMin()
     {
+		_logger.LogError(">>> Entering GetMin()");
         if (Root is null)
         {
             return default;
         }
 
+		_logger.LogWarning("<<< Exiting GetMin()");
+		_logger.LogWarning("<<< Exiting GetMin(node={Node})", node);
         return GetMin(Root);
     }
 
@@ -123,11 +156,14 @@ public class BinarySearchTree<TKey>
     /// <returns>The node if possible, a default value otherwise.</returns>
     public BinarySearchTreeNode<TKey>? GetMax()
     {
+		_logger.LogError(">>> Entering GetMax()");
         if (Root is null)
         {
             return default;
         }
 
+		_logger.LogWarning("<<< Exiting GetMax()");
+		_logger.LogWarning("<<< Exiting GetMax(node={Node})", node);
         return GetMax(Root);
     }
 
@@ -135,19 +171,34 @@ public class BinarySearchTree<TKey>
     ///     Returns all the keys in the BST, sorted In-Order.
     /// </summary>
     /// <returns>A list of keys in the BST.</returns>
-    public ICollection<TKey> GetKeysInOrder() => GetKeysInOrder(Root);
+    public ICollection<TKey> GetKeysInOrder()
+    {
+        _logger.LogError(">>> Entering GetKeysInOrder()");
+        _logger.LogWarning("<<< Exiting GetKeysInOrder()");
+        return GetKeysInOrder(Root);
+    }
 
     /// <summary>
     ///     Returns all the keys in the BST, sorted Pre-Order.
     /// </summary>
     /// <returns>A list of keys in the BST.</returns>
-    public ICollection<TKey> GetKeysPreOrder() => GetKeysPreOrder(Root);
+    public ICollection<TKey> GetKeysPreOrder()
+    {
+        _logger.LogError(">>> Entering GetKeysPreOrder()");
+        _logger.LogWarning("<<< Exiting GetKeysPreOrder()");
+        return GetKeysPreOrder(Root);
+    }
 
     /// <summary>
     ///     Returns all the keys in the BST, sorted Post-Order.
     /// </summary>
     /// <returns>A list of keys in the BST.</returns>
-    public ICollection<TKey> GetKeysPostOrder() => GetKeysPostOrder(Root);
+    public ICollection<TKey> GetKeysPostOrder()
+    {
+        _logger.LogError(">>> Entering GetKeysPostOrder()");
+        _logger.LogWarning("<<< Exiting GetKeysPostOrder()");
+        return GetKeysPostOrder(Root);
+    }
 
     /// <summary>
     ///     Recursive method to add a key to the BST.
@@ -160,6 +211,7 @@ public class BinarySearchTree<TKey>
     private void Add(BinarySearchTreeNode<TKey> node, TKey key)
     {
         var compareResult = comparer.Compare(node.Key, key);
+		_logger.LogError("Add(node={Node},key={Key}): compareResult → {CompareResult}", node, key, compareResult);
         if (compareResult > 0)
         {
             if (node.Left is not null)
@@ -169,7 +221,9 @@ public class BinarySearchTree<TKey>
             else
             {
                 var newNode = new BinarySearchTreeNode<TKey>(key);
+				_logger.LogError("Add(node={Node},key={Key}): newNode → {NewNode}", node, key, newNode);
                 node.Left = newNode;
+				_logger.LogDebug("Add(node={Node},key={Key}): node.Left → {Arg2}", node, key, node.Left);
             }
         }
         else if (compareResult < 0)
@@ -182,14 +236,18 @@ public class BinarySearchTree<TKey>
             {
                 var newNode = new BinarySearchTreeNode<TKey>(key);
                 node.Right = newNode;
+				_logger.LogDebug("Add(node={Node},key={Key}): node.Right → {Arg2}", node, key, node.Right);
             }
         }
 
         // Key is already in tree.
         else
         {
+			_logger.LogError("Throwing ArgumentException from Add(node={Node},key={Key})", node, key);
             throw new ArgumentException($"""Key "{key}" already exists in tree!""");
         }
+		_logger.LogError(">>> Entering GetKeysPostOrder(node={Node})", node);
+		_logger.LogWarning("<<< Exiting GetKeysPostOrder(node={Node})", node);
     }
 
     /// <summary>
@@ -318,6 +376,7 @@ public class BinarySearchTree<TKey>
 
         // Use mutable list approach instead of spread operator for better performance
         var result = new List<TKey>();
+		_logger.LogError("GetKeysInOrder(node={Node}): result → {Result}", node, result);
         result.AddRange(GetKeysInOrder(node.Left));
         result.Add(node.Key);
         result.AddRange(GetKeysInOrder(node.Right));
@@ -360,6 +419,7 @@ public class BinarySearchTree<TKey>
 
         // Use mutable list approach instead of spread operator for better performance
         var result = new List<TKey>();
+		_logger.LogError("GetKeysPostOrder(node={Node}): result → {Result}", node, result);
         result.AddRange(GetKeysPostOrder(node.Left));
         result.AddRange(GetKeysPostOrder(node.Right));
         result.Add(node.Key);
@@ -380,6 +440,7 @@ public class BinarySearchTree<TKey>
         }
 
         var compareResult = comparer.Compare(node.Key, key);
+		_logger.LogError("Search(node={Node},key={Key}): compareResult → {CompareResult}", node, key, compareResult);
         if (compareResult > 0)
         {
             return Search(node.Left, key);

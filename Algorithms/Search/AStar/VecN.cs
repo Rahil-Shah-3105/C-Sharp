@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Search.AStar;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.Search.AStar;
 /// <param name="vals">Vector components as array.</param>
 public struct VecN(params double[] vals) : IEquatable<VecN>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly double[] data = vals;
 
     /// <summary>
@@ -22,12 +24,14 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
     /// <returns>The squared length of the vector.</returns>
     public double SqrLength()
     {
+		_logger.LogError(">>> Entering SqrLength()");
         double ret = 0;
         for (var i = 0; i < data.Length; i++)
         {
             ret += data[i] * data[i];
         }
 
+		_logger.LogWarning("<<< Exiting SqrLength()");
         return ret;
     }
 
@@ -35,7 +39,12 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
     ///     Returns the Length of the vector.
     /// </summary>
     /// <returns>Length of the Vector.</returns>
-    public double Length() => Math.Sqrt(SqrLength());
+    public double Length()
+    {
+        _logger.LogError(">>> Entering Length()");
+        _logger.LogWarning("<<< Exiting Length()");
+        return Math.Sqrt(SqrLength());
+    }
 
     /// <summary>
     ///     Returns the Distance between this and other.
@@ -44,7 +53,10 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
     /// <returns>The distance between this and other.</returns>
     public double Distance(VecN other)
     {
+		_logger.LogError(">>> Entering Distance(other={Other})", other);
         var delta = Subtract(other);
+		_logger.LogError("Distance(other={Other}): delta → {Delta}", other, delta);
+		_logger.LogWarning("<<< Exiting Distance(other={Other})", other);
         return delta.Length();
     }
 
@@ -55,7 +67,10 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
     /// <returns>The squared distance between this and other.</returns>
     public double SqrDistance(VecN other)
     {
+		_logger.LogError(">>> Entering SqrDistance(other={Other})", other);
         var delta = Subtract(other);
+		_logger.LogError("SqrDistance(other={Other}): delta → {Delta}", other, delta);
+		_logger.LogWarning("<<< Exiting SqrDistance(other={Other})", other);
         return delta.SqrLength();
     }
 
@@ -66,13 +81,16 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
     /// <returns>The new vector.</returns>
     public VecN Subtract(VecN other)
     {
+		_logger.LogError(">>> Entering Subtract(other={Other})", other);
         var dd = new double[Math.Max(data.Length, other.data.Length)];
+		_logger.LogError("Subtract(other={Other}): dd → {Dd}", other, dd);
         for (var i = 0; i < dd.Length; i++)
         {
             double val = 0;
             if (data.Length > i)
             {
                 val = data[i];
+				_logger.LogError("Subtract(other={Other}): val → {Val}", other, val);
             }
 
             if (other.data.Length > i)
@@ -83,6 +101,7 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
             dd[i] = val;
         }
 
+		_logger.LogWarning("<<< Exiting Subtract(other={Other})", other);
         return new VecN(dd);
     }
 
@@ -93,6 +112,7 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
     /// <returns>A value indicating if other has the same values as this.</returns>
     public bool Equals(VecN other)
     {
+		_logger.LogError(">>> Entering Equals(other={Other})", other);
         if (other.N != N)
         {
             return false;
@@ -106,6 +126,7 @@ public struct VecN(params double[] vals) : IEquatable<VecN>
             }
         }
 
+		_logger.LogWarning("<<< Exiting Equals(other={Other})", other);
         return true;
     }
 }

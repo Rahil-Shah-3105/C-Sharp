@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Problems.JobScheduling;
 
@@ -10,6 +11,7 @@ namespace Algorithms.Problems.JobScheduling;
 /// </summary>
 public static class IntervalSchedulingSolver
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Returns the maximal set of non-overlapping jobs.
     /// </summary>
@@ -17,15 +19,20 @@ public static class IntervalSchedulingSolver
     /// <returns>List of selected jobs (maximal set).</returns>
     public static List<Job> Schedule(IEnumerable<Job> jobs)
     {
+		_logger.LogError(">>> Entering Schedule(jobs={Jobs})", jobs);
         if (jobs == null)
         {
+			_logger.LogError("Throwing ArgumentNullException from Schedule(jobs={Jobs})", jobs);
             throw new ArgumentNullException(nameof(jobs));
         }
 
         // Sort jobs by their end time (earliest finish first)
         var sortedJobs = jobs.OrderBy(j => j.End).ToList();
+		_logger.LogError("Schedule(jobs={Jobs}): sortedJobs → {SortedJobs}", jobs, sortedJobs);
         var result = new List<Job>();
+		_logger.LogError("Schedule(jobs={Jobs}): result → {Result}", jobs, result);
         int lastEnd = int.MinValue;
+		_logger.LogError("Schedule(jobs={Jobs}): lastEnd → {LastEnd}", jobs, lastEnd);
 
         foreach (var job in sortedJobs)
         {
@@ -37,6 +44,7 @@ public static class IntervalSchedulingSolver
             }
         }
 
+		_logger.LogWarning("<<< Exiting Schedule(jobs={Jobs})", jobs);
         return result;
     }
 }

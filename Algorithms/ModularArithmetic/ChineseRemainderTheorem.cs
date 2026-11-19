@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.ModularArithmetic;
 
 /// <summary>
@@ -5,6 +6,7 @@ namespace Algorithms.ModularArithmetic;
 /// </summary>
 public static class ChineseRemainderTheorem
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     The Chinese Remainder Theorem is used to compute x for given set of pairs of integers (a_i, n_i) with:
     ///     <list type="bullet">
@@ -108,6 +110,7 @@ public static class ChineseRemainderTheorem
             result += prodN;
         }
 
+		_logger.LogWarning("<<< Exiting Compute(listOfAs={ListOfAs},listOfNs={ListOfNs})", listOfAs, listOfNs);
         return result;
     }
 
@@ -146,6 +149,9 @@ public static class ChineseRemainderTheorem
                 }
             }
         }
+		_logger.LogError(">>> Entering CheckRequirements(listOfAs={ListOfAs},listOfNs={ListOfNs})", listOfAs, listOfNs);
+		_logger.LogError("Throwing ArgumentException from CheckRequirements(listOfAs={ListOfAs},listOfNs={ListOfNs})", listOfAs, listOfNs);
+		_logger.LogWarning("<<< Exiting CheckRequirements(listOfAs={ListOfAs},listOfNs={ListOfNs})", listOfAs, listOfNs);
     }
 
     /// <summary>
@@ -158,6 +164,7 @@ public static class ChineseRemainderTheorem
     {
         if (listOfAs == null || listOfNs == null || listOfAs.Count != listOfNs.Count)
         {
+			_logger.LogError("Throwing ArgumentException from CheckRequirements(listOfAs={ListOfAs},listOfNs={ListOfNs})", listOfAs, listOfNs);
             throw new ArgumentException("The parameters 'listOfAs' and 'listOfNs' must not be null and have to be of equal length!");
         }
 

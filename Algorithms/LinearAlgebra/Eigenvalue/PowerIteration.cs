@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.LinearAlgebra.Eigenvalue;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.LinearAlgebra.Eigenvalue;
 /// </summary>
 public static class PowerIteration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Returns approximation of the dominant eigenvalue and eigenvector of <paramref name="source" /> matrix.
     /// </summary>
@@ -28,8 +30,10 @@ public static class PowerIteration
         double[] startVector,
         double error = 0.00001)
     {
+		_logger.LogError(">>> Entering Dominant()");
         if (source.GetLength(0) != source.GetLength(1))
         {
+			_logger.LogError("Throwing ArgumentException from Dominant()");
             throw new ArgumentException("The source matrix is not square-shaped.");
         }
 
@@ -46,17 +50,23 @@ public static class PowerIteration
         do
         {
             previousEigenVector = currentEigenVector;
+			_logger.LogDebug("Dominant(): previousEigenVector → {PreviousEigenVector}", previousEigenVector);
             currentEigenVector = source.Multiply(
                     previousEigenVector.ToColumnVector())
                 .ToRowVector();
 
             eigenNorm = currentEigenVector.Magnitude();
+			_logger.LogError("Dominant(): eigenNorm → {EigenNorm}", eigenNorm);
+			_logger.LogDebug("Dominant(): eigenNorm → {EigenNorm}", eigenNorm);
             currentEigenVector = currentEigenVector.Select(x => x / eigenNorm).ToArray();
+			_logger.LogError("Dominant(): currentEigenVector → {CurrentEigenVector}", currentEigenVector);
         }
         while (Math.Abs(currentEigenVector.Dot(previousEigenVector)) < 1.0 - error);
 
         var eigenvalue = source.Multiply(currentEigenVector.ToColumnVector()).ToRowVector().Magnitude();
+		_logger.LogError("Dominant(): eigenvalue → {Eigenvalue}", eigenvalue);
 
+		_logger.LogWarning("<<< Exiting Dominant()");
         return (eigenvalue, Eigenvector: currentEigenVector);
     }
 

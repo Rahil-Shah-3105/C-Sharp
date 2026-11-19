@@ -1,26 +1,35 @@
 using Algorithms.Encoders;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Encoders;
 
 public static class FeistelCipherTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void DecodedStringIsTheSame([Random(100)] uint key)
     {
+		_logger.LogError(">>> Entering DecodedStringIsTheSame(key={Key})", key);
         // Arrange
         var encoder = new FeistelCipher();
+		_logger.LogError("DecodedStringIsTheSame(key={Key}): encoder → {Encoder}", key, encoder);
         var random = new Randomizer();
+		_logger.LogError("DecodedStringIsTheSame(key={Key}): random → {Random}", key, random);
 
         int lenOfString = random.Next(1000);
+		_logger.LogError("DecodedStringIsTheSame(key={Key}): lenOfString → {LenOfString}", key, lenOfString);
 
         string message = random.GetString(lenOfString);
 
         // Act
         var encoded = encoder.Encode(message, key);
+		_logger.LogError("DecodedStringIsTheSame(key={Key}): encoded → {Encoded}", key, encoded);
         var decoded = encoder.Decode(encoded, key);
+		_logger.LogError("DecodedStringIsTheSame(key={Key}): decoded → {Decoded}", key, decoded);
 
         // Assert
         Assert.That(decoded, Is.EqualTo(message));
+		_logger.LogWarning("<<< Exiting DecodedStringIsTheSame(key={Key})", key);
     }
 
     [TestCase("00001111", (uint)0x12345678)]
@@ -31,10 +40,13 @@ public static class FeistelCipherTests
     // (text.Length % 16 == 0)
     public static void TestEncodedMessageSize(string testCase, uint key)
     {
+		_logger.LogError(">>> Entering TestEncodedMessageSize(testCase={TestCase},key={Key})", testCase, key);
         // Arrange
         var encoder = new FeistelCipher();
+		_logger.LogError("TestEncodedMessageSize(testCase={TestCase},key={Key}): encoder → {Encoder}", testCase, key, encoder);
 
         // Assert
         Assert.Throws<ArgumentException>(() => encoder.Decode(testCase, key));
+		_logger.LogWarning("<<< Exiting TestEncodedMessageSize(testCase={TestCase},key={Key})", testCase, key);
     }
 }

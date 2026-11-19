@@ -1,4 +1,5 @@
 using Algorithms.Other;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
@@ -7,12 +8,16 @@ namespace Algorithms.Tests.Other;
 /// </summary>
 public static class JulianEasterTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCaseSource(nameof(CalculateCases))]
     public static void CalculateTest(int year, DateTime expected)
     {
+		_logger.LogError(">>> Entering CalculateTest(year={Year},expected={Expected})", year, expected);
         var result = JulianEaster.Calculate(year);
 
+		_logger.LogError("CalculateTest(year={Year},expected={Expected}): result → {Result}", year, expected, result);
         Assert.That(result, Is.EqualTo(expected));
+		_logger.LogWarning("<<< Exiting CalculateTest(year={Year},expected={Expected})", year, expected);
     }
 
     private static readonly object[] CalculateCases =

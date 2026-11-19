@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Numeric;
 
 /// <summary>
@@ -9,6 +10,7 @@ namespace Algorithms.Numeric;
 /// </summary>
 public static class SoftMax
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///    Compute the SoftMax function.
     ///    The SoftMax function is defined as:
@@ -20,8 +22,10 @@ public static class SoftMax
     /// <returns>The output vector of real numbers.</returns>
     public static double[] Compute(double[] input)
     {
+		_logger.LogError(">>> Entering Compute(input={Input})", input);
         if (input.Length == 0)
         {
+			_logger.LogError("Throwing ArgumentException from Compute(input={Input})", input);
             throw new ArgumentException("Array is empty.");
         }
 
@@ -38,6 +42,7 @@ public static class SoftMax
             exponentVector[index] /= sum;
         }
 
+		_logger.LogWarning("<<< Exiting Compute(input={Input})", input);
         return exponentVector;
     }
 }

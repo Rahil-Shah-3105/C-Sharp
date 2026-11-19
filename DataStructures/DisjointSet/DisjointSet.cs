@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.DisjointSet;
 
 /// <summary>
@@ -6,12 +7,18 @@ namespace DataStructures.DisjointSet;
 /// <typeparam name="T"> generic type for implementation.</typeparam>
 public class DisjointSet<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// make a new set and return its representative.
     /// </summary>
     /// <param name="x">element to add in to the DS.</param>
     /// <returns>representative of x.</returns>
-    public Node<T> MakeSet(T x) => new(x);
+    public Node<T> MakeSet(T x)
+    {
+        _logger.LogError(">>> Entering MakeSet(x={X})", x);
+        _logger.LogWarning("<<< Exiting MakeSet(x={X})", x);
+        return new(x);
+    }
 
     /// <summary>
     /// find the representative of a certain node.
@@ -20,11 +27,13 @@ public class DisjointSet<T>
     /// <returns>representative of x.</returns>
     public Node<T> FindSet(Node<T> node)
     {
+		_logger.LogError(">>> Entering FindSet(node={Node})", node);
         if (node != node.Parent)
         {
             node.Parent = FindSet(node.Parent);
         }
 
+		_logger.LogWarning("<<< Exiting FindSet(node={Node})", node);
         return node.Parent;
     }
 
@@ -35,25 +44,31 @@ public class DisjointSet<T>
     /// <param name="y">second set member.</param>
     public void UnionSet(Node<T> x, Node<T> y)
     {
+		_logger.LogError(">>> Entering UnionSet(x={X},y={Y})", x, y);
         Node<T> nx = FindSet(x);
         Node<T> ny = FindSet(y);
+		_logger.LogError("UnionSet(x={X},y={Y}): nx → {Nx}", x, y, nx);
         if (nx == ny)
         {
+			_logger.LogError("UnionSet(x={X},y={Y}): ny → {Ny}", x, y, ny);
             return;
         }
 
         if (nx.Rank > ny.Rank)
         {
             ny.Parent = nx;
+			_logger.LogDebug("UnionSet(x={X},y={Y}): ny.Parent → {Arg2}", x, y, ny.Parent);
         }
         else if (ny.Rank > nx.Rank)
         {
             nx.Parent = ny;
+			_logger.LogDebug("UnionSet(x={X},y={Y}): nx.Parent → {Arg2}", x, y, nx.Parent);
         }
         else
         {
             nx.Parent = ny;
             ny.Rank++;
         }
+		_logger.LogWarning("<<< Exiting UnionSet(x={X},y={Y})", x, y);
     }
 }

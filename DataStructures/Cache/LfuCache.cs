@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace DataStructures.Cache;
 
 /// <summary>
@@ -29,8 +30,10 @@ namespace DataStructures.Cache;
 /// <param name="capacity">The max number of items the cache can store.</param>
 public class LfuCache<TKey, TValue>(int capacity = LfuCache<TKey, TValue>.DefaultCapacity) where TKey : notnull
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private class CachedItem
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         public TKey Key { get; set; } = default!;
 
         public TValue? Value { get; set; }
@@ -56,7 +59,12 @@ public class LfuCache<TKey, TValue>(int capacity = LfuCache<TKey, TValue>.Defaul
     // When a new item is added, the <c>minFrequency</c> is set to 1.
     private int minFrequency = -1;
 
-    public bool Contains(TKey key) => cache.ContainsKey(key);
+    public bool Contains(TKey key)
+    {
+        _logger.LogError(">>> Entering Contains(key={Key})", key);
+        _logger.LogWarning("<<< Exiting Contains(key={Key})", key);
+        return cache.ContainsKey(key);
+    }
 
     /// <summary>
     /// Gets the cached item by key.
@@ -66,6 +74,7 @@ public class LfuCache<TKey, TValue>(int capacity = LfuCache<TKey, TValue>.Defaul
     /// <remarks> Time complexity: O(1). </remarks>
     public TValue? Get(TKey key)
     {
+		_logger.LogError(">>> Entering Get(key={Key})", key);
         if (!cache.ContainsKey(key))
         {
             return default;
@@ -73,6 +82,7 @@ public class LfuCache<TKey, TValue>(int capacity = LfuCache<TKey, TValue>.Defaul
 
         var node = cache[key];
         UpdateFrequency(node, isNew: false);
+		_logger.LogWarning("<<< Exiting Get(key={Key})", key);
         return node.Value.Value;
     }
 
@@ -89,6 +99,7 @@ public class LfuCache<TKey, TValue>(int capacity = LfuCache<TKey, TValue>.Defaul
     /// </remarks>
     public void Put(TKey key, TValue value)
     {
+		_logger.LogError(">>> Entering Put(key={Key},value={Value})", key, value);
         if (cache.ContainsKey(key))
         {
             var existingNode = cache[key];
@@ -104,18 +115,23 @@ public class LfuCache<TKey, TValue>(int capacity = LfuCache<TKey, TValue>.Defaul
 
         var item = new CachedItem { Key = key, Value = value };
         var newNode = new LinkedListNode<CachedItem>(item);
+		_logger.LogError("Put(key={Key},value={Value}): newNode → {NewNode}", key, value, newNode);
         UpdateFrequency(newNode, isNew: true);
         cache.Add(key, newNode);
+		_logger.LogWarning("<<< Exiting Put(key={Key},value={Value})", key, value);
     }
 
     private void UpdateFrequency(LinkedListNode<CachedItem> node, bool isNew)
     {
+		_logger.LogError(">>> Entering UpdateFrequency(node={Node},isNew={IsNew})", node, isNew);
         var item = node.Value;
 
         if (isNew)
         {
             item.Frequency = 1;
+			_logger.LogDebug("UpdateFrequency(node={Node},isNew={IsNew}): item.Frequency → {Arg2}", node, isNew, item.Frequency);
             minFrequency = 1;
+			_logger.LogDebug("UpdateFrequency(node={Node},isNew={IsNew}): minFrequency → {MinFrequency}", node, isNew, minFrequency);
         }
         else
         {
@@ -137,13 +153,16 @@ public class LfuCache<TKey, TValue>(int capacity = LfuCache<TKey, TValue>.Defaul
         }
 
         frequencies[item.Frequency].AddLast(node);
+		_logger.LogWarning("<<< Exiting UpdateFrequency(node={Node},isNew={IsNew})", node, isNew);
     }
 
     private void EvictOneItem()
     {
+		_logger.LogError(">>> Entering EvictOneItem()");
         var lruList = frequencies[minFrequency];
         var itemToRemove = lruList.First!.Value;
         lruList.RemoveFirst();
         cache.Remove(itemToRemove.Key);
+		_logger.LogWarning("<<< Exiting EvictOneItem()");
     }
 }

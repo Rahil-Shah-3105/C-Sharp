@@ -1,4 +1,5 @@
 using Algorithms.Knapsack;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.DataCompression;
 
@@ -9,6 +10,7 @@ public class ShannonFanoCompressor(
     IHeuristicKnapsackSolver<(char Symbol, double Frequency)> splitter,
     Translator translator)
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IHeuristicKnapsackSolver<(char Symbol, double Frequency)> splitter = splitter;
     private readonly Translator translator = translator;
 
@@ -20,6 +22,7 @@ public class ShannonFanoCompressor(
     /// <returns>Compressed string and keys to decompress it.</returns>
     public (string CompressedText, Dictionary<string, string> DecompressionKeys) Compress(string uncompressedText)
     {
+		_logger.LogError(">>> Entering Compress(uncompressedText={UncompressedText})", uncompressedText);
         if (string.IsNullOrEmpty(uncompressedText))
         {
             return (string.Empty, new Dictionary<string, string>());
@@ -35,16 +38,22 @@ public class ShannonFanoCompressor(
         }
 
         var node = GetListNodeFromText(uncompressedText);
+		_logger.LogError("Compress(uncompressedText={UncompressedText}): node → {Node}", uncompressedText, node);
         var tree = GenerateShannonFanoTree(node);
+		_logger.LogError("Compress(uncompressedText={UncompressedText}): tree → {Tree}", uncompressedText, tree);
         var (compressionKeys, decompressionKeys) = GetKeys(tree);
+		_logger.LogWarning("<<< Exiting Compress(uncompressedText={UncompressedText})", uncompressedText);
         return (translator.Translate(uncompressedText, compressionKeys), decompressionKeys);
     }
 
     private (Dictionary<string, string> CompressionKeys, Dictionary<string, string> DecompressionKeys) GetKeys(
         ListNode tree)
     {
+		_logger.LogError(">>> Entering GetKeys()");
         var compressionKeys = new Dictionary<string, string>();
         var decompressionKeys = new Dictionary<string, string>();
+		_logger.LogError("GetKeys(): decompressionKeys → {DecompressionKeys}", decompressionKeys);
+		_logger.LogError("GetKeys(): compressionKeys → {CompressionKeys}", compressionKeys);
 
         if (tree.Data.Length == 1)
         {
@@ -67,22 +76,27 @@ public class ShannonFanoCompressor(
             decompressionKeys.AddMany(rsdk.Select(kvp => ("1" + kvp.Key, kvp.Value)));
         }
 
+		_logger.LogWarning("<<< Exiting GetKeys()");
         return (compressionKeys, decompressionKeys);
     }
 
     private ListNode GenerateShannonFanoTree(ListNode node)
     {
+		_logger.LogError(">>> Entering GenerateShannonFanoTree(node={Node})", node);
         if (node.Data.Length == 1)
         {
             return node;
         }
 
         var left = splitter.Solve(node.Data, 0.5 * node.Data.Sum(x => x.Frequency), x => x.Frequency, _ => 1);
+		_logger.LogError("GenerateShannonFanoTree(node={Node}): left → {Left}", node, left);
         var right = node.Data.Except(left).ToArray();
+		_logger.LogError("GenerateShannonFanoTree(node={Node}): right → {Right}", node, right);
 
         node.LeftChild = GenerateShannonFanoTree(new ListNode(left));
         node.RightChild = GenerateShannonFanoTree(new ListNode(right));
 
+		_logger.LogWarning("<<< Exiting GenerateShannonFanoTree(node={Node})", node);
         return node;
     }
 
@@ -92,8 +106,10 @@ public class ShannonFanoCompressor(
     /// <returns>Symbol-frequency array.</returns>
     private ListNode GetListNodeFromText(string text)
     {
+		_logger.LogError(">>> Entering GetListNodeFromText(text={Text})", text);
         var occurenceCounts = new Dictionary<char, double>();
 
+		_logger.LogError("GetListNodeFromText(text={Text}): occurenceCounts → {OccurenceCounts}", text, occurenceCounts);
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
@@ -105,6 +121,7 @@ public class ShannonFanoCompressor(
             occurenceCounts[ch]++;
         }
 
+		_logger.LogWarning("<<< Exiting GetListNodeFromText(text={Text})", text);
         return new ListNode(occurenceCounts.Select(kvp => (kvp.Key, 1d * kvp.Value / text.Length)).ToArray());
     }
 

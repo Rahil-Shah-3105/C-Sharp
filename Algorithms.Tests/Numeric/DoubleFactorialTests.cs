@@ -1,5 +1,6 @@
 using System.Numerics;
 using Algorithms.Numeric;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric;
 
@@ -8,6 +9,7 @@ namespace Algorithms.Tests.Numeric;
 /// </summary>
 public static class DoubleFactorialTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Tests the calculation of double factorial for non-negative integers.
     /// Includes base cases (0, 1), odd numbers (5, 11), even numbers (6, 12), 
@@ -24,14 +26,18 @@ public static class DoubleFactorialTests
     [TestCase(20, "3715891200")] // Large Even
     public static void GetsDoubleFactorial(int input, string expected)
     {
+		_logger.LogError(">>> Entering GetsDoubleFactorial(input={Input},expected={Expected})", input, expected);
         // Arrange
         BigInteger expectedBigInt = BigInteger.Parse(expected);
+		_logger.LogError("GetsDoubleFactorial(input={Input},expected={Expected}): expectedBigInt → {ExpectedBigInt}", input, expected, expectedBigInt);
 
         // Act
         var result = DoubleFactorial.Calculate(input);
+		_logger.LogError("GetsDoubleFactorial(input={Input},expected={Expected}): result → {Result}", input, expected, result);
 
         // Assert
         Assert.That(result, Is.EqualTo(expectedBigInt));
+		_logger.LogWarning("<<< Exiting GetsDoubleFactorial(input={Input},expected={Expected})", input, expected);
     }
 
     /// <summary>
@@ -43,12 +49,14 @@ public static class DoubleFactorialTests
     [TestCase(-10)]
     public static void GetsDoubleFactorialExceptionForNegativeNumbers(int num)
     {
+		_logger.LogError(">>> Entering GetsDoubleFactorialExceptionForNegativeNumbers(num={Num})", num);
         // Arrange
 
         // Act
         void Act() => DoubleFactorial.Calculate(num);
 
         // Assert
+		_logger.LogWarning("<<< Exiting GetsDoubleFactorialExceptionForNegativeNumbers(num={Num})", num);
         _ = Assert.Throws<ArgumentException>(Act);
     }
 }

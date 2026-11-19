@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -6,6 +7,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type of array element.</typeparam>
 public class ExchangeSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sorts array using specified comparer,
     ///     internal, in-place, stable,
@@ -17,6 +19,7 @@ public class ExchangeSorter<T> : IComparisonSorter<T>
     /// <param name="comparer">Compares elements.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogError(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         for (var i = 0; i < array.Length - 1; i++)
         {
             for (var j = i + 1; j < array.Length; j++)
@@ -27,5 +30,6 @@ public class ExchangeSorter<T> : IComparisonSorter<T>
                 }
             }
         }
+		_logger.LogWarning("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 }

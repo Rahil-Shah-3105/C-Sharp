@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Sorters.Comparison;
 
 /// <summary>
@@ -10,6 +11,7 @@ namespace Algorithms.Sorters.Comparison;
 /// <typeparam name="T">Type array input.</typeparam>
 public class CycleSorter<T> : IComparisonSorter<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Sorts input array using Cycle sort.
     /// </summary>
@@ -17,16 +19,21 @@ public class CycleSorter<T> : IComparisonSorter<T>
     /// <param name="comparer">Integer comparer.</param>
     public void Sort(T[] array, IComparer<T> comparer)
     {
+		_logger.LogError(">>> Entering Sort(array={Array},comparer={Comparer})", array, comparer);
         for (var i = 0; i < array.Length - 1; i++)
         {
             MoveCycle(array, i, comparer);
         }
+		_logger.LogWarning("<<< Exiting Sort(array={Array},comparer={Comparer})", array, comparer);
     }
 
     private static void MoveCycle(T[] array, int startingIndex, IComparer<T> comparer)
     {
+		_logger.LogError(">>> Entering MoveCycle(array={Array},startingIndex={StartingIndex},comparer={Comparer})", array, startingIndex, comparer);
         var item = array[startingIndex];
         var pos = startingIndex + CountSmallerElements(array, startingIndex + 1, item, comparer);
+		_logger.LogError("MoveCycle(array={Array},startingIndex={StartingIndex},comparer={Comparer}): pos → {Pos}", array, startingIndex, comparer, pos);
+		_logger.LogError("MoveCycle(array={Array},startingIndex={StartingIndex},comparer={Comparer}): item → {Item}", array, startingIndex, comparer, item);
 
         if (pos == startingIndex)
         {
@@ -48,20 +55,24 @@ public class CycleSorter<T> : IComparisonSorter<T>
             array[pos] = item;
             item = temp;
         }
+		_logger.LogWarning("<<< Exiting MoveCycle(array={Array},startingIndex={StartingIndex},comparer={Comparer})", array, startingIndex, comparer);
     }
 
     private static int SkipSameElements(T[] array, int nextIndex, T item, IComparer<T> comparer)
     {
+		_logger.LogError(">>> Entering SkipSameElements(array={Array},nextIndex={NextIndex},item={Item},comparer={Comparer})", array, nextIndex, item, comparer);
         while (comparer.Compare(array[nextIndex], item) == 0)
         {
             nextIndex++;
         }
 
+		_logger.LogWarning("<<< Exiting SkipSameElements(array={Array},nextIndex={NextIndex},item={Item},comparer={Comparer})", array, nextIndex, item, comparer);
         return nextIndex;
     }
 
     private static int CountSmallerElements(T[] array, int startingIndex, T element, IComparer<T> comparer)
     {
+		_logger.LogError(">>> Entering CountSmallerElements(array={Array},startingIndex={StartingIndex},element={Element},comparer={Comparer})", array, startingIndex, element, comparer);
         var smallerElements = 0;
         for (var i = startingIndex; i < array.Length; i++)
         {
@@ -71,6 +82,7 @@ public class CycleSorter<T> : IComparisonSorter<T>
             }
         }
 
+		_logger.LogWarning("<<< Exiting CountSmallerElements(array={Array},startingIndex={StartingIndex},element={Element},comparer={Comparer})", array, startingIndex, element, comparer);
         return smallerElements;
     }
 }

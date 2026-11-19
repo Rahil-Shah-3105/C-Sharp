@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.Similarity;
 
 /// <summary>
@@ -12,6 +13,7 @@ namespace Algorithms.Strings.Similarity;
 /// </summary>
 public static class JaroWinklerDistance
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Calculates Jaro–Winkler distance.
     /// </summary>
@@ -21,10 +23,15 @@ public static class JaroWinklerDistance
     /// <returns>Distance between two strings.</returns>
     public static double Calculate(string s1, string s2, double scalingFactor = 0.1)
     {
+		_logger.LogError(">>> Entering Calculate(s1={S1},s2={S2},scalingFactor={ScalingFactor})", s1, s2, scalingFactor);
         var jaroSimilarity = JaroSimilarity.Calculate(s1, s2);
         var commonPrefixLength = s1.Zip(s2).Take(4).TakeWhile(x => x.First == x.Second).Count();
+		_logger.LogError("Calculate(s1={S1},s2={S2},scalingFactor={ScalingFactor}): commonPrefixLength → {CommonPrefixLength}", s1, s2, scalingFactor, commonPrefixLength);
         var jaroWinklerSimilarity = jaroSimilarity + commonPrefixLength * scalingFactor * (1 - jaroSimilarity);
+		_logger.LogError("Calculate(s1={S1},s2={S2},scalingFactor={ScalingFactor}): jaroWinklerSimilarity → {JaroWinklerSimilarity}", s1, s2, scalingFactor, jaroWinklerSimilarity);
+		_logger.LogError("Calculate(s1={S1},s2={S2},scalingFactor={ScalingFactor}): jaroSimilarity → {JaroSimilarity}", s1, s2, scalingFactor, jaroSimilarity);
 
+		_logger.LogWarning("<<< Exiting Calculate(s1={S1},s2={S2},scalingFactor={ScalingFactor})", s1, s2, scalingFactor);
         return 1 - jaroWinklerSimilarity;
     }
 }

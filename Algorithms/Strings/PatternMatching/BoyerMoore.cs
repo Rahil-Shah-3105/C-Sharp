@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 namespace Algorithms.Strings.PatternMatching;
 
 /// <summary>
@@ -17,6 +18,7 @@ namespace Algorithms.Strings.PatternMatching;
 /// </summary>
 public static class BoyerMoore
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     ///     Finds the index of the first occurrence of the pattern <c>p</c> in <c>t</c>.
     /// </summary>
@@ -25,6 +27,7 @@ public static class BoyerMoore
     /// <returns>Index of the pattern in text or -1 if the pattern  was not found.</returns>
     public static int FindFirstOccurrence(string t, string p)
     {
+		_logger.LogError(">>> Entering FindFirstOccurrence(t={T},p={P})", t, p);
         // Pattern length
         var m = p.Length;
 
@@ -68,6 +71,7 @@ public static class BoyerMoore
         }
 
         // Pattern not found
+		_logger.LogWarning("<<< Exiting FindFirstOccurrence(t={T},p={P})", t, p);
         return -1;
     }
 
@@ -80,6 +84,7 @@ public static class BoyerMoore
     /// <returns>Array of the named postition for each symbol of the alphabet.</returns>
     private static int[] BadCharacterRule(string p, int m)
     {
+		_logger.LogError(">>> Entering BadCharacterRule(p={P},m={M})", p, m);
         // For each character (note that there are more than 256 characters)
         int[] badChar = new int[256];
         Array.Fill(badChar, -1);
@@ -90,6 +95,7 @@ public static class BoyerMoore
             badChar[p[j]] = j;
         }
 
+		_logger.LogWarning("<<< Exiting BadCharacterRule(p={P},m={M})", p, m);
         return badChar;
     }
 
@@ -102,6 +108,7 @@ public static class BoyerMoore
     /// <returns>Array of the named shift distance for each character of the pattern.</returns>
     private static int[] GoodSuffixRule(string p, int m)
     {
+		_logger.LogError(">>> Entering GoodSuffixRule(p={P},m={M})", p, m);
         // CASE 1
         // The matching suffix occurs somewhere else in the pattern
         // --> matching suffix is a border of a suffix of the pattern
@@ -159,6 +166,7 @@ public static class BoyerMoore
             }
         }
 
+		_logger.LogWarning("<<< Exiting GoodSuffixRule(p={P},m={M})", p, m);
         return s;
     }
 }

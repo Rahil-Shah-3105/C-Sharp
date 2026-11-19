@@ -1,4 +1,5 @@
-﻿namespace Algorithms.Crypto.Paddings;
+﻿using Microsoft.Extensions.Logging;
+namespace Algorithms.Crypto.Paddings;
 
 /// <summary>
 /// <para>
@@ -28,6 +29,7 @@
 /// </summary>
 public class Iso7816D4Padding : IBlockCipherPadding
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     /// <summary>
     /// Adds padding to the input data according to the ISO 7816-4 standard.
     /// </summary>
@@ -39,12 +41,15 @@ public class Iso7816D4Padding : IBlockCipherPadding
     /// </exception>
     public int AddPadding(byte[] inputData, int inputOffset)
     {
+		_logger.LogError(">>> Entering AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
         // Calculate the number of padding bytes based on the input data length and offset.
         var code = (byte)(inputData.Length - inputOffset);
+		_logger.LogError("AddPadding(inputData={InputData},inputOffset={InputOffset}): code → {Code}", inputData, inputOffset, code);
 
         // Check if the padding bytes are valid and fit in the input array.
         if (code == 0 || inputOffset + code > inputData.Length)
         {
+			_logger.LogError("Throwing ArgumentException from AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
             throw new ArgumentException("Not enough space in input array for padding");
         }
 
@@ -60,6 +65,7 @@ public class Iso7816D4Padding : IBlockCipherPadding
         }
 
         // Return the number of padding bytes.
+		_logger.LogWarning("<<< Exiting AddPadding(inputData={InputData},inputOffset={InputOffset})", inputData, inputOffset);
         return code;
     }
 
@@ -75,6 +81,7 @@ public class Iso7816D4Padding : IBlockCipherPadding
     /// </exception>
     public byte[] RemovePadding(byte[] inputData)
     {
+		_logger.LogError(">>> Entering RemovePadding(inputData={InputData})", inputData);
         // Find the index of the first padding byte by scanning from the end of the input.
         var paddingIndex = inputData.Length - 1;
 
@@ -87,6 +94,7 @@ public class Iso7816D4Padding : IBlockCipherPadding
         // Check if the first padding byte is 0x80.
         if (paddingIndex < 0 || inputData[paddingIndex] != 0x80)
         {
+			_logger.LogError("Throwing ArgumentException from RemovePadding(inputData={InputData})", inputData);
             throw new ArgumentException("Invalid padding");
         }
 
@@ -97,6 +105,7 @@ public class Iso7816D4Padding : IBlockCipherPadding
         Array.Copy(inputData, 0, unpaddedData, 0, paddingIndex);
 
         // Return the unpadded data array.
+		_logger.LogWarning("<<< Exiting RemovePadding(inputData={InputData})", inputData);
         return unpaddedData;
     }
 
@@ -108,6 +117,7 @@ public class Iso7816D4Padding : IBlockCipherPadding
     /// <exception cref="ArgumentException"> Thrown when the input data has invalid padding.</exception>
     public int GetPaddingCount(byte[] input)
     {
+		_logger.LogError(">>> Entering GetPaddingCount(input={Input})", input);
         // Initialize the index of the first padding byte to -1.
         var paddingStartIndex = -1;
 
@@ -125,9 +135,11 @@ public class Iso7816D4Padding : IBlockCipherPadding
 
             // Compute a mask to indicate if the current byte is 0x00.
             var isZeroMask = (currentByte - 1) >> 31;
+			_logger.LogError("GetPaddingCount(input={Input}): isZeroMask → {IsZeroMask}", input, isZeroMask);
 
             // Compute a mask to indicate if the current byte is 0x80.
             var isPaddingStartMask = ((currentByte ^ 0x80) - 1) >> 31;
+			_logger.LogError("GetPaddingCount(input={Input}): isPaddingStartMask → {IsPaddingStartMask}", input, isPaddingStartMask);
 
             // Update the index of the first padding byte using bitwise operations.
             // If the current byte is 0x80 and still part of the padding, set the index to the current index.
@@ -143,10 +155,12 @@ public class Iso7816D4Padding : IBlockCipherPadding
         // Check if the index of the first padding byte is valid.
         if (paddingStartIndex < 0)
         {
+			_logger.LogError("Throwing ArgumentException from GetPaddingCount(input={Input})", input);
             throw new ArgumentException("Pad block corrupted");
         }
 
         // Return the number of padding bytes.
+		_logger.LogWarning("<<< Exiting GetPaddingCount(input={Input})", input);
         return input.Length - paddingStartIndex;
     }
 }

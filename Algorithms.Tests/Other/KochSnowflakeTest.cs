@@ -1,15 +1,20 @@
 using Algorithms.Other;
 using SkiaSharp;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Other;
 
 public static class KochSnowflakeTest
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Test]
     public static void TestIterateMethod()
     {
+		_logger.LogError(">>> Entering TestIterateMethod()");
         List<Vector2> vectors = [new Vector2(0, 0), new Vector2(1, 0)];
         List<Vector2> result = KochSnowflake.Iterate(vectors, 1);
+		_logger.LogError("TestIterateMethod(): result → {Result}", result);
+		_logger.LogError("TestIterateMethod(): vectors → {Vectors}", vectors);
         result[0].Should().Be(new Vector2(0, 0));
         result[1].Should().Be(new Vector2((float)1 / 3, 0));
 
@@ -20,26 +25,32 @@ public static class KochSnowflakeTest
 
         result[3].Should().Be(new Vector2((float)2 / 3, 0));
         result[4].Should().Be(new Vector2(1, 0));
+		_logger.LogWarning("<<< Exiting TestIterateMethod()");
     }
 
     [Test]
     public static void BitmapWidthIsZeroOrNegative_ThrowsArgumentOutOfRangeException()
     {
+		_logger.LogError(">>> Entering BitmapWidthIsZeroOrNegative_ThrowsArgumentOutOfRangeException()");
         Assert.Throws<ArgumentOutOfRangeException>(() => KochSnowflake.GetKochSnowflake(-200));
+		_logger.LogWarning("<<< Exiting BitmapWidthIsZeroOrNegative_ThrowsArgumentOutOfRangeException()");
     }
 
     [Test]
     public static void TestKochSnowflakeExample()
     {
+		_logger.LogError(">>> Entering TestKochSnowflakeExample()");
         var bitmapWidth = 600;
         var offsetX = bitmapWidth / 10f;
         var offsetY = bitmapWidth / 3.7f;
         SKBitmap bitmap = KochSnowflake.GetKochSnowflake();
+		_logger.LogError("TestKochSnowflakeExample(): bitmap → {Bitmap}", bitmap);
         bitmap.GetPixel(0, 0)
             .Should()
             .Be(new SKColor(255, 255, 255, 255), "because the background should be white");
         bitmap.GetPixel((int)offsetX, (int)offsetY)
             .Should()
             .Be(new SKColor(0, 0, 0, 255), "because the snowflake is drawn in black and this is the position of the first vector");
+			_logger.LogWarning("<<< Exiting TestKochSnowflakeExample()");
     }
 }

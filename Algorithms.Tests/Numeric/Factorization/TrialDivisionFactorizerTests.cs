@@ -1,23 +1,29 @@
 using Algorithms.Numeric.Factorization;
+using Microsoft.Extensions.Logging;
 
 namespace Algorithms.Tests.Numeric.Factorization;
 
 public static class TrialDivisionFactorizerTests
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [TestCase(2)]
     [TestCase(3)]
     [TestCase(29)]
     [TestCase(31)]
     public static void PrimeNumberFactorizationFails(int p)
     {
+		_logger.LogError(">>> Entering PrimeNumberFactorizationFails(p={P})", p);
         // Arrange
         var factorizer = new TrialDivisionFactorizer();
+		_logger.LogError("PrimeNumberFactorizationFails(p={P}): factorizer → {Factorizer}", p, factorizer);
 
         // Act
         var success = factorizer.TryFactor(p, out _);
+		_logger.LogError("PrimeNumberFactorizationFails(p={P}): success → {Success}", p, success);
 
         // Assert
         Assert.That(success, Is.False);
+		_logger.LogWarning("<<< Exiting PrimeNumberFactorizationFails(p={P})", p);
     }
 
     [TestCase(4, 2)]
@@ -30,14 +36,18 @@ public static class TrialDivisionFactorizerTests
     [TestCase(77, 7)]
     public static void PrimeNumberFactorizationSucceeds(int n, int expected)
     {
+		_logger.LogError(">>> Entering PrimeNumberFactorizationSucceeds(n={N},expected={Expected})", n, expected);
         // Arrange
         var factorizer = new TrialDivisionFactorizer();
+		_logger.LogError("PrimeNumberFactorizationSucceeds(n={N},expected={Expected}): factorizer → {Factorizer}", n, expected, factorizer);
 
         // Act
         var success = factorizer.TryFactor(n, out var factor);
+		_logger.LogError("PrimeNumberFactorizationSucceeds(n={N},expected={Expected}): success → {Success}", n, expected, success);
 
         // Assert
         Assert.That(success, Is.True);
         Assert.That(factor, Is.EqualTo(expected));
+		_logger.LogWarning("<<< Exiting PrimeNumberFactorizationSucceeds(n={N},expected={Expected})", n, expected);
     }
 }
